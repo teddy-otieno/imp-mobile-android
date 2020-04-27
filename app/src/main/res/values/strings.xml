@@ -1,0 +1,59 @@
+<resources>
+
+    <string name="get_user_info">Enter your details</string>
+    <string name="login_up_label">Login</string>
+    <string name="login_sign_up">Dont have an account?</string>
+    <string name="login_greetings_message">We\'re glad to have you back.</string>
+    <string name="login_error">Your username or password is incorrect</string>
+
+    <string name="sign_up_email">Email Address</string>
+    <string name="sign_up_phone_number">Phone Number</string>
+    <string name="sign_up_stage_button">Next</string>
+    <string name="sign_up_contact_details_head">Enter Your Contact Details</string>
+
+
+    <string name="month">Month</string>
+    <string name="day">Day</string>
+    <string name="year">Year</string>
+    <string name="date_of_birth_head">Enter Your Date Of Birth</string>
+
+    <string name="app_name">Imp</string>
+    <string name="creator_sign_up_first_name">First Name</string>
+    <string name="creator_sign_up_last_name">Last Name</string>
+    <string name="creator_year_of_birth">Date Of Birth</string>
+    <string name="creator_sign_up_gender">Gender</string>
+    <string name="creator_username_label">Username</string>
+    <string name="creator_password_label">Password</string>
+    <string name="creator_confirm_password_label">Confirm Password</string>
+    <string name="sign_up_button_label">Sign Up</string>
+    <string name="terms_and_conditions_label">Terms and Conditions</string>
+    <string name="terms_and_conditions_radio_button">Do you agree with the terms and conditions?</string>
+    <string-array name="gender">
+        <item>Male</item>
+        <item>Female</item>
+        <item>Other</item>
+    </string-array>
+
+    <string-array name="months_of_year">
+        <item>January</item>
+        <item>February</item>
+        <item>March</item>
+        <item>April</item>
+        <item>May</item>
+        <item>June</item>
+        <item>July</item>
+        <item>August</item>
+        <item>September</item>
+        <item>October</item>
+        <item>November</item>
+        <item>December</item>
+    </string-array>
+
+    <!-- TODO: Remove or change this placeholder text -->
+    <string name="hello_blank_fragment">Hello blank fragment</string>
+    <string name="title_activity_main_dashboard">MainDashboard</string>
+    <string name="title_campaign_feed">Feed</string>
+    <string name="title_campaign_dashboard">Dashboard</string>
+    <string name="title_notifications">Notifications</string>
+    <string name="title_creator_profile">Profile</string>
+</resources>
