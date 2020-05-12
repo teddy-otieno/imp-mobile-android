@@ -1,7 +1,9 @@
 package com.imp.impandroidclient
 
 import android.app.Application
+import android.graphics.Bitmap
 import android.os.AsyncTask
+import android.util.LruCache
 import androidx.room.Room
 import com.android.volley.RequestQueue
 import com.android.volley.toolbox.Volley
@@ -16,6 +18,7 @@ class GlobalApplication : Application() {
         lateinit var database: AppDatabase
         var accessToken: String? = null
         var refreshToken: String? = null
+        val memCache: LruCache<Int, Bitmap> = LruCache(1024 * 1024 * 10)
     }
 
 

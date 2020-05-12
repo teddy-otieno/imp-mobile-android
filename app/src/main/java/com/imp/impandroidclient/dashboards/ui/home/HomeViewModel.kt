@@ -31,12 +31,11 @@ class HomeViewModel : ViewModel() {
     }
 
     private fun getNewCampaignsFromServer() {
-        val url = GlobalApplication.root_path.plus("/api/creator/campaigns")
-
         if (GlobalApplication.accessToken == null) {
             return;
         }
 
+        val url = GlobalApplication.root_path.plus("/api/creator/campaigns")
         val request = object : JsonArrayRequest(
             Request.Method.GET,
             url,

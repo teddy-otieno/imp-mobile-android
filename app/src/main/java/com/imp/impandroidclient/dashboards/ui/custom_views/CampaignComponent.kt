@@ -6,7 +6,6 @@ import android.view.View
 import androidx.constraintlayout.widget.ConstraintLayout
 import com.imp.impandroidclient.R
 import com.imp.impandroidclient.dashboards.ui.data_classes.CampaignData
-import kotlinx.android.synthetic.main.frame_campaign_view.view.*
 
 class CampaignComponentView @JvmOverloads constructor(
     context: Activity,
@@ -19,8 +18,8 @@ class CampaignComponentView @JvmOverloads constructor(
     }
 
     fun setData(campaignData: CampaignData) {
-        campaign_component_brand_name.text = "Test"
+        //campaign_component_brand_name.text = "Test"
         //campaign_component_campaign_cover_image.setImageBitmap(campaignData.cover_image)
-        campaign_component_campaign_title.text = campaignData.title
+        //campaign_component_campaign_title.text = campaignData.title
     }
 }

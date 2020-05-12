@@ -73,6 +73,9 @@ class RetrieveAccessToken(activity: Activity) : AsyncTask<Unit, Unit, Unit>() {
             },
             Response.ErrorListener {
                 //TODO: On error we switch to the loginActivity
+                val intent = Intent(activityRef.get()!!, LoginActivity::class.java)
+                intent.flags = Intent.FLAG_ACTIVITY_CLEAR_TASK or Intent.FLAG_ACTIVITY_NEW_TASK
+                activityRef.get()?.startActivity(intent)
             }
         )
 

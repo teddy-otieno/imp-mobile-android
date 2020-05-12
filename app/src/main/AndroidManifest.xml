@@ -12,6 +12,11 @@
         android:roundIcon="@mipmap/ic_launcher_round"
         android:supportsRtl="true"
         android:theme="@style/AppTheme">
+        <activity android:name=".image_submission.ImageSubmission"></activity>
+        <activity
+            android:name=".campaign.Campaign"
+            android:label="@string/title_activity_campaign"
+            android:theme="@style/AppTheme.NoActionBar"></activity>
         <activity
             android:name=".dashboards.MainDashboard"
             android:label="@string/title_activity_main_dashboard"

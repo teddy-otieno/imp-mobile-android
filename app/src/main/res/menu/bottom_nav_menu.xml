@@ -3,12 +3,12 @@
 
     <item
         android:id="@+id/navigation_campaign_feed"
-        android:icon="@drawable/ic_campaign_home_feed"
+        android:icon="@drawable/ic_home"
         android:title="@string/title_campaign_feed" />
 
     <item
         android:id="@+id/navigation_campaign_dashboard"
-        android:icon="@drawable/ic_bullhorn"
+        android:icon="@drawable/ic_library_icon"
         android:title="@string/title_campaign_dashboard" />
 
     <item
