@@ -4,11 +4,6 @@ import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
-import com.android.volley.Request
-import com.android.volley.Response
-import com.android.volley.toolbox.JsonArrayRequest
-import com.google.gson.Gson
-import com.imp.impandroidclient.GlobalApplication
 import com.imp.impandroidclient.dashboards.ui.data_classes.CampaignData
 import kotlinx.coroutines.launch
 
@@ -31,12 +26,12 @@ class HomeViewModel : ViewModel() {
     }
 
     private fun getNewCampaignsFromServer() {
-        val url = GlobalApplication.root_path.plus("/api/creator/campaigns")
-
+        /*
         if (GlobalApplication.accessToken == null) {
             return;
         }
 
+        val url = GlobalApplication.root_path.plus("/api/creator/campaigns")
         val request = object : JsonArrayRequest(
             Request.Method.GET,
             url,
@@ -72,5 +67,6 @@ class HomeViewModel : ViewModel() {
 
         GlobalApplication.httpRequestQueue.add(request)
         Unit
+         */
     }
 }

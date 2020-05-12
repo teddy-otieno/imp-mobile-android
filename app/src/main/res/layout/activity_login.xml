@@ -22,7 +22,7 @@
 
     <EditText
         android:id="@+id/login_activity_username"
-        android:layout_width="376dp"
+        android:layout_width="300dp"
         android:layout_height="51dp"
         android:layout_marginTop="32dp"
         android:background="@drawable/input_field"
@@ -36,7 +36,7 @@
 
     <EditText
         android:id="@+id/login_activity_password"
-        android:layout_width="379dp"
+        android:layout_width="300dp"
         android:layout_height="50dp"
         android:layout_marginTop="24dp"
         android:background="@drawable/input_field"
@@ -55,7 +55,7 @@
         android:layout_marginTop="32dp"
         android:background="@drawable/primary_button"
         android:text="@string/login_up_label"
-        android:textColor="@color/primaryColorForeGround"
+        android:textColor="@color/primaryForeGround"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintHorizontal_bias="0.497"
         app:layout_constraintStart_toStartOf="parent"

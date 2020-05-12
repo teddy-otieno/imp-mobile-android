@@ -5,23 +5,28 @@
     <uses-permission android:name="android.permission.INTERNET" />
 
     <application
-        android:name=".GlobalApplication"
+        android:name=".application.GlobalApplication"
         android:allowBackup="true"
         android:icon="@mipmap/ic_launcher"
         android:label="@string/app_name"
         android:roundIcon="@mipmap/ic_launcher_round"
         android:supportsRtl="true"
         android:theme="@style/AppTheme">
+        <activity android:name=".image_submission.ImageSubmission"></activity>
+        <activity
+            android:name=".campaign.Campaign"
+            android:label="@string/title_activity_campaign"
+            android:theme="@style/AppTheme.NoActionBar"></activity>
         <activity
             android:name=".dashboards.MainDashboard"
             android:label="@string/title_activity_main_dashboard"
-            android:parentActivityName=".LoadingPage">
+            android:parentActivityName=".loading_activity.LoadingPage">
             <meta-data
                 android:name="android.support.PARENT_ACTIVITY"
-                android:value="com.imp.impandroidclient.LoadingPage" />
+                android:value="com.imp.impandroidclient.loading_activity.LoadingPage" />
         </activity>
         <activity android:name=".loginsignup.LoginActivity" />
-        <activity android:name=".LoadingPage">
+        <activity android:name=".loading_activity.LoadingPage">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
 

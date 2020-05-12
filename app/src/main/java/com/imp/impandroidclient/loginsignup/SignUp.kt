@@ -1,20 +1,12 @@
 package com.imp.impandroidclient.loginsignup
 
 import android.app.Activity
-import android.content.Intent
 import android.os.AsyncTask
 import android.os.Bundle
 import android.view.Window
 import androidx.appcompat.app.AppCompatActivity
-import com.android.volley.Request
-import com.android.volley.Response
-import com.android.volley.toolbox.JsonObjectRequest
-import com.google.gson.Gson
 import com.google.gson.annotations.SerializedName
-import com.imp.impandroidclient.GlobalApplication
-import com.imp.impandroidclient.LoadingPage
 import com.imp.impandroidclient.R
-import org.json.JSONObject
 import java.lang.ref.WeakReference
 
 data class CreatorSignUpInfo(
@@ -76,6 +68,7 @@ class SendCreatorSignUpUserData(activity: Activity) : AsyncTask<CreatorSignUpInf
     private val activityRef: WeakReference<Activity> = WeakReference(activity)
 
     override fun doInBackground(vararg params: CreatorSignUpInfo?) {
+        /*
         val jsonMessage = Gson().toJson(params[0], CreatorSignUpInfo::class.java)
 
         val app = activityRef.get()?.application as GlobalApplication
@@ -108,5 +101,6 @@ class SendCreatorSignUpUserData(activity: Activity) : AsyncTask<CreatorSignUpInf
         )
 
         GlobalApplication.httpRequestQueue.add(jsonRequest)
+         */
     }
 }
