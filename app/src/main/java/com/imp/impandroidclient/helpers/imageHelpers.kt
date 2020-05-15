@@ -2,6 +2,10 @@ package com.imp.impandroidclient.helpers
 
 import android.graphics.*
 import android.widget.ImageView
+import com.imp.impandroidclient.app_state.web_client.HttpClient
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.withContext
+import okhttp3.Request
 
 
 fun getRoundedCornerBitmap(bitmap: Bitmap, pixels: Int): Bitmap {
@@ -39,4 +43,24 @@ fun fillViewBitmap(bitmap: Bitmap, imageView: ImageView): Bitmap {
 
     val widthScale = bitmap.width / imageView.width
     return Bitmap.createBitmap(bitmap, 0, 0, imageView.width * widthScale, bitmap.height)
+}
+
+suspend fun loadImage(url: String): Bitmap? = withContext(Dispatchers.IO){
+
+    val request = Request.Builder()
+        .url(HttpClient.SERVER_URL + url)
+        .addHeader("Authorization", "Bearer " + HttpClient.accessKey)
+        .get()
+        .build()
+
+    val response = HttpClient.webClient.newCall(request).execute()
+
+    if(response.isSuccessful) {
+        val bytes = response.body!!.bytes()
+        val bitmap: Bitmap = BitmapFactory.decodeByteArray(bytes, 0, bytes.size)!!
+
+        return@withContext bitmap
+    }
+
+    return@withContext null
 }

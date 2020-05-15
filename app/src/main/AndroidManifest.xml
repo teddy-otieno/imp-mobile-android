@@ -14,7 +14,7 @@
         android:theme="@style/AppTheme">
         <activity android:name=".image_submission.ImageSubmission"></activity>
         <activity
-            android:name=".campaign.Campaign"
+            android:name=".campaign.CampaignActivity"
             android:label="@string/title_activity_campaign"
             android:theme="@style/AppTheme.NoActionBar"></activity>
         <activity

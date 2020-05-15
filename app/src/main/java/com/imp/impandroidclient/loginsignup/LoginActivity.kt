@@ -1,6 +1,5 @@
 package com.imp.impandroidclient.loginsignup
 
-import android.app.Activity
 import android.content.Intent
 import android.graphics.Typeface
 import android.os.Bundle
@@ -8,8 +7,8 @@ import androidx.activity.viewModels
 import androidx.appcompat.app.AppCompatActivity
 import androidx.lifecycle.Observer
 import androidx.lifecycle.lifecycleScope
-import com.android.volley.Response
 import com.imp.impandroidclient.R
+import com.imp.impandroidclient.app_state.repos.NetworkError
 import com.imp.impandroidclient.dashboards.MainDashboard
 import kotlinx.android.synthetic.main.activity_login.*
 import kotlinx.coroutines.launch
@@ -36,12 +35,15 @@ class LoginActivity : AppCompatActivity() {
         })
 
         loginViewModel.errorOnAuth().observe(this, Observer { occurred ->
-            if(occurred) {
-                greetings_message.run {
+
+            when(occurred){
+                NetworkError.SIGN_IN_FAILED -> greetings_message.run {
                     this.setText(R.string.login_error)
                     this.setTextColor(resources.getColor(R.color.colorError))
                     this.setTypeface(this.typeface, Typeface.BOLD)
                 }
+
+                else -> Unit
             }
         })
     }
@@ -96,31 +98,32 @@ class LoginActivity : AppCompatActivity() {
     }
 }
 
+
+/*
 fun authenticateLogin(
-    context: Activity,
-    username: String,
-    password: String,
-    onErrorCallback: Response.ErrorListener
+context: Activity,
+username: String,
+password: String,
+onErrorCallback: Response.ErrorListener
 ) {
 
-    /*
-    val appViewModel = ViewModelProvider(context as ViewModelStoreOwner).get(ApplicationViewModel::class.java)
-    val credentials = JSONObject()
-        .put("username", username)
-        .put("password", password)
+val appViewModel = ViewModelProvider(context as ViewModelStoreOwner).get(ApplicationViewModel::class.java)
+val credentials = JSONObject()
+    .put("username", username)
+    .put("password", password)
 
-    val request = JsonObjectRequest(
-        credentials,
-        Response.Listener {
-            app.receiveKeyTokens(it.get("access").toString(), it.get("refresh").toString())
-            println("access token received, starting Main activity")
-            val intent = Intent(context, MainDashboard::class.java)
-            intent.flags = Intent.FLAG_ACTIVITY_NEW_TASK or Intent.FLAG_ACTIVITY_CLEAR_TASK
-            context.startActivity(intent)
-        },
-        onErrorCallback
-    )
+val request = JsonObjectRequest(
+    credentials,
+    Response.Listener {
+        app.receiveKeyTokens(it.get("access").toString(), it.get("refresh").toString())
+        println("access token received, starting Main activity")
+        val intent = Intent(context, MainDashboard::class.java)
+        intent.flags = Intent.FLAG_ACTIVITY_NEW_TASK or Intent.FLAG_ACTIVITY_CLEAR_TASK
+        context.startActivity(intent)
+    },
+    onErrorCallback
+)
 
-    GlobalApplication.httpRequestQueue.add(request);
-     */
+GlobalApplication.httpRequestQueue.add(request);
 }
+ */

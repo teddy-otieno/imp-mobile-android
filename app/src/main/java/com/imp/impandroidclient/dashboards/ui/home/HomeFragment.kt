@@ -12,24 +12,21 @@ import android.widget.ImageView
 import android.widget.TextView
 import androidx.constraintlayout.widget.ConstraintLayout
 import androidx.fragment.app.Fragment
-import androidx.fragment.app.viewModels
 import androidx.lifecycle.Observer
-import androidx.lifecycle.ViewModelProvider
 import androidx.lifecycle.lifecycleScope
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
 import com.imp.impandroidclient.R
-import com.imp.impandroidclient.application.ApplicationViewModel
-import com.imp.impandroidclient.campaign.Campaign
+import com.imp.impandroidclient.app_state.Cache
+import com.imp.impandroidclient.campaign.CampaignActivity
 import com.imp.impandroidclient.dashboards.ui.data_classes.CampaignData
-import com.imp.impandroidclient.helpers.convertCampaignToParcelable
 import kotlinx.android.synthetic.main.fragment_home.*
 import kotlinx.coroutines.launch
 import android.util.Pair as UtilPair
 
 class HomeFragment : Fragment() {
 
-    private val homeViewModel: HomeViewModel by viewModels()
+    private val homeViewModel: HomeViewModel = HomeViewModel()
 
     private var campaignAdapter: CampaignComponentAdapter? = null
 
@@ -42,12 +39,16 @@ class HomeFragment : Fragment() {
         inflater: LayoutInflater,
         container: ViewGroup?,
         savedInstanceState: Bundle?
-    ): View? = inflater.inflate(R.layout.fragment_home, container, false)
+    ): View? {
+        println("View was created")
+        return inflater.inflate(R.layout.fragment_home, container, false)
+    }
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
 
         this.homeViewModel.getCampaigns().observe(viewLifecycleOwner, Observer {
+
             home_campaign_list_view.layoutManager = LinearLayoutManager(context)
 
             campaignAdapter = CampaignComponentAdapter(this, it)
@@ -73,7 +74,6 @@ class ViewHolder(val context: Fragment, inflator: LayoutInflater, parent: ViewGr
     private var campaignDescription: TextView
     private var brandTitle: TextView
     private var cardLayout: ConstraintLayout
-    private var coverImage: Int? = null
 
     init {
         campaignCoverImage = itemView.findViewById(R.id.campaignCoverImage)
@@ -85,18 +85,11 @@ class ViewHolder(val context: Fragment, inflator: LayoutInflater, parent: ViewGr
     }
 
     @SuppressLint("ClickableViewAccessibility")
-    fun bind(campaign: CampaignData, contextAdapter: CampaignComponentAdapter) {
-
-
+    fun bind(contextAdapter: CampaignComponentAdapter, campaign: CampaignData, index: Int) {
         cardLayout.setOnTouchListener { v, event ->
-            println("Campaign View Opened")
-
-            if (coverImage != null && contextAdapter.canStart) {
-                val intent: Intent = Intent(context.context, Campaign::class.java).also {
-                    it.putExtra(
-                        "CampaignObject",
-                        convertCampaignToParcelable(campaign, coverImage!!)
-                    )
+            if (contextAdapter.canStart) {
+                val intent: Intent = Intent(context.context, CampaignActivity::class.java).also {
+                    it.putExtra("campaignId", index)
                 }
                 val activityOptions = ActivityOptions.makeSceneTransitionAnimation(
                     context.context as Activity,
@@ -104,8 +97,6 @@ class ViewHolder(val context: Fragment, inflator: LayoutInflater, parent: ViewGr
                     UtilPair.create(campaignTitle as View, "campaignTitleTransition"),
                     UtilPair.create(campaignDescription as View, "campaignDescriptionTransition")
                 )
-
-                println("Alert Activity Started")
                 contextAdapter.canStart = false
                 context.startActivity(intent, activityOptions.toBundle())
             }
@@ -113,56 +104,29 @@ class ViewHolder(val context: Fragment, inflator: LayoutInflater, parent: ViewGr
             true
         }
 
-        val applicationViewModel = ViewModelProvider(context).get(ApplicationViewModel::class.java)
+        campaignTitle.text = campaign.title
+        campaignDescription.text = campaign.about_you
+        brandTitle.text = campaign.brand.brand_name
 
-        context.lifecycleScope.launch {
-            campaignTitle.text = campaign.title
-            campaignDescription.text = campaign.about_you
-            brandTitle.text = campaign.brand.brand_name
+        val coverImageCached = Cache.getImageFromMemCache(campaign.cover_image)
 
-            if (coverImage != null) {
-                campaignCoverImage.setImageBitmap(applicationViewModel.memCache.get(coverImage))
-                return@launch
-            }
-
-            /*
-            val headers: Map<String, String> =
-                mapOf("Authorization" to "Bearer " + GlobalApplication.accessToken)
-            val request = ImageRequest(
-                GlobalApplication.root_path + campaign.cover_image,
-                headers as MutableMap<String, String>,
-                Response.Listener {
-                    val cropped = squareCropBitmap(it)
-                    val croppedRounded = getRoundedCornerBitmap(
-                        cropped,
-                        (0.5 * cropped.width).toInt()
-                    )
-                    //campaignCoverImage.setImageBitmap(croppedRounded)
-
-                    val filled = fillViewBitmap(it, campaignCoverImage)
-
-                    campaignCoverImage.setImageBitmap(filled)
-                    campaignCoverImage.clipToOutline = true;
-
-                    val index = GlobalApplication.memCache.size()
-
-                    coverImage = index + 1
-                    GlobalApplication.memCache.put(coverImage!!, filled)
-                    //campaignCoverImage.setImageBitmap(it)
-                },
-                Response.ErrorListener {
-                    println("Error occured")
+        if(coverImageCached == null) {
+            context.lifecycleScope.launch {
+                val coverImage = campaign.coverImageFuture!!.await()
+                if(coverImage != null) {
+                    Cache.addImageToMemCache(campaign.cover_image, coverImage)
+                    campaignCoverImage.setImageBitmap(coverImage)
                 }
-            )
-            GlobalApplication.httpRequestQueue.add(request)
-             */
+            }
+        } else {
+            campaignCoverImage.setImageBitmap(coverImageCached)
         }
     }
 }
 
 class CampaignComponentAdapter(
     val context: Fragment,
-    private val campaignData: ArrayList<CampaignData>
+    private val campaignData: List<CampaignData>
 ) : RecyclerView.Adapter<ViewHolder>() {
 
     var canStart: Boolean = true
@@ -178,7 +142,7 @@ class CampaignComponentAdapter(
 
     override fun onBindViewHolder(holder: ViewHolder, position: Int) {
         //Set new campaignData to that View
-        holder.bind(campaignData[position], this)
+        holder.bind(this, campaignData[position], position)
     }
 
 

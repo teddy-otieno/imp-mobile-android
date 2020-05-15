@@ -1,7 +1,7 @@
 package com.imp.impandroidclient.dashboards.ui.data_classes
 
-import android.os.Parcelable
-import kotlinx.android.parcel.Parcelize
+import android.graphics.Bitmap
+import kotlinx.coroutines.Deferred
 import java.util.*
 
 //INFO: The other data will be used to filter user
@@ -15,19 +15,19 @@ data class CampaignData(
     var mood_boards: ArrayList<MoodBoard>? = null,
     var where_to_find_product: String,
     var about_you: String,
-    var categories: ArrayList<String>,
+    var categories: ArrayList<String>?,
     var start_date: Date,
     var campaign_period: Int,
     var content_wed_love_from_you: String,
     var dos: ArrayList<Indexed>,
-    var donts: ArrayList<Indexed>
+    var donts: ArrayList<Indexed>,
+    var coverImageFuture: Deferred<Bitmap?>? = null
 )
 
-@Parcelize
 data class Indexed(
     val id: Int,
     val name: String
-) : Parcelable
+)
 
 data class MoodBoard(
     val id: Int,
@@ -35,9 +35,9 @@ data class MoodBoard(
 )
 
 
-@Parcelize
 data class Brand(
     val id: Int,
     val brand_name: String,
-    val brand_image: String
-) : Parcelable
+    val brand_image: String,
+    var brandImageFuture: Deferred<Bitmap?>? = null
+)

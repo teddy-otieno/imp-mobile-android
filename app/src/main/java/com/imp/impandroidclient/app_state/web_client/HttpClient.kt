@@ -1,24 +1,16 @@
 package com.imp.impandroidclient.app_state.web_client
 
-import android.content.Context
-import com.android.volley.Request
-import com.android.volley.RequestQueue
-import com.android.volley.toolbox.Volley
+import okhttp3.MediaType.Companion.toMediaType
+import okhttp3.OkHttpClient
 
 object HttpClient {
-    private lateinit var requestQueue: RequestQueue
+    var webClient: OkHttpClient = OkHttpClient()
     const val SERVER_URL = "http://192.168.0.15:8000"
+
+    val JSON = "application/json; charset=utf-8".toMediaType()
 
     lateinit var accessKey: String
     lateinit var refreshKey: String
-
-    fun initializeRequestQueue(context: Context) {
-        requestQueue = Volley.newRequestQueue(context)
-    }
-
-    fun<T> sendRequest(request: Request<T>) {
-        requestQueue.add(request)
-    }
 
     fun getAuthHeader(): HashMap<String, String> {
         return hashMapOf("Authorization" to "Bearer $accessKey")

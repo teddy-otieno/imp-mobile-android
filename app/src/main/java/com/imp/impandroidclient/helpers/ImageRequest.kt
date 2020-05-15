@@ -1,13 +1,7 @@
 package com.imp.impandroidclient.helpers
 
-import android.graphics.Bitmap
-import android.graphics.BitmapFactory
-import com.android.volley.NetworkResponse
-import com.android.volley.ParseError
-import com.android.volley.Request
-import com.android.volley.Response
-import com.android.volley.toolbox.HttpHeaderParser
 
+/*
 class ImageRequest(
     url: String,
     private val headers: MutableMap<String, String>,
@@ -27,3 +21,4 @@ class ImageRequest(
     override fun getHeaders(): MutableMap<String, String> = headers
     override fun deliverResponse(response: Bitmap?) = listener.onResponse(response)
 }
+*/

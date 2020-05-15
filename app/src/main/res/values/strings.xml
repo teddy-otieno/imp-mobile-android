@@ -57,6 +57,7 @@
     <string name="campaign_apply">APPLY</string>
 
 
+    <string name="connection_failed">Oops... Sorry we were unable to connect. Please check your internet connection</string>
     <!-- Image submission texts -->
     <string name="instagram_post_hint">Enter the caption you want your submission to have…</string>
 

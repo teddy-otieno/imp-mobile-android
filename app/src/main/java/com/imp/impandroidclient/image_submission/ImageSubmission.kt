@@ -9,14 +9,10 @@ import androidx.activity.viewModels
 import androidx.appcompat.app.AppCompatActivity
 import androidx.constraintlayout.widget.ConstraintLayout
 import androidx.lifecycle.Observer
-import androidx.lifecycle.ViewModelProvider
-import androidx.lifecycle.ViewModelStoreOwner
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
 import com.imp.impandroidclient.R
-import com.imp.impandroidclient.application.ApplicationViewModel
-import com.imp.impandroidclient.helpers.CampaignParcelable
-import kotlinx.android.synthetic.main.activity_image_submission.*
+import com.imp.impandroidclient.app_state.Cache
 
 typealias ImageID = Int
 
@@ -38,15 +34,18 @@ class ImageSubmission : AppCompatActivity() {
 
         })
 
-        val campaignObject: CampaignParcelable = intent.getParcelableExtra("CampaignObject")!!
+        val campaignObject: Int = intent.getIntExtra("CampaignObject", -1)
         val layoutManger = LinearLayoutManager(
             this, LinearLayoutManager.HORIZONTAL, false)
 
+        /*
         val images: List<ImageID> = listOf(campaignObject.cover_image, campaignObject.cover_image, campaignObject.cover_image)
         val adapter = SubmissionImagesCarouselAdapter(this, images)
 
         image_submission_carousel.adapter = adapter
         image_submission_carousel.layoutManager = layoutManger
+
+         */
 
     }
 }
@@ -54,7 +53,7 @@ class ImageSubmission : AppCompatActivity() {
 
 class ImageViewHolder(val image: ConstraintLayout) : RecyclerView.ViewHolder(image)
 
-class SubmissionImagesCarouselAdapter(val activityContext: Activity, private val images: List<ImageID?>) :
+class SubmissionImagesCarouselAdapter(val activityContext: Activity, private val images: List<String?>) :
     RecyclerView.Adapter<ImageViewHolder>()
 {
 
@@ -73,10 +72,10 @@ class SubmissionImagesCarouselAdapter(val activityContext: Activity, private val
         submissionImageView.apply {
             this.clipToOutline = true
 
-            val applicationViewModel = ViewModelProvider(activityContext as ViewModelStoreOwner).get(ApplicationViewModel::class.java)
             //Incase the list is empty the put the plus icon
-            if(images[position] != null) {
-                submissionImageView.setImageBitmap(applicationViewModel.memCache.get(images[position]))
+            val submissionImage = images[position]
+            if(submissionImage != null) {
+                submissionImageView.setImageBitmap(Cache.getImageFromMemCache(submissionImage))
             } else {
                 submissionImageView.setImageResource(R.drawable.ic_plus_grey)
             }
