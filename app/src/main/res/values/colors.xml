@@ -9,4 +9,5 @@
     <color name="inputBorder">#EEEEEE</color>
     <color name="primaryForeGround">#FFFFFF</color>
     <color name="black">#000000</color>
+    <color name="svg_grey">#737373</color>
 </resources>

@@ -1,0 +1,85 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    android:id="@+id/submissionTypeChooser"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    android:background="@drawable/card_background"
+    android:elevation="4dp"
+    app:behavior_hideable="false"
+    app:behavior_peekHeight="56dp"
+    app:layout_behavior="com.google.android.material.bottomsheet.BottomSheetBehavior"
+    android:orientation="vertical">
+    
+    <TextView
+        android:layout_width="match_parent"
+        android:text="Submit"
+        android:textAlignment="center"
+        android:textSize="16sp"
+        android:textColor="@color/primaryForeGround"
+        android:background="@color/colorPrimary"
+        android:layout_gravity="center_horizontal"
+        android:paddingVertical="16dp"
+        android:layout_height="wrap_content" />
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:clickable="true"
+        android:foreground="?attr/selectableItemBackground"
+        android:orientation="horizontal"
+        android:paddingTop="@dimen/bottom_sheet_margin"
+        android:paddingBottom="@dimen/bottom_sheet_margin"
+        android:paddingLeft="@dimen/activity_horizontal_margin"
+        android:paddingRight="@dimen/activity_horizontal_margin"
+        >
+        <ImageView
+            android:layout_width="24dp"
+            android:layout_height="24dp"
+            android:src="@drawable/ic_add_to_photos_24px"
+            android:layout_marginRight="32dp"
+            android:tint="@color/svg_grey"
+            />
+        
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+
+            android:textSize="16sp"
+            android:layout_gravity="center_vertical"
+            android:text="Image submission"
+        />
+
+    </LinearLayout>
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:clickable="true"
+        android:foreground="?attr/selectableItemBackground"
+        android:orientation="horizontal"
+        android:paddingBottom="@dimen/bottom_sheet_margin"
+        android:paddingTop="@dimen/bottom_sheet_margin"
+        android:paddingLeft="@dimen/activity_horizontal_margin"
+        android:paddingRight="@dimen/activity_horizontal_margin"
+        >
+        <ImageView
+            android:layout_width="24dp"
+            android:layout_height="24dp"
+            android:src="@drawable/ic_movie_black_18dp"
+            android:layout_marginRight="32dp"
+            android:tint="@color/svg_grey"
+            />
+
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+
+            android:textSize="16sp"
+            android:layout_gravity="center_vertical"
+            android:text="Video submission"
+            />
+
+    </LinearLayout>
+
+</LinearLayout>
