@@ -1,6 +1,5 @@
 package com.imp.impandroidclient.dashboards.ui.home
 
-import android.annotation.SuppressLint
 import android.app.Activity
 import android.app.ActivityOptions
 import android.content.Intent
@@ -82,7 +81,6 @@ class ViewHolder(val context: Fragment, inflator: LayoutInflater, parent: ViewGr
         brandAvatar = itemView.findViewById(R.id.card_brand_avatar)
     }
 
-    @SuppressLint("ClickableViewAccessibility")
     fun bind(contextAdapter: CampaignComponentAdapter, campaign: CampaignData, index: Int) {
         itemView.setOnTouchListener { v, event ->
             if (contextAdapter.canStart) {
@@ -91,9 +89,11 @@ class ViewHolder(val context: Fragment, inflator: LayoutInflater, parent: ViewGr
                 }
                 val activityOptions = ActivityOptions.makeSceneTransitionAnimation(
                     context.context as Activity,
-                    UtilPair.create(campaignCoverImage as View, "campaignCoverImage"),
-                    UtilPair.create(campaignTitle as View, "campaignTitleTransition"),
-                    UtilPair.create(campaignDescription as View, "campaignDescriptionTransition")
+                    UtilPair.create(campaignCoverImage as View, "campaign_cover_image"),
+                    UtilPair.create(campaignTitle as View, "campaign_title"),
+                    UtilPair.create(campaignDescription as View, "campaign_description"),
+                    UtilPair.create(brandAvatar as View, "brand_avatar"),
+                    UtilPair.create(brandTitle as View, "brand_title")
                 )
                 contextAdapter.canStart = false
                 context.startActivity(intent, activityOptions.toBundle())

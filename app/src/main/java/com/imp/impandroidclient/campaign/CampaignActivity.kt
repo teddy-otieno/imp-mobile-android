@@ -14,8 +14,6 @@ import com.imp.impandroidclient.app_state.Cache
 import kotlinx.android.synthetic.main.activity_campaign.*
 import kotlinx.android.synthetic.main.layout_campaign_info_details.*
 import kotlinx.android.synthetic.main.layout_choose_submission.*
-import kotlinx.coroutines.Dispatchers
-import kotlinx.coroutines.launch
 
 class CampaignActivity : AppCompatActivity() {
 
@@ -65,25 +63,10 @@ class CampaignActivity : AppCompatActivity() {
             detailed_campaignDescription.text = campaign.about_you
             detailed_contentWedLoveFromYou.text = campaign.content_wed_love_from_you
             detailed_whereToFindProduct.text = campaign.where_to_find_product
+            detailed_callToAction.text = campaign.call_to_action
 
-
-            val cachedBrandImage = Cache.getImageFromMemCache(campaign.brand.brand_image)
-            if(cachedBrandImage == null) {
-                lifecycleScope.launch(Dispatchers.Main) {
-                    //TODO: Handle this instead of crashing the app
-                    val brandImage = campaign.brand.brandImageFuture?.await()
-
-                    if(brandImage == null) {
-                        TODO("Handle this error")
-                    } else {
-                        brandOfCampaign.setImageBitmap(brandImage)
-                        brandOfCampaign.clipToOutline = true
-                    }
-                }
-            } else {
-                brandOfCampaign.setImageBitmap(cachedBrandImage)
-            }
-
+            brand_avatar.setImageBitmap(Cache.getImageFromMemCache(campaign.brand.brand_image))
+            brand_avatar.clipToOutline = true
 
             for (item in campaign.dos) {
                 val view: ConstraintLayout =

@@ -2,7 +2,6 @@
 
 
 <androidx.coordinatorlayout.widget.CoordinatorLayout
-
     xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
@@ -21,8 +20,7 @@
 
         <androidx.constraintlayout.widget.ConstraintLayout
             android:layout_width="match_parent"
-            android:layout_height="match_parent"
-            android:padding="4dp">
+            android:layout_height="match_parent">
 
             <androidx.constraintlayout.widget.ConstraintLayout
                 android:id="@+id/main_title"
@@ -37,19 +35,17 @@
                     android:layout_height="261dp"
                     android:adjustViewBounds="true"
                     android:scaleType="centerCrop"
-                    android:transitionName="campaignCoverImage"
+                    android:transitionName="campaign_cover_image"
                     app:layout_constraintTop_toTopOf="parent"
                     tools:srcCompat="@tools:sample/backgrounds/scenic" />
 
                 <ImageView
-                    android:id="@+id/brandOfCampaign"
+                    android:id="@+id/brand_avatar"
                     android:layout_width="100dp"
                     android:layout_height="100dp"
                     android:layout_marginTop="180dp"
-                    android:adjustViewBounds="true"
+                    android:transitionName="brand_avatar"
                     android:background="@drawable/avatar_background"
-                    android:cropToPadding="true"
-                    android:elevation="2dp"
                     android:scaleType="centerCrop"
 
                     app:layout_constraintEnd_toEndOf="parent"
@@ -62,24 +58,27 @@
                     android:id="@+id/detail_campaignTitle"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
-                    android:layout_marginTop="28dp"
-                    android:textColor="@color/colorPrimary"
+                    android:layout_marginTop="16dp"
+                    android:text="CampaignTitle"
+                    android:textSize="24sp"
                     android:textStyle="bold"
-                    android:transitionName="campaignTitleTransition"
+                    android:transitionName="campaign_title"
                     app:layout_constraintEnd_toEndOf="parent"
-                    app:layout_constraintHorizontal_bias="0.5"
+                    app:layout_constraintHorizontal_bias="0.498"
                     app:layout_constraintStart_toStartOf="parent"
-                    app:layout_constraintTop_toBottomOf="@+id/brandOfCampaign" />
+                    app:layout_constraintTop_toBottomOf="@+id/brand_avatar" />
 
                 <TextView
                     android:id="@+id/detailed_campaignDescription"
-                    android:layout_width="wrap_content"
+                    android:layout_width="match_parent"
                     android:layout_height="wrap_content"
                     android:layout_marginStart="32dp"
                     android:layout_marginTop="16dp"
                     android:layout_marginEnd="32dp"
                     android:text="TextView"
-                    android:transitionName="campaignDescriptionTransition"
+                    android:textAlignment="center"
+                    android:textSize="16sp"
+                    android:transitionName="campaign_description"
                     app:layout_constraintEnd_toEndOf="parent"
                     app:layout_constraintHorizontal_bias="0.5"
                     app:layout_constraintStart_toStartOf="parent"

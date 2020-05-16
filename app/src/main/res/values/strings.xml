@@ -60,6 +60,7 @@
     <string name="connection_failed">Oops... Sorry we were unable to connect. Please check your internet connection</string>
     <!-- Image submission texts -->
     <string name="instagram_post_hint">Enter the caption you want your submission to have…</string>
+    <string name="dummy">Lorem ipsum dolor sit amet, consectetur adipiscing elit. Fusce dictum libero sapien, a vulputate dolor aliquam vel. Pellentesque ut sollicitudin turpis, non malesuada neque. Vestibulum et lorem sodales, congue dui eu, laoreet orci. Pellentesque sit amet ultrices massa, sit amet bibendum justo</string>
 
     <!-- TODO: Remove or change this placeholder text -->
     <string name="hello_blank_fragment">Hello blank fragment</string>
