@@ -4,6 +4,7 @@ import android.util.Log
 import androidx.lifecycle.MutableLiveData
 import com.imp.impandroidclient.app_state.database.AppDatabase
 import com.imp.impandroidclient.app_state.web_client.HttpClient
+import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.GlobalScope
 import kotlinx.coroutines.launch
 import okhttp3.Call
@@ -11,6 +12,7 @@ import okhttp3.Callback
 import okhttp3.Request
 import okhttp3.RequestBody.Companion.toRequestBody
 import okhttp3.Response
+import org.json.JSONException
 import org.json.JSONObject
 import java.io.IOException
 
@@ -40,31 +42,13 @@ class SessionRepository private constructor() {
 
     private fun authenticate() {
 
-        GlobalScope.launch {
+        GlobalScope.launch(Dispatchers.IO) {
             val refreshKey = db.sessionDao().getCurrentCredentials()
 
+            Log.d("Sqlite", "refresh ${refreshKey}")
             if(refreshKey == null) {
                 isAuthenticated.postValue(false)
             } else {
-
-                /*
-                val refreshMessage = JSONObject().put("refresh", refreshKey)
-                val old_request = JsonObjectRequest(
-                    Request.Method.POST,
-                    HttpClient.SERVER_URL + "/api/accounts/token/refresh",
-                    refreshMessage,
-                    Response.Listener {
-                        isAuthenticated.postValue(true)
-
-                        HttpClient.accessKey = it.getString("access")
-                        HttpClient.refreshKey = refreshKey
-                    },
-                    Response.ErrorListener {
-                        isAuthenticated.postValue(false)
-                    }
-                )
-                HttpClient.sendRequest(request)
-                */
 
                 val refreshMessage = JSONObject().put("refresh", refreshKey)
                 val request = Request.Builder()
@@ -72,19 +56,20 @@ class SessionRepository private constructor() {
                     .post(refreshMessage.toString().toRequestBody(HttpClient.JSON))
                     .build()
 
+                Log.d("Http", refreshMessage.toString())
+
                 HttpClient.webClient.newCall(request).enqueue(object: Callback{
                     override fun onResponse(call: Call, response: Response) {
                         if(response.isSuccessful) {
-                            isAuthenticated.postValue(true)
                             val rawJson = response.body!!.string()
                             println("json ${rawJson}")
                             val json = JSONObject(rawJson)
                             HttpClient.accessKey = json.getString("access")
                             HttpClient.refreshKey = refreshKey
+                            isAuthenticated.postValue(true)
                         } else {
+                            Log.d("HTTP", "${response.body?.string()}")
                             isAuthenticated.postValue(false)
-
-                            println("Error ${response.body.toString()}")
                         }
                     }
 
@@ -98,7 +83,7 @@ class SessionRepository private constructor() {
     }
 
     fun login(username: String, password: String) {
-        GlobalScope.launch {
+        GlobalScope.launch(Dispatchers.IO) {
             val userCredentialsObject = JSONObject()
                 .put("username", username)
                 .put("password", password)
@@ -133,7 +118,32 @@ class SessionRepository private constructor() {
 
             HttpClient.webClient.newCall(request).enqueue(object: Callback {
                 override fun onResponse(call: Call, response: Response) {
-                    TODO("Handle")
+                    val body = response.body
+
+                    if(body == null) {
+                        errorOnAuth.postValue(NetworkError.FAILED)
+                        isAuthenticated.postValue(false)
+                    } else {
+                        val rawJson = body.string()
+                        val json = JSONObject(rawJson)
+
+                        try {
+                            Log.d("HTTP", "${json.toString()}")
+                            //Incase a broken respone is returned
+                            HttpClient.accessKey = json.getString("access")
+                            HttpClient.refreshKey = json.getString("refresh")
+
+                            GlobalScope.launch(Dispatchers.IO) {
+                                db.sessionDao().addRefreshToken(HttpClient.refreshKey)
+                                println("Reached this")
+                            }
+
+                            isAuthenticated.postValue(true)
+                        } catch(e: JSONException) {
+                            errorOnAuth.postValue(NetworkError.BAD_RESPONSE)
+                            isAuthenticated.postValue(false)
+                        }
+                    }
                 }
 
                 override fun onFailure(call: Call, e: IOException) {

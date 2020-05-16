@@ -1,14 +1,13 @@
 package com.imp.impandroidclient.app_state.repos
 
+import android.graphics.Bitmap
 import androidx.lifecycle.MutableLiveData
 import com.google.gson.Gson
+import com.imp.impandroidclient.app_state.Cache
 import com.imp.impandroidclient.app_state.web_client.HttpClient
 import com.imp.impandroidclient.dashboards.ui.data_classes.CampaignData
 import com.imp.impandroidclient.helpers.loadImage
-import kotlinx.coroutines.Dispatchers
-import kotlinx.coroutines.GlobalScope
-import kotlinx.coroutines.async
-import kotlinx.coroutines.launch
+import kotlinx.coroutines.*
 import okhttp3.Request
 import okio.IOException
 import org.json.JSONArray
@@ -35,6 +34,22 @@ class CampaignRepository
                 return instance!!
             }
             return instance!!
+        }
+
+        suspend fun getImage(imageFuture: Deferred<Bitmap?>?, imageName: String): Bitmap? {
+            val coverImageCached = Cache.getImageFromMemCache(imageName)
+
+            if(coverImageCached == null) {
+                val coverImage = imageFuture?.await()
+                if(coverImage != null) {
+                    Cache.addImageToMemCache(imageName, coverImage)
+                    return coverImage
+                }
+            } else {
+                return coverImageCached
+            }
+
+            return null
         }
     }
 
@@ -81,4 +96,6 @@ class CampaignRepository
     fun updateCampaign(campaign: CampaignData, index: Int) {
         campaignData.value!![index] = campaign
     }
+
+
 }

@@ -10,14 +10,13 @@ import android.view.View
 import android.view.ViewGroup
 import android.widget.ImageView
 import android.widget.TextView
-import androidx.constraintlayout.widget.ConstraintLayout
 import androidx.fragment.app.Fragment
 import androidx.lifecycle.Observer
 import androidx.lifecycle.lifecycleScope
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
 import com.imp.impandroidclient.R
-import com.imp.impandroidclient.app_state.Cache
+import com.imp.impandroidclient.app_state.repos.CampaignRepository
 import com.imp.impandroidclient.campaign.CampaignActivity
 import com.imp.impandroidclient.dashboards.ui.data_classes.CampaignData
 import kotlinx.android.synthetic.main.fragment_home.*
@@ -73,20 +72,19 @@ class ViewHolder(val context: Fragment, inflator: LayoutInflater, parent: ViewGr
     private var campaignTitle: TextView
     private var campaignDescription: TextView
     private var brandTitle: TextView
-    private var cardLayout: ConstraintLayout
+    private var brandAvatar: ImageView
 
     init {
-        campaignCoverImage = itemView.findViewById(R.id.campaignCoverImage)
-        campaignTitle = itemView.findViewById(R.id.campaignTitle)
-        campaignDescription = itemView.findViewById(R.id.campaignDescription)
-        brandTitle = itemView.findViewById(R.id.campaignBrandName)
-
-        cardLayout = itemView.findViewById(R.id.campaignFrame)
+        campaignCoverImage = itemView.findViewById(R.id.card_campaign_cover_image)
+        campaignTitle = itemView.findViewById(R.id.card_campaign_title)
+        campaignDescription = itemView.findViewById(R.id.card_campaign_description)
+        brandTitle = itemView.findViewById(R.id.card_brand_name)
+        brandAvatar = itemView.findViewById(R.id.card_brand_avatar)
     }
 
     @SuppressLint("ClickableViewAccessibility")
     fun bind(contextAdapter: CampaignComponentAdapter, campaign: CampaignData, index: Int) {
-        cardLayout.setOnTouchListener { v, event ->
+        itemView.setOnTouchListener { v, event ->
             if (contextAdapter.canStart) {
                 val intent: Intent = Intent(context.context, CampaignActivity::class.java).also {
                     it.putExtra("campaignId", index)
@@ -108,6 +106,7 @@ class ViewHolder(val context: Fragment, inflator: LayoutInflater, parent: ViewGr
         campaignDescription.text = campaign.about_you
         brandTitle.text = campaign.brand.brand_name
 
+        /*
         val coverImageCached = Cache.getImageFromMemCache(campaign.cover_image)
 
         if(coverImageCached == null) {
@@ -121,6 +120,14 @@ class ViewHolder(val context: Fragment, inflator: LayoutInflater, parent: ViewGr
         } else {
             campaignCoverImage.setImageBitmap(coverImageCached)
         }
+         */
+
+        context.lifecycleScope.launch {
+            campaignCoverImage.setImageBitmap(CampaignRepository.getImage(campaign.coverImageFuture, campaign.cover_image))
+            brandAvatar.setImageBitmap(CampaignRepository.getImage(campaign.brand.brandImageFuture, campaign.brand.brand_image))
+            brandAvatar.clipToOutline = true
+        }
+
     }
 }
 

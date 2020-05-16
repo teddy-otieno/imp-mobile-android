@@ -12,6 +12,7 @@ import com.google.android.material.bottomsheet.BottomSheetBehavior
 import com.imp.impandroidclient.R
 import com.imp.impandroidclient.app_state.Cache
 import kotlinx.android.synthetic.main.activity_campaign.*
+import kotlinx.android.synthetic.main.layout_campaign_info_details.*
 import kotlinx.android.synthetic.main.layout_choose_submission.*
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch

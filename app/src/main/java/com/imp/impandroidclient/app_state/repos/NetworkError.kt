@@ -5,5 +5,6 @@ enum class NetworkError {
     INTERUPTED,
     FAILED_EXECUTION,
     SIGN_IN_FAILED,
-    FAILED
+    FAILED,
+    BAD_RESPONSE
 }
