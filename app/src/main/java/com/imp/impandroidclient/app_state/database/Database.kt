@@ -51,10 +51,10 @@ data class SubmissionImage (
 
 @Dao
 interface SessionCredentialsDao {
-    @Query("SELECT refreshToken FROM SessionCredentials")
+    @Query("SELECT refreshToken FROM SessionCredentials WHERE uid=1;")
     fun getCurrentCredentials(): String?
 
-    @Query("INSERT INTO SessionCredentials(refreshToken) values (:token)")
+    @Query("UPDATE SessionCredentials SET refreshToken = (:token) WHERE uid=1;")
     fun addRefreshToken(token: String)
 }
 
