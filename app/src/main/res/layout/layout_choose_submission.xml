@@ -19,10 +19,11 @@
         android:textColor="@color/primaryForeGround"
         android:background="@color/colorPrimary"
         android:layout_gravity="center_horizontal"
-        android:paddingVertical="16dp"
+        android:paddingVertical="18dp"
         android:layout_height="wrap_content" />
 
     <LinearLayout
+        android:id="@+id/post_submission"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:clickable="true"
@@ -36,7 +37,7 @@
         <ImageView
             android:layout_width="24dp"
             android:layout_height="24dp"
-            android:src="@drawable/ic_add_to_photos_24px"
+            android:src="@drawable/ic_add_box_24px"
             android:layout_marginRight="32dp"
             android:tint="@color/svg_grey"
             />
@@ -47,12 +48,13 @@
 
             android:textSize="16sp"
             android:layout_gravity="center_vertical"
-            android:text="Image submission"
+            android:text="Post"
         />
 
     </LinearLayout>
 
     <LinearLayout
+        android:id="@+id/carousel_submission"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:clickable="true"
@@ -66,7 +68,7 @@
         <ImageView
             android:layout_width="24dp"
             android:layout_height="24dp"
-            android:src="@drawable/ic_movie_black_18dp"
+            android:src="@drawable/ic_view_carousel_24px"
             android:layout_marginRight="32dp"
             android:tint="@color/svg_grey"
             />
@@ -77,9 +79,39 @@
 
             android:textSize="16sp"
             android:layout_gravity="center_vertical"
-            android:text="Video submission"
+            android:text="Carousel"
             />
 
     </LinearLayout>
 
+    <LinearLayout
+        android:id="@+id/story_submission"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:clickable="true"
+        android:foreground="?attr/selectableItemBackground"
+        android:orientation="horizontal"
+        android:paddingBottom="@dimen/bottom_sheet_margin"
+        android:paddingTop="@dimen/bottom_sheet_margin"
+        android:paddingLeft="@dimen/activity_horizontal_margin"
+        android:paddingRight="@dimen/activity_horizontal_margin"
+        >
+        <ImageView
+            android:layout_width="24dp"
+            android:layout_height="24dp"
+            android:src="@drawable/ic_add_circle_outline_24px"
+            android:layout_marginRight="32dp"
+            android:tint="@color/svg_grey"
+            />
+
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+
+            android:textSize="16sp"
+            android:layout_gravity="center_vertical"
+            android:text="Story"
+            />
+
+    </LinearLayout>
 </LinearLayout>

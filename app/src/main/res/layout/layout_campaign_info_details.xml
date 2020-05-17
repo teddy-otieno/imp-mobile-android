@@ -10,6 +10,41 @@
     android:orientation="vertical">
 
     <com.google.android.material.card.MaterialCardView
+        android:id="@+id/about_us"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="16dp"
+        android:layout_marginHorizontal="8dp"
+        android:paddingHorizontal="16dp"
+        >
+
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:orientation="vertical"
+            >
+
+            <com.google.android.material.textview.MaterialTextView
+                android:id="@+id/header_about_us"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginStart="16dp"
+                android:layout_marginTop="16dp"
+                android:text="@string/header_about_us"
+                android:textSize="16sp"
+                android:textStyle="bold" />
+
+            <com.google.android.material.textview.MaterialTextView
+                android:id="@+id/detailed_about_us"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginVertical="16dp"
+                android:layout_marginHorizontal="16dp"
+                android:text="@string/dummy"
+                android:transitionName="campaign_description"/>
+        </LinearLayout>
+    </com.google.android.material.card.MaterialCardView>
+    <com.google.android.material.card.MaterialCardView
         android:id="@+id/contentWedLoveContainer"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
@@ -51,6 +86,7 @@
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:layout_marginTop="16dp"
+        android:layout_marginHorizontal="8dp"
         android:paddingHorizontal="16dp"
         android:paddingVertical="8dp"
         >
@@ -77,7 +113,7 @@
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:layout_marginStart="16dp"
-                android:layout_marginVertical="8dp"
+                android:layout_marginVertical="16dp"
                 android:layout_marginEnd="16dp"
                 android:text="@string/dummy"
                 />
@@ -90,6 +126,7 @@
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:layout_marginTop="16dp"
+        android:layout_marginHorizontal="8dp"
         android:paddingHorizontal="16dp"
         android:paddingVertical="8dp"
         >
@@ -114,7 +151,7 @@
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:layout_marginStart="16dp"
-                android:layout_marginVertical="8dp"
+                android:layout_marginVertical="16dp"
                 android:layout_marginEnd="16dp"
                 android:text="@string/dummy"/>
         </LinearLayout>
@@ -126,6 +163,7 @@
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:layout_marginTop="16dp"
+        android:layout_marginHorizontal="8dp"
         android:paddingHorizontal="16dp"
         android:paddingVertical="8dp"
         >
@@ -164,6 +202,8 @@
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:layout_marginTop="16dp"
+        android:layout_marginBottom="56dp"
+        android:layout_marginHorizontal="8dp"
         android:paddingHorizontal="16dp"
         android:paddingVertical="8dp"
         >

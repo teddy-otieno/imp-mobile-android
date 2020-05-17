@@ -67,19 +67,11 @@ class HomeFragment : Fragment() {
 class ViewHolder(val context: Fragment, inflator: LayoutInflater, parent: ViewGroup) :
     RecyclerView.ViewHolder(inflator.inflate(R.layout.frame_campaign_view, parent, false)) {
 
-    private var campaignCoverImage: ImageView
-    private var campaignTitle: TextView
-    private var campaignDescription: TextView
-    private var brandTitle: TextView
-    private var brandAvatar: ImageView
-
-    init {
-        campaignCoverImage = itemView.findViewById(R.id.card_campaign_cover_image)
-        campaignTitle = itemView.findViewById(R.id.card_campaign_title)
-        campaignDescription = itemView.findViewById(R.id.card_campaign_description)
-        brandTitle = itemView.findViewById(R.id.card_brand_name)
-        brandAvatar = itemView.findViewById(R.id.card_brand_avatar)
-    }
+    private var campaignCoverImage: ImageView = itemView.findViewById(R.id.card_campaign_cover_image)
+    private var campaignTitle: TextView = itemView.findViewById(R.id.card_campaign_title)
+    private var campaignDescription: TextView = itemView.findViewById(R.id.card_campaign_description)
+    private var brandTitle: TextView = itemView.findViewById(R.id.card_brand_name)
+    private var brandAvatar: ImageView = itemView.findViewById(R.id.card_brand_avatar)
 
     fun bind(contextAdapter: CampaignComponentAdapter, campaign: CampaignData, index: Int) {
         itemView.setOnTouchListener { v, event ->

@@ -49,6 +49,7 @@
         <item>December</item>
     </string-array>
 
+    <string name="header_about_us">ABOUT US</string>
     <string name="header_contentWedLoveFromYou">CONTENT WE\'D LOVE FROM YOU</string>
     <string name="header_whereToFindProduct">WHERE TO FIND OUR PRODUCT</string>
     <string name="header_callToAction">CALL TO ACTION</string>

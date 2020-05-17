@@ -1,16 +1,18 @@
 package com.imp.impandroidclient.campaign
 
+import android.content.Intent
 import android.os.Bundle
 import android.view.View
+import android.widget.LinearLayout
 import android.widget.TextView
 import androidx.appcompat.app.AppCompatActivity
 import androidx.constraintlayout.widget.ConstraintLayout
 import androidx.lifecycle.Observer
 import androidx.lifecycle.ViewModelProvider
-import androidx.lifecycle.lifecycleScope
 import com.google.android.material.bottomsheet.BottomSheetBehavior
 import com.imp.impandroidclient.R
 import com.imp.impandroidclient.app_state.Cache
+import com.imp.impandroidclient.image_submission.ImageSubmission
 import kotlinx.android.synthetic.main.activity_campaign.*
 import kotlinx.android.synthetic.main.layout_campaign_info_details.*
 import kotlinx.android.synthetic.main.layout_choose_submission.*
@@ -19,6 +21,7 @@ class CampaignActivity : AppCompatActivity() {
 
     private lateinit var campaignModelFactory: CampaignViewModelFactory
     private lateinit var viewModel: CampaignViewModel
+    private lateinit var sheetBehavior: BottomSheetBehavior<LinearLayout>
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -26,33 +29,27 @@ class CampaignActivity : AppCompatActivity() {
 
         initMembers()
         setUpObservers()
-        setUpListeners()
         setupBottomSheet()
-
-        lifecycleScope.launchWhenCreated {
-            val campaign = viewModel.getCampaign().value!!
-        }
-
+        setUpListeners()
     }
 
     private fun initMembers() {
         val campaignId: Int = intent.getIntExtra("campaignId", -1)
 
-        if(campaignId == -1) {
-            throw IndexOutOfBoundsException("CampaignID is out of range")
-        }
+        if(campaignId == -1) throw IndexOutOfBoundsException("CampaignID is out of range")
         campaignModelFactory = CampaignViewModelFactory(campaignId)
         viewModel = ViewModelProvider(this, campaignModelFactory).get(CampaignViewModel::class.java)
     }
 
     private fun setUpListeners() {
+        post_submission.setOnClickListener {
+            val intent = Intent(this, ImageSubmission::class.java).apply {
+                this.putExtra("campaignId", viewModel.campaignId)
+            }
 
-        /*
-        campaignSubmission.setOnClickListener {
-            setupBottomSheet()
+            sheetBehavior.state = BottomSheetBehavior.STATE_COLLAPSED
+            startActivity(intent)
         }
-         */
-
     }
 
     private fun setUpObservers() {
@@ -60,7 +57,7 @@ class CampaignActivity : AppCompatActivity() {
         viewModel.getCampaign().observe(this, Observer { campaign ->
             detailed_campaignCoverImage.setImageBitmap(Cache.getImageFromMemCache(campaign.cover_image))
             detail_campaignTitle.text = campaign.title
-            detailed_campaignDescription.text = campaign.about_you
+            detailed_about_us.text = campaign.about_you
             detailed_contentWedLoveFromYou.text = campaign.content_wed_love_from_you
             detailed_whereToFindProduct.text = campaign.where_to_find_product
             detailed_callToAction.text = campaign.call_to_action
@@ -91,7 +88,7 @@ class CampaignActivity : AppCompatActivity() {
 
     private fun setupBottomSheet() {
 
-        val sheetBehavior = BottomSheetBehavior.from(submissionTypeChooser)
+        sheetBehavior = BottomSheetBehavior.from(submissionTypeChooser)
 
         sheetBehavior.addBottomSheetCallback(object: BottomSheetBehavior.BottomSheetCallback() {
             override fun onStateChanged(bottomSheet: View, newState: Int) {
