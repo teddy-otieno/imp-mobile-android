@@ -1,4 +1,4 @@
-package com.imp.impandroidclient.dashboards.ui.data_classes
+package com.imp.impandroidclient.app_state.repos.data
 
 import android.graphics.Bitmap
 import kotlinx.coroutines.Deferred

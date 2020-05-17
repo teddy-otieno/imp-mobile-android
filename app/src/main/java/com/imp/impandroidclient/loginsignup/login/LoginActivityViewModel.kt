@@ -1,4 +1,4 @@
-package com.imp.impandroidclient.loginsignup
+package com.imp.impandroidclient.loginsignup.login
 
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel

@@ -1,6 +1,5 @@
 package com.imp.impandroidclient.dashboards.ui.home
 
-import android.app.Activity
 import android.app.ActivityOptions
 import android.content.Intent
 import android.os.Bundle
@@ -16,8 +15,8 @@ import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
 import com.imp.impandroidclient.R
 import com.imp.impandroidclient.app_state.repos.CampaignRepository
+import com.imp.impandroidclient.app_state.repos.data.CampaignData
 import com.imp.impandroidclient.campaign.CampaignActivity
-import com.imp.impandroidclient.dashboards.ui.data_classes.CampaignData
 import kotlinx.android.synthetic.main.fragment_home.*
 import kotlinx.coroutines.launch
 import android.util.Pair as UtilPair
@@ -46,26 +45,21 @@ class HomeFragment : Fragment() {
         super.onViewCreated(view, savedInstanceState)
 
         this.homeViewModel.getCampaigns().observe(viewLifecycleOwner, Observer {
-
             home_campaign_list_view.layoutManager = LinearLayoutManager(context)
-
             campaignAdapter = CampaignComponentAdapter(this, it)
             home_campaign_list_view.adapter = campaignAdapter!!
-
         })
     }
 
     override fun onResume() {
         super.onResume()
-
-        if (campaignAdapter != null) {
-            campaignAdapter?.canStart = true
-        }
+        campaignAdapter?.canStart = campaignAdapter != null
     }
 }
 
 class ViewHolder(val context: Fragment, inflator: LayoutInflater, parent: ViewGroup) :
-    RecyclerView.ViewHolder(inflator.inflate(R.layout.frame_campaign_view, parent, false)) {
+    RecyclerView.ViewHolder(inflator.inflate(R.layout.frame_campaign_view, parent, false))
+{
 
     private var campaignCoverImage: ImageView = itemView.findViewById(R.id.card_campaign_cover_image)
     private var campaignTitle: TextView = itemView.findViewById(R.id.card_campaign_title)
@@ -80,7 +74,7 @@ class ViewHolder(val context: Fragment, inflator: LayoutInflater, parent: ViewGr
                     it.putExtra("campaignId", index)
                 }
                 val activityOptions = ActivityOptions.makeSceneTransitionAnimation(
-                    context.context as Activity,
+                    context.activity,
                     UtilPair.create(campaignCoverImage as View, "campaign_cover_image"),
                     UtilPair.create(campaignTitle as View, "campaign_title"),
                     UtilPair.create(campaignDescription as View, "campaign_description"),
@@ -98,25 +92,13 @@ class ViewHolder(val context: Fragment, inflator: LayoutInflater, parent: ViewGr
         campaignDescription.text = campaign.about_you
         brandTitle.text = campaign.brand.brand_name
 
-        /*
-        val coverImageCached = Cache.getImageFromMemCache(campaign.cover_image)
-
-        if(coverImageCached == null) {
-            context.lifecycleScope.launch {
-                val coverImage = campaign.coverImageFuture!!.await()
-                if(coverImage != null) {
-                    Cache.addImageToMemCache(campaign.cover_image, coverImage)
-                    campaignCoverImage.setImageBitmap(coverImage)
-                }
-            }
-        } else {
-            campaignCoverImage.setImageBitmap(coverImageCached)
-        }
-         */
-
         context.lifecycleScope.launch {
-            campaignCoverImage.setImageBitmap(CampaignRepository.getImage(campaign.coverImageFuture, campaign.cover_image))
-            brandAvatar.setImageBitmap(CampaignRepository.getImage(campaign.brand.brandImageFuture, campaign.brand.brand_image))
+            campaignCoverImage.setImageBitmap(
+                CampaignRepository.getImage(
+                    campaign.coverImageFuture, campaign.cover_image))
+            brandAvatar.setImageBitmap(
+                CampaignRepository.getImage(
+                    campaign.brand.brandImageFuture, campaign.brand.brand_image))
             brandAvatar.clipToOutline = true
         }
 
@@ -129,13 +111,8 @@ class CampaignComponentAdapter(
 ) : RecyclerView.Adapter<ViewHolder>() {
 
     var canStart: Boolean = true
-
-    override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): ViewHolder {
-        //Create a campaign component view
-        val inflator = LayoutInflater.from(parent.context)
-
-        return ViewHolder(context, inflator, parent)
-    }
+    override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): ViewHolder =
+        ViewHolder(context, LayoutInflater.from(parent.context), parent)
 
     override fun getItemCount() = campaignData.size
 

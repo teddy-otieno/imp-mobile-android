@@ -3,7 +3,7 @@ package com.imp.impandroidclient.campaign
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
 import com.imp.impandroidclient.app_state.repos.CampaignRepository
-import com.imp.impandroidclient.dashboards.ui.data_classes.CampaignData
+import com.imp.impandroidclient.app_state.repos.data.CampaignData
 
 class CampaignViewModel(val campaignId: Int) : ViewModel() {
     private val campaignRepo: CampaignRepository = CampaignRepository.getInstance()

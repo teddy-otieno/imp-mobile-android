@@ -27,12 +27,14 @@ class SessionRepository private constructor() {
         private var instance: SessionRepository? = null
 
         fun getInstance(): SessionRepository {
-            if(instance == null) {
+            return if(instance == null) {
                 instance = SessionRepository()
-                return instance!!
+                instance!!
+            } else {
+
+                instance!!
             }
 
-            return instance!!
         }
 
     }

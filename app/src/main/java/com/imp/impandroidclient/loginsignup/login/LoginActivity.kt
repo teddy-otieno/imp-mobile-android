@@ -1,4 +1,4 @@
-package com.imp.impandroidclient.loginsignup
+package com.imp.impandroidclient.loginsignup.login
 
 import android.content.Intent
 import android.graphics.Typeface
@@ -10,6 +10,7 @@ import androidx.lifecycle.lifecycleScope
 import com.imp.impandroidclient.R
 import com.imp.impandroidclient.app_state.repos.NetworkError
 import com.imp.impandroidclient.dashboards.MainDashboard
+import com.imp.impandroidclient.loginsignup.SignUp
 import kotlinx.android.synthetic.main.activity_login.*
 import kotlinx.coroutines.launch
 

@@ -8,7 +8,7 @@ import androidx.lifecycle.Observer
 import com.imp.impandroidclient.R
 import com.imp.impandroidclient.app_state.repos.NetworkError
 import com.imp.impandroidclient.dashboards.MainDashboard
-import com.imp.impandroidclient.loginsignup.LoginActivity
+import com.imp.impandroidclient.loginsignup.login.LoginActivity
 import kotlinx.android.synthetic.main.activity_loading_page.*
 
 class LoadingPage : AppCompatActivity() {

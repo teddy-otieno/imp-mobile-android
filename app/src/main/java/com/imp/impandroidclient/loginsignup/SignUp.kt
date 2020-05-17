@@ -1,13 +1,10 @@
 package com.imp.impandroidclient.loginsignup
 
-import android.app.Activity
-import android.os.AsyncTask
 import android.os.Bundle
 import android.view.Window
 import androidx.appcompat.app.AppCompatActivity
 import com.google.gson.annotations.SerializedName
 import com.imp.impandroidclient.R
-import java.lang.ref.WeakReference
 
 data class CreatorSignUpInfo(
     @SerializedName("creatorFirstName") var firstName: String? = null,
@@ -60,47 +57,6 @@ class SignUp : AppCompatActivity(),
         signUpData.password = password
 
         //TODO: Move to kotlin coroutines
-        SendCreatorSignUpUserData(this).execute(signUpData)
     }
 }
 
-class SendCreatorSignUpUserData(activity: Activity) : AsyncTask<CreatorSignUpInfo, Void, Unit>() {
-    private val activityRef: WeakReference<Activity> = WeakReference(activity)
-
-    override fun doInBackground(vararg params: CreatorSignUpInfo?) {
-        /*
-        val jsonMessage = Gson().toJson(params[0], CreatorSignUpInfo::class.java)
-
-        val app = activityRef.get()?.application as GlobalApplication
-
-        val jsonRequest = JsonObjectRequest(
-            Request.Method.POST,
-            GlobalApplication.root_path.plus("/api/accounts/creator-sign-up3"),
-            JSONObject(jsonMessage),
-            Response.Listener { response ->
-                var intent = Intent(activityRef.get(), LoadingPage::class.java)
-                intent.flags = Intent.FLAG_ACTIVITY_NEW_TASK or Intent.FLAG_ACTIVITY_CLEAR_TASK
-
-                val bundle = Bundle().also { bundle ->
-                    bundle.putString("username", params[0]?.username)
-                    bundle.putString("password", params[0]?.password)
-                }
-
-                intent.putExtra("fromSignUpTokens", bundle)
-
-                activityRef.get()?.startActivity(intent)
-            },
-            Response.ErrorListener
-            {
-                println("Error Occured While sending data")
-                println(it.message)
-                println(it.localizedMessage)
-                println(it.networkResponse)
-                println(it.cause)
-            }
-        )
-
-        GlobalApplication.httpRequestQueue.add(jsonRequest)
-         */
-    }
-}

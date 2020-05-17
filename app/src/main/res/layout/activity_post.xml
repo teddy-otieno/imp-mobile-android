@@ -12,17 +12,19 @@
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:background="@color/backgroundColor"
-        android:padding="8dp"
+        android:padding="16dp"
         android:orientation="horizontal"
         app:layout_constraintTop_toTopOf="parent">
 
         <ImageView
+            android:id="@+id/post_back_button"
             android:layout_width="32dp"
             android:layout_height="32dp"
             android:layout_marginEnd="32dp"
             android:scaleType="fitCenter"
             android:src="@drawable/ic_arrow_back_24px"
-            android:tint="@color/svg_grey" />
+            android:tint="@color/svg_grey"
+            />
 
         <TextView
             android:layout_width="match_parent"

@@ -46,7 +46,6 @@ class CampaignActivity : AppCompatActivity() {
             val intent = Intent(this, Post::class.java).apply {
                 this.putExtra("campaignId", viewModel.campaignId)
             }
-
             sheetBehavior.state = BottomSheetBehavior.STATE_COLLAPSED
             startActivity(intent)
         }
