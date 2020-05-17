@@ -10,9 +10,8 @@
     app:behavior_peekHeight="56dp"
     app:layout_behavior="com.google.android.material.bottomsheet.BottomSheetBehavior"
     android:orientation="vertical">
-    
-    <TextView
-        android:layout_width="match_parent"
+
+    <TextView android:layout_width="match_parent"
         android:text="Submit"
         android:textAlignment="center"
         android:textSize="16sp"

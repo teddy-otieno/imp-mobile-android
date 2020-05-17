@@ -12,7 +12,7 @@ import androidx.lifecycle.ViewModelProvider
 import com.google.android.material.bottomsheet.BottomSheetBehavior
 import com.imp.impandroidclient.R
 import com.imp.impandroidclient.app_state.Cache
-import com.imp.impandroidclient.image_submission.ImageSubmission
+import com.imp.impandroidclient.submission_types.post.Post
 import kotlinx.android.synthetic.main.activity_campaign.*
 import kotlinx.android.synthetic.main.layout_campaign_info_details.*
 import kotlinx.android.synthetic.main.layout_choose_submission.*
@@ -43,7 +43,7 @@ class CampaignActivity : AppCompatActivity() {
 
     private fun setUpListeners() {
         post_submission.setOnClickListener {
-            val intent = Intent(this, ImageSubmission::class.java).apply {
+            val intent = Intent(this, Post::class.java).apply {
                 this.putExtra("campaignId", viewModel.campaignId)
             }
 

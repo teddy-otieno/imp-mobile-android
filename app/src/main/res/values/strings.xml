@@ -58,9 +58,15 @@
     <string name="campaign_apply">APPLY</string>
 
 
-    <string name="connection_failed">Oops... Sorry we were unable to connect. Please check your internet connection</string>
+    <!-- Post activity -->
+    <string name="post_caption">Post Caption</string>
+
+    <string name="connection_failed">Oops… Sorry we were unable to connect. Please check your internet connection</string>
     <!-- Image submission texts -->
+    <string name="post_activity_title">Instagram Post</string>
     <string name="instagram_post_hint">Enter the caption you want your submission to have…</string>
+    <string name="fee">Add a fee you\'d like to be paid</string>
+    <string name="notes">Notes \nAdd notes for the brand</string>
     <string name="dummy">Lorem ipsum dolor sit amet, consectetur adipiscing elit. Fusce dictum libero sapien, a vulputate dolor aliquam vel. Pellentesque ut sollicitudin turpis, non malesuada neque. Vestibulum et lorem sodales, congue dui eu, laoreet orci. Pellentesque sit amet ultrices massa, sit amet bibendum justo</string>
 
     <!-- TODO: Remove or change this placeholder text -->
