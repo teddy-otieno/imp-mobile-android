@@ -22,6 +22,7 @@
             android:orientation="vertical"
             >
             <EditText
+                android:id="@+id/post_caption"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:background="@drawable/input_field"
@@ -56,7 +57,8 @@
             android:textColor="@color/colorPrimary"
             android:textStyle="bold" />
         <EditText
-            android:layout_width="match_parent"
+            android:id="@+id/post_fee_rates"
+            android:layout_width="0dp"
             android:layout_height="wrap_content"
             android:layout_margin="8dp"
             android:layout_weight="0.5"
@@ -76,6 +78,7 @@
     </LinearLayout>
 
     <EditText
+        android:id="@+id/post_notes"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:layout_marginHorizontal="8dp"

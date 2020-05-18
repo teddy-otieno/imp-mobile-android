@@ -30,6 +30,7 @@ class CampaignRepository
         private var instance: CampaignRepository? = null
 
         fun getInstance(): CampaignRepository {
+
             return if(instance == null) {
                 instance = CampaignRepository()
                 instance!!

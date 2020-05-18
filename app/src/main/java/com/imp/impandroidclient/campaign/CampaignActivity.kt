@@ -44,7 +44,7 @@ class CampaignActivity : AppCompatActivity() {
     private fun setUpListeners() {
         post_submission.setOnClickListener {
             val intent = Intent(this, Post::class.java).apply {
-                this.putExtra("campaignId", viewModel.campaignId)
+                putExtra("campaignId", viewModel.campaignId)
             }
             sheetBehavior.state = BottomSheetBehavior.STATE_COLLAPSED
             startActivity(intent)
