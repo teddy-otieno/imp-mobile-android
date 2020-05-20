@@ -5,7 +5,7 @@
     android:layout_height="match_parent"
     android:background="@android:color/background_light"
     android:visibility="visible"
-    tools:context=".loginsignup.SignUp">
+    tools:context=".loginsignup.signup.SignUp">
 
     <FrameLayout
         android:id="@+id/sign_up_stage_fragment_container"

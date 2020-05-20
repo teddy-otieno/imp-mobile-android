@@ -6,7 +6,7 @@ import androidx.activity.viewModels
 import androidx.appcompat.app.AppCompatActivity
 import androidx.lifecycle.Observer
 import com.imp.impandroidclient.R
-import com.imp.impandroidclient.app_state.repos.NetworkError
+import com.imp.impandroidclient.app_state.repos.TransferStatus
 import com.imp.impandroidclient.dashboards.MainDashboard
 import com.imp.impandroidclient.loginsignup.login.LoginActivity
 import kotlinx.android.synthetic.main.activity_loading_page.*
@@ -37,7 +37,7 @@ class LoadingPage : AppCompatActivity() {
         model.getError().observe(this, Observer {error ->
 
             when(error) {
-                NetworkError.FAILED -> loadingActivityError.setText(R.string.connection_failed)
+                TransferStatus.FAILED -> loadingActivityError.setText(R.string.connection_failed)
 
                 else -> Unit
             }

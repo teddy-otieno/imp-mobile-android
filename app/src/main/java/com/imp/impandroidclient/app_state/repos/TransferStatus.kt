@@ -1,10 +1,11 @@
 package com.imp.impandroidclient.app_state.repos
 
-enum class NetworkError {
+enum class TransferStatus {
+    SUCESSFULL,
     TIMEOUT,
     INTERUPTED,
-    FAILED_EXECUTION,
     SIGN_IN_FAILED,
     FAILED,
+    SERVER_ERROR,
     BAD_RESPONSE
 }

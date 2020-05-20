@@ -8,9 +8,9 @@ import androidx.appcompat.app.AppCompatActivity
 import androidx.lifecycle.Observer
 import androidx.lifecycle.lifecycleScope
 import com.imp.impandroidclient.R
-import com.imp.impandroidclient.app_state.repos.NetworkError
+import com.imp.impandroidclient.app_state.repos.TransferStatus
 import com.imp.impandroidclient.dashboards.MainDashboard
-import com.imp.impandroidclient.loginsignup.SignUp
+import com.imp.impandroidclient.loginsignup.signup.SignUp
 import kotlinx.android.synthetic.main.activity_login.*
 import kotlinx.coroutines.launch
 
@@ -38,7 +38,7 @@ class LoginActivity : AppCompatActivity() {
         loginViewModel.errorOnAuth().observe(this, Observer { occurred ->
 
             when(occurred){
-                NetworkError.SIGN_IN_FAILED -> greetings_message.run {
+                TransferStatus.SIGN_IN_FAILED -> greetings_message.run {
                     this.setText(R.string.login_error)
                     this.setTextColor(resources.getColor(R.color.colorError))
                     this.setTypeface(this.typeface, Typeface.BOLD)

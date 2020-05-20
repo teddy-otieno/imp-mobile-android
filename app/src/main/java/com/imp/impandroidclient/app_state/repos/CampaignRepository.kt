@@ -17,7 +17,7 @@ class CampaignRepository
 {
     val campaignData: MutableLiveData<MutableList<CampaignData>> = MutableLiveData()
 
-    val errorDuringLoading: MutableLiveData<NetworkError> = MutableLiveData()
+    val errorDuringLoading: MutableLiveData<TransferStatus> = MutableLiveData()
 
     init {
         GlobalScope.launch(context = Dispatchers.IO) {
@@ -81,7 +81,7 @@ class CampaignRepository
             }
             campaignData.postValue(campaigns)
         } catch (e: IOException) {
-            errorDuringLoading.postValue(NetworkError.FAILED)
+            errorDuringLoading.postValue(TransferStatus.FAILED)
             Log.d("Connection", "${e.message}" )
         }
 

@@ -7,6 +7,7 @@
     <string name="login_error">Your username or password is incorrect</string>
 
     <string name="sign_up_email">Email Address</string>
+    <string name="username">Username</string>
     <string name="sign_up_phone_number">Phone Number</string>
     <string name="sign_up_stage_button">Next</string>
     <string name="sign_up_contact_details_head">Enter Your Contact Details</string>
@@ -15,7 +16,7 @@
     <string name="month">Month</string>
     <string name="day">Day</string>
     <string name="year">Year</string>
-    <string name="date_of_birth_head">Enter Your Date Of Birth</string>
+    <string name="date_of_birth">Date Of Birth</string>
 
     <string name="app_name">IMP</string>
     <string name="creator_sign_up_first_name">First Name</string>
