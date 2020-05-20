@@ -10,6 +10,7 @@
     <string name="username">Username</string>
     <string name="sign_up_phone_number">Phone Number</string>
     <string name="sign_up_stage_button">Next</string>
+    <string name="sign_up_done">Done</string>
     <string name="sign_up_contact_details_head">Enter Your Contact Details</string>
 
 
@@ -27,7 +28,7 @@
     <string name="creator_password_label">Password</string>
     <string name="creator_confirm_password_label">Confirm Password</string>
     <string name="sign_up_button_label">Sign Up</string>
-    <string name="terms_and_conditions_label">Terms and Conditions</string>
+    <string name="terms_and_conditions_label">Do you agree to our Terms and Conditions?</string>
     <string name="terms_and_conditions_radio_button">Do you agree with the terms and conditions?</string>
     <string-array name="gender">
         <item>Male</item>

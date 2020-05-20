@@ -12,7 +12,6 @@ object HttpClient {
     lateinit var accessKey: String
     lateinit var refreshKey: String
 
-    fun getAuthHeader(): HashMap<String, String> {
-        return hashMapOf("Authorization" to "Bearer $accessKey")
-    }
+    fun getAuthHeader(): HashMap<String, String> =  hashMapOf("Authorization" to "Bearer $accessKey")
+    fun isAccessKeyInititialized(): Boolean = this::accessKey.isInitialized
 }

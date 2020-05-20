@@ -3,10 +3,10 @@ package com.imp.impandroidclient.loginsignup.signup
 import android.app.DatePickerDialog
 import android.os.Bundle
 import android.text.SpannableStringBuilder
-import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import android.widget.AdapterView
 import android.widget.ArrayAdapter
 import android.widget.TextView
 import androidx.fragment.app.Fragment
@@ -14,7 +14,6 @@ import androidx.fragment.app.activityViewModels
 import androidx.lifecycle.Observer
 import com.imp.impandroidclient.R
 import kotlinx.android.synthetic.main.fragment_basic_creator_info.*
-import java.text.ParseException
 import java.text.SimpleDateFormat
 import java.util.*
 
@@ -96,11 +95,23 @@ class BasicSignUpFragment : Fragment()
                 parentViewModel.fName.value = creator_first_name.text.toString()
             }
         }
-
         creators_last_name.setOnFocusChangeListener { _, hasFocus ->
             if(!hasFocus)
             {
                 parentViewModel.lName.value = creators_last_name.text.toString()
+            }
+        }
+        gender_selector.onItemSelectedListener = object: AdapterView.OnItemSelectedListener {
+            override fun onItemSelected(parent: AdapterView<*>?, view: View?, position: Int, id: Long )
+            {
+                parent?.run {
+                    parentViewModel.gender.value = getItemAtPosition(position) as String
+                } ?: throw java.lang.IllegalStateException("Adapter view is not supposed to be null")
+            }
+
+            override fun onNothingSelected(parent: AdapterView<*>?)
+            {
+                TODO("Not yet implemented")
             }
         }
     }
