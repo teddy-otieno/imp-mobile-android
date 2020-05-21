@@ -68,6 +68,12 @@ class Post : AppCompatActivity()
                 viewModel.submission.value = newSubmission
             }
         }
+
+        media_display.setOnClickListener {
+            val bottomSheetDialog = PostMediaBottomSheet().apply {
+                show(supportFragmentManager, tag)
+            }
+        }
     }
 
     private fun setUpObservers()

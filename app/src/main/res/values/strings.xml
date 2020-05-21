@@ -5,20 +5,16 @@
     <string name="login_sign_up">Don\'t have an account?</string>
     <string name="login_greetings_message">We\'re glad to have you back.</string>
     <string name="login_error">Your username or password is incorrect</string>
-
     <string name="sign_up_email">Email Address</string>
     <string name="username">Username</string>
     <string name="sign_up_phone_number">Phone Number</string>
     <string name="sign_up_stage_button">Next</string>
     <string name="sign_up_done">Done</string>
     <string name="sign_up_contact_details_head">Enter Your Contact Details</string>
-
-
     <string name="month">Month</string>
     <string name="day">Day</string>
     <string name="year">Year</string>
     <string name="date_of_birth">Date Of Birth</string>
-
     <string name="app_name">IMP</string>
     <string name="creator_sign_up_first_name">First Name</string>
     <string name="creator_sign_up_last_name">Last Name</string>
@@ -30,6 +26,23 @@
     <string name="sign_up_button_label">Sign Up</string>
     <string name="terms_and_conditions_label">Do you agree to our Terms and Conditions?</string>
     <string name="terms_and_conditions_radio_button">Do you agree with the terms and conditions?</string>
+    <string name="header_about_us">ABOUT US</string>
+    <string name="header_contentWedLoveFromYou">CONTENT WE\'D LOVE FROM YOU</string>
+    <string name="header_whereToFindProduct">WHERE TO FIND OUR PRODUCT</string>
+    <string name="header_callToAction">CALL TO ACTION</string>
+    <string name="header_campaignDos">DOs</string>
+    <string name="header_campaignDonts">DONTs</string>
+    <string name="campaign_apply">APPLY</string>
+    <string name="post_activity_title">Instagram Post</string>
+    <string name="instagram_post_hint">Enter the caption you want your submission to have…</string>
+    <string name="fee">Add a fee you\'d like to be paid</string>
+    <string name="notes">Notes \nAdd notes for the brand</string>
+    <string name="dummy">Lorem ipsum dolor sit amet, consectetur adipiscing elit. Fusce dictum libero sapien, a vulputate dolor aliquam vel. Pellentesque ut sollicitudin turpis, non malesuada neque. Vestibulum et lorem sodales, congue dui eu, laoreet orci. Pellentesque sit amet ultrices massa, sit amet bibendum justo</string>
+    <string name="connection_failed">Oops… Sorry we were unable to connect. Please check your internet connection</string>
+    <string name="post_caption">Post Caption</string>
+    <string name="camera">Camera</string>
+    <string name="phone_gallery">Gallery</string>
+    <string name="view">View</string>
     <string-array name="gender">
         <item>Male</item>
         <item>Female</item>
@@ -51,25 +64,11 @@
         <item>December</item>
     </string-array>
 
-    <string name="header_about_us">ABOUT US</string>
-    <string name="header_contentWedLoveFromYou">CONTENT WE\'D LOVE FROM YOU</string>
-    <string name="header_whereToFindProduct">WHERE TO FIND OUR PRODUCT</string>
-    <string name="header_callToAction">CALL TO ACTION</string>
-    <string name="header_campaignDos">DOs</string>
-    <string name="header_campaignDonts">DONTs</string>
-    <string name="campaign_apply">APPLY</string>
 
 
     <!-- Post activity -->
-    <string name="post_caption">Post Caption</string>
 
-    <string name="connection_failed">Oops… Sorry we were unable to connect. Please check your internet connection</string>
     <!-- Image submission texts -->
-    <string name="post_activity_title">Instagram Post</string>
-    <string name="instagram_post_hint">Enter the caption you want your submission to have…</string>
-    <string name="fee">Add a fee you\'d like to be paid</string>
-    <string name="notes">Notes \nAdd notes for the brand</string>
-    <string name="dummy">Lorem ipsum dolor sit amet, consectetur adipiscing elit. Fusce dictum libero sapien, a vulputate dolor aliquam vel. Pellentesque ut sollicitudin turpis, non malesuada neque. Vestibulum et lorem sodales, congue dui eu, laoreet orci. Pellentesque sit amet ultrices massa, sit amet bibendum justo</string>
 
     <!-- TODO: Remove or change this placeholder text -->
     <string name="hello_blank_fragment">Hello blank fragment</string>
