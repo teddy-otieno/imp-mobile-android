@@ -4,6 +4,7 @@ import android.app.ActivityOptions
 import android.content.Intent
 import android.os.Bundle
 import android.view.LayoutInflater
+import android.view.MotionEvent
 import android.view.View
 import android.view.ViewGroup
 import android.widget.ImageView
@@ -18,6 +19,7 @@ import com.imp.impandroidclient.app_state.repos.CampaignRepository
 import com.imp.impandroidclient.app_state.repos.data.CampaignData
 import com.imp.impandroidclient.campaign.CampaignActivity
 import kotlinx.android.synthetic.main.fragment_home.*
+import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
 import android.util.Pair as UtilPair
 
@@ -92,7 +94,7 @@ class ViewHolder(val context: Fragment, inflator: LayoutInflater, parent: ViewGr
         campaignDescription.text = campaign.about_you
         brandTitle.text = campaign.brand.brand_name
 
-        context.lifecycleScope.launch {
+        context.lifecycleScope.launch(Dispatchers.Main) {
             campaignCoverImage.setImageBitmap(
                 CampaignRepository.getImage(
                     campaign.coverImageFuture, campaign.cover_image))

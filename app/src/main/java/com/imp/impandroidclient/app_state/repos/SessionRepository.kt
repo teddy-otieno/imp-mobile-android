@@ -118,7 +118,7 @@ class SessionRepository private constructor()
                             //Incase a broken respone is returned
                             HttpClient.accessKey = json.getString("access")
                             HttpClient.refreshKey = json.getString("refresh")
-
+                            //Remove this Global scope
                             GlobalScope.launch(Dispatchers.IO) {
                                 db.sessionDao().addRefreshToken(HttpClient.refreshKey)
                                 println("Reached this")

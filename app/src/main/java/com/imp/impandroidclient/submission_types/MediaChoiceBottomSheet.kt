@@ -1,4 +1,4 @@
-package com.imp.impandroidclient.submission_types.post
+package com.imp.impandroidclient.submission_types
 
 import android.os.Bundle
 import android.view.LayoutInflater
@@ -7,8 +7,7 @@ import android.view.ViewGroup
 import com.google.android.material.bottomsheet.BottomSheetDialogFragment
 import com.imp.impandroidclient.R
 
-class PostMediaBottomSheet : BottomSheetDialogFragment() {
-
+class MediaChoiceBottomSheet : BottomSheetDialogFragment() {
     override fun onCreateView(
         inflater: LayoutInflater,
         container: ViewGroup?,

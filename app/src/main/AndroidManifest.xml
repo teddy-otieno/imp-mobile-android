@@ -12,7 +12,8 @@
         android:roundIcon="@mipmap/ic_launcher_round"
         android:supportsRtl="true"
         android:theme="@style/AppTheme">
-        <activity android:name=".submission_types.post.Post"></activity>
+        <activity android:name=".media.MediaGallery"></activity>
+        <activity android:name=".submission_types.post.Post" />
         <activity android:name=".submission_types.carousel.Carousel" />
         <activity
             android:name=".campaign.CampaignActivity"

@@ -16,11 +16,12 @@ import org.json.JSONArray
 class CampaignRepository
 {
     val campaignData: MutableLiveData<MutableList<CampaignData>> = MutableLiveData()
-
     val errorDuringLoading: MutableLiveData<TransferStatus> = MutableLiveData()
+    private val scope = CoroutineScope(Dispatchers.IO)
+
 
     init {
-        GlobalScope.launch(context = Dispatchers.IO) {
+        scope.launch {
             getNewCampaignsFromServer()
         }
     }
@@ -75,8 +76,8 @@ class CampaignRepository
             for(i in 0 until rawCampaigns.length()) {
                 val rawCampaign = rawCampaigns[i]
                 val campaign: CampaignData = gson.fromJson(rawCampaign.toString(), CampaignData::class.java)
-                campaign.coverImageFuture = GlobalScope.async { loadImage(campaign.cover_image) }
-                campaign.brand.brandImageFuture = GlobalScope.async { loadImage(campaign.brand.brand_image) }
+                campaign.coverImageFuture = scope.async { loadImage(campaign.cover_image) }
+                campaign.brand.brandImageFuture = scope.async { loadImage(campaign.brand.brand_image) }
                 campaigns.add(campaign)
             }
             campaignData.postValue(campaigns)

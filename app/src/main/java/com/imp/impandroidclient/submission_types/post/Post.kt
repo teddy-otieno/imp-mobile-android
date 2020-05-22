@@ -7,6 +7,7 @@ import android.widget.TextView
 import androidx.appcompat.app.AppCompatActivity
 import androidx.lifecycle.Observer
 import com.imp.impandroidclient.R
+import com.imp.impandroidclient.submission_types.MediaChoiceBottomSheet
 import kotlinx.android.synthetic.main.activity_post.*
 import kotlinx.android.synthetic.main.layout_submission_details.*
 
@@ -70,7 +71,8 @@ class Post : AppCompatActivity()
         }
 
         media_display.setOnClickListener {
-            val bottomSheetDialog = PostMediaBottomSheet().apply {
+            val bottomSheetDialog = MediaChoiceBottomSheet()
+                .apply {
                 show(supportFragmentManager, tag)
             }
         }
