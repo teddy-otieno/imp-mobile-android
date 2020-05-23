@@ -71,7 +71,7 @@ class Post : AppCompatActivity()
         }
 
         media_display.setOnClickListener {
-            val bottomSheetDialog = MediaChoiceBottomSheet()
+            val bottomSheetDialog = MediaChoiceBottomSheet(this)
                 .apply {
                 show(supportFragmentManager, tag)
             }

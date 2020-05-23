@@ -1,3 +1,5 @@
 package com.imp.impandroidclient.app_state.repos.data
 
-data class LocalImage(val imageIndex: Long)
+import android.net.Uri
+
+data class LocalImage(val imageIndex: Long, val contentUri: Uri)
