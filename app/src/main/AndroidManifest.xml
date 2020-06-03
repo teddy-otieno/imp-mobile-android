@@ -13,7 +13,8 @@
         android:roundIcon="@mipmap/ic_launcher_round"
         android:supportsRtl="true"
         android:theme="@style/AppTheme">
-        <activity android:name=".media.MediaGallery"></activity>
+        <activity android:name=".media.ImageSelector"></activity>
+        <activity android:name=".media.MediaGallery" />
         <activity android:name=".submission_types.post.Post" />
         <activity android:name=".submission_types.carousel.Carousel" />
         <activity

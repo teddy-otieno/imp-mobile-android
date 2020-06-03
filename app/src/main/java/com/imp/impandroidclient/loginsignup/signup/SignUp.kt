@@ -1,9 +1,7 @@
 package com.imp.impandroidclient.loginsignup.signup
 
 import android.os.Bundle
-import android.view.Window
 import androidx.appcompat.app.AppCompatActivity
-import com.google.gson.annotations.SerializedName
 import com.imp.impandroidclient.R
 
 

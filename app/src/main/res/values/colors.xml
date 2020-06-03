@@ -8,6 +8,8 @@
     <color name="colorError">#D81B60</color>
     <color name="inputBorder">#EEEEEE</color>
     <color name="primaryForeGround">#FFFFFF</color>
+    <color name="white">#EEEEEE</color>
     <color name="black">#222222</color>
+    <color name="deep_black">#000000</color>
     <color name="svg_grey">#737373</color>
 </resources>

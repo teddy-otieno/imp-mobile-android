@@ -2,8 +2,8 @@ package com.imp.impandroidclient.submission_types.post
 
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
-import com.imp.impandroidclient.app_state.repos.TransferStatus
 import com.imp.impandroidclient.app_state.repos.PostSubmissionRepo
+import com.imp.impandroidclient.app_state.repos.TransferStatus
 import com.imp.impandroidclient.app_state.repos.data.PostSubmission
 
 class PostViewModel(private var submissionId: Int, campaignId: Int) : ViewModel()

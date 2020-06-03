@@ -2,8 +2,8 @@ package com.imp.impandroidclient.loginsignup.login
 
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
-import com.imp.impandroidclient.app_state.repos.TransferStatus
 import com.imp.impandroidclient.app_state.repos.SessionRepository
+import com.imp.impandroidclient.app_state.repos.TransferStatus
 
 class LoginActivityViewModel : ViewModel(){
 
