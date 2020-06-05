@@ -44,7 +44,11 @@ class CampaignActivity : AppCompatActivity() {
     private fun setUpListeners() {
         post_submission.setOnClickListener {
             val intent = Intent(this, Post::class.java).apply {
-                putExtra("campaignId", viewModel.campaignId)
+                putExtra("campaignId",
+                    viewModel.campaignData.value?.run {
+                        this.id
+                    } ?: throw IllegalStateException("Attempting to create a campaign that has not been loaded")
+                )
             }
             sheetBehavior.state = BottomSheetBehavior.STATE_COLLAPSED
             startActivity(intent)
@@ -53,7 +57,7 @@ class CampaignActivity : AppCompatActivity() {
 
     private fun setUpObservers() {
 
-        viewModel.getCampaign().observe(this, Observer { campaign ->
+        viewModel.campaignData.observe(this, Observer { campaign ->
             detailed_campaignCoverImage.setImageBitmap(Cache.getImageFromMemCache(campaign.cover_image))
             detail_campaignTitle.text = campaign.title
             detailed_about_us.text = campaign.about_you
