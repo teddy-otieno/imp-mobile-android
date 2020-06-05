@@ -26,11 +26,13 @@ class CampaignRepository
         }
     }
 
-    companion object {
+    companion object
+    {
         @Volatile
         private var instance: CampaignRepository? = null
 
-        fun getInstance(): CampaignRepository {
+        fun getInstance(): CampaignRepository
+        {
 
             return if(instance == null) {
                 instance = CampaignRepository()
@@ -40,7 +42,8 @@ class CampaignRepository
             }
         }
 
-        suspend fun getImage(imageFuture: Deferred<Bitmap?>?, imageName: String): Bitmap? {
+        suspend fun getImage(imageFuture: Deferred<Bitmap?>?, imageName: String): Bitmap?
+        {
             val coverImageCached = Cache.getImageFromMemCache(imageName)
 
             return if(coverImageCached == null) {
@@ -58,7 +61,9 @@ class CampaignRepository
         }
     }
 
-    private fun getNewCampaignsFromServer() {
+    //Note(teddy) this should be a suspended computation
+    private fun getNewCampaignsFromServer()
+    {
 
         val request = Request.Builder()
             .url(HttpClient.SERVER_URL + "/api/creator/campaigns")

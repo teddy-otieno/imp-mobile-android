@@ -25,13 +25,14 @@ import com.google.android.material.appbar.MaterialToolbar
 import com.imp.impandroidclient.R
 import com.imp.impandroidclient.app_state.repos.FileSystemMedia
 import com.imp.impandroidclient.app_state.repos.data.LocalImage
+import com.imp.impandroidclient.submission_types.post.SELECT_IMAGE
 import kotlinx.android.synthetic.main.activity_media_gallery.*
+
 
 class MediaGallery : AppCompatActivity()
 {
 
     private val viewModel: MediaGalleryViewModel by viewModels()
-
     companion object
     {
         const val REQUEST_READ_EXTERNAL_MEDIA = 2
@@ -42,7 +43,6 @@ class MediaGallery : AppCompatActivity()
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_media_gallery)
 
-        checkAndGetPermission()
         init()
         setUpListeners()
     }
@@ -60,7 +60,9 @@ class MediaGallery : AppCompatActivity()
                     Toast.makeText(this, "Permission to display images on the device", Toast.LENGTH_LONG).show() //FIXME:
                 }
                 requestPermissions(arrayOf(Manifest.permission.READ_EXTERNAL_STORAGE), REQUEST_READ_EXTERNAL_MEDIA)
-            } else {
+            }
+            else
+            {
                 setUpObservers()
             }
         }
@@ -94,9 +96,6 @@ class MediaGallery : AppCompatActivity()
         finish()
     }
 
-    private fun checkAndGetPermission()
-    { }
-
     override fun onRequestPermissionsResult( requestCode: Int, permissions: Array<out String>,
                                             grantResults: IntArray)
     {
@@ -113,6 +112,22 @@ class MediaGallery : AppCompatActivity()
             }
         } else {
             super.onRequestPermissionsResult(requestCode, permissions, grantResults)
+        }
+    }
+
+    override fun onActivityResult(requestCode: Int, resultCode: Int, data: Intent?) {
+        super.onActivityResult(requestCode, resultCode, data)
+
+        if(requestCode == SELECT_IMAGE)
+        {
+            if(resultCode == RESULT_OK)
+            {
+                data?.run{
+                    //TODO(tedd) pass the result back to the caller
+                    setResult(Activity.RESULT_OK, this)
+                    finish()
+                } ?: throw IllegalStateException("data passed from ImageSelect activity should not be null")
+            }
         }
     }
 }
@@ -169,7 +184,7 @@ private class GalleryAdapter(private val activity: AppCompatActivity, private va
             }
 
             val options = ActivityOptionsCompat.makeSceneTransitionAnimation(activity, it as View, "image")
-            activity.startActivity(intent, options.toBundle())
+            activity.startActivityForResult(intent , SELECT_IMAGE, options.toBundle())
         }
     }
 }

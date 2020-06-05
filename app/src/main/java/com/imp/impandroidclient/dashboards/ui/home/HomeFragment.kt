@@ -22,13 +22,15 @@ import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
 import android.util.Pair as UtilPair
 
-class HomeFragment : Fragment() {
+class HomeFragment : Fragment()
+{
 
     private val homeViewModel: HomeViewModel = HomeViewModel()
 
     private var campaignAdapter: CampaignComponentAdapter? = null
 
-    override fun onCreate(savedInstanceState: Bundle?) {
+    override fun onCreate(savedInstanceState: Bundle?)
+    {
         super.onCreate(savedInstanceState)
         retainInstance = true
     }
@@ -37,12 +39,14 @@ class HomeFragment : Fragment() {
         inflater: LayoutInflater,
         container: ViewGroup?,
         savedInstanceState: Bundle?
-    ): View? {
+    ): View?
+    {
         println("View was created")
         return inflater.inflate(R.layout.fragment_home, container, false)
     }
 
-    override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
+    override fun onViewCreated(view: View, savedInstanceState: Bundle?)
+    {
         super.onViewCreated(view, savedInstanceState)
 
         this.homeViewModel.getCampaigns().observe(viewLifecycleOwner, Observer {
@@ -52,13 +56,15 @@ class HomeFragment : Fragment() {
         })
     }
 
-    override fun onResume() {
+    override fun onResume()
+    {
         super.onResume()
         campaignAdapter?.canStart = campaignAdapter != null
     }
 }
 
-class ViewHolder(val context: Fragment, inflator: LayoutInflater, parent: ViewGroup) :
+class ViewHolder(val context: Fragment, inflator: LayoutInflater, parent: ViewGroup)
+    :
     RecyclerView.ViewHolder(inflator.inflate(R.layout.frame_campaign_view, parent, false))
 {
 

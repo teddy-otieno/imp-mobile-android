@@ -1,5 +1,6 @@
 package com.imp.impandroidclient.submission_types.post
 
+import android.graphics.Bitmap
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
 import com.imp.impandroidclient.app_state.repos.PostSubmissionRepo
@@ -10,22 +11,28 @@ class PostViewModel(private var submissionId: Int, campaignId: Int) : ViewModel(
 {
     private val submissionRepo = PostSubmissionRepo.getInstance()
     var submission: MutableLiveData<PostSubmission>
+    val image: MutableLiveData<Bitmap> = MutableLiveData()
 
-    init
-    {
-        assert(campaignId >= 0)
-        if(submissionId < 0)
-        {
-            //Create new submission
+    init {
+        //Create new submission
+        if (submissionId < 0)
             submissionId = submissionRepo.createSubmission(campaignId)
-        }
         submission = submissionRepo.getSubmissionById(submissionId)
     }
 
-    fun submit()
+    fun submit(): Boolean
     {
-        assert(submission.value != null)
-        submissionRepo.syncSubmission(submission.value!!)
+        return submission.value?.run {
+            if(this.isValid())
+            {
+                submissionRepo.syncSubmission(this)
+                true
+            }
+            else
+            {
+                false
+            }
+        } ?: false
     }
 
     fun transferStatus(): MutableLiveData<TransferStatus> = submissionRepo.transferStatus

@@ -1,6 +1,7 @@
 package com.imp.impandroidclient.app_state.repos
 
 import androidx.lifecycle.MutableLiveData
+import com.google.gson.Gson
 import com.imp.impandroidclient.app_state.repos.data.PostSubmission
 import com.imp.impandroidclient.app_state.web_client.HttpClient
 import okhttp3.Call
@@ -8,7 +9,6 @@ import okhttp3.Callback
 import okhttp3.Request
 import okhttp3.RequestBody.Companion.toRequestBody
 import okhttp3.Response
-import org.json.JSONObject
 import java.io.IOException
 
 typealias PostSubmissionsMutableLiveData = MutableLiveData<MutableList<MutableLiveData<PostSubmission>>>
@@ -79,14 +79,14 @@ class PostSubmissionRepo private constructor(){
 
     fun syncSubmission(submission: PostSubmission)
     {
-        val submissionJson = JSONObject()
-        submissionJson.put("post_caption", submission.postCaption)
-        submissionJson.put("fee", submission.fee)
+
+        val gson = Gson()
+        val requestBody = gson.toJson(submission).toRequestBody(HttpClient.JSON)
 
         val request = Request.Builder()
             .url(HttpClient.SERVER_URL + "/api/creator/post_submission")
             .header("Authorization", "Bearer ${HttpClient.accessKey}")
-            .post(submissionJson.toString().toRequestBody(HttpClient.JSON))
+            .post(requestBody)
             .build()
 
         HttpClient.webClient.newCall(request).enqueue(object: Callback {
