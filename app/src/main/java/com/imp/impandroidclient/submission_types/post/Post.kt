@@ -41,17 +41,22 @@ class Post : AppCompatActivity()
     {
         post_back_button.setOnClickListener { finish() }
         btn_submit_post.setOnClickListener {
+            post_notes.clearFocus()
+            post_caption.clearFocus()
+            post_fee_rates.clearFocus()
+
             if(viewModel.submit())
             {
                 viewModel.transferStatus().observe(this, Observer {
                     //Redirect to the homepage,
                     //Display a dialog successful
                     //Change the color of the submit button
+                    TODO()
                 })
             }
             else
             {
-                //TODO: Check for an error
+                TODO()
             }
         }
 
@@ -105,7 +110,11 @@ class Post : AppCompatActivity()
             {
                 data?.extras?.getParcelable<Uri>("IMAGE")?.run {
                     val image = Cache.getImageFromMemCache(this.toString())
-                    viewModel.image.value = image
+
+                    viewModel.submission.value?.run {
+                        val tempSubmission = this.copy(image=image)
+                        viewModel.submission.value = tempSubmission
+                    } ?: throw java.lang.IllegalStateException("Post Submission is not supposed to be null")
                 } ?: throw IllegalStateException("POST activity: Image uri was not passed in the intent")
             }
         }
@@ -119,11 +128,9 @@ class Post : AppCompatActivity()
                 post_fee_rates.text = SpannableStringBuilder(fee.toString())
             }
             post_notes.setText(it.note)
-        })
 
-        viewModel.image.observe(this, Observer {
             post_image.imageTintMode = null
-            post_image.setImageBitmap(it)
+            post_image.setImageBitmap(it.image)
         })
     }
 }

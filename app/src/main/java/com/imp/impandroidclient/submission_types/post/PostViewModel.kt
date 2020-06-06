@@ -11,7 +11,6 @@ class PostViewModel(private var submissionId: Int, campaignId: Int) : ViewModel(
 {
     private val submissionRepo = PostSubmissionRepo.getInstance()
     var submission: MutableLiveData<PostSubmission>
-    val image: MutableLiveData<Bitmap> = MutableLiveData()
 
     init {
         //Create new submission
