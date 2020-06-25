@@ -7,10 +7,10 @@ import okhttp3.OkHttpClient
 
 object HttpClient {
     var webClient: OkHttpClient = OkHttpClient()
-    val MEDIA_TYPE_PNG = "image/png".toMediaTypeOrNull()
     const val SERVER_URL = "http://192.168.0.15:8000"
 
     val JSON = "application/json; charset=utf-8".toMediaType()
+    val MEDIA_TYPE_PNG = "image/png".toMediaTypeOrNull()
 
     lateinit var accessKey: String
     lateinit var refreshKey: String

@@ -6,14 +6,20 @@ import com.google.gson.Gson
 import com.google.gson.JsonObject
 import com.imp.impandroidclient.app_state.repos.data.PostSubmission
 import com.imp.impandroidclient.app_state.web_client.HttpClient
+import kotlinx.coroutines.CoroutineScope
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.MainScope
+import kotlinx.coroutines.launch
 import okhttp3.*
 import okhttp3.RequestBody.Companion.toRequestBody
 import org.joda.time.DateTime
+import org.json.JSONArray
 import org.json.JSONObject
 import java.io.ByteArrayOutputStream
 import java.io.IOException
 import java.io.OutputStream
 import java.lang.IllegalStateException
+import kotlin.coroutines.CoroutineContext
 
 typealias PostSubmissionsMutableLiveData = MutableLiveData<MutableList<MutableLiveData<PostSubmission>>>
 
@@ -38,27 +44,29 @@ class PostSubmissionRepo private constructor(){
 
     }
 
+    private val repoScope: CoroutineScope = CoroutineScope(context = Dispatchers.IO)
+
     private val postSubmissions: PostSubmissionsMutableLiveData = MutableLiveData(mutableListOf())
     val submissions: PostSubmissionsMutableLiveData get() = postSubmissions
     private val networkTransmissionStatus: MutableLiveData<TransferStatus> = MutableLiveData()
     val transferStatus get() = networkTransmissionStatus
 
+    init {
+        repoScope.launch {
+            loadPostSubmissions()
+        }
+    }
+
     fun getSubmissionById(id: Int): MutableLiveData<PostSubmission>
     {
-        val submission = postSubmissions.value?.find {
+
+        return postSubmissions.value?.find {
             if(it.value != null) {
                 it.value!!.id == id
             } else {
                 false
             }
-        }
-
-        if(submission != null)
-        {
-            return submission
-        } else {
-            throw RuntimeException("Undefined behaviour: Submission is supposed to exist")
-        }
+        } ?: throw RuntimeException("Undefined behaviour: Submission is supposed to exist")
     }
 
     fun createSubmission(campaignId: Int): Int
@@ -88,7 +96,7 @@ class PostSubmissionRepo private constructor(){
         val requestBody = gson.toJson(submission).toRequestBody(HttpClient.JSON)
 
         val request = Request.Builder()
-            .url(HttpClient.SERVER_URL + "/api/creator/post_submission")
+            .url("${HttpClient.SERVER_URL}/api/creator/post_submission")
             .header("Authorization", "Bearer ${HttpClient.accessKey}")
             .post(requestBody)
             .build()
@@ -98,11 +106,16 @@ class PostSubmissionRepo private constructor(){
             {
                 if(response.isSuccessful)
                 {
-                    //Note(teddy) Returns the id of the created submission
-                    //Use the id to send the submission image
+                    /*
+                        * The response returns the id for the send submission
+                        * Use the id to submit the image
+                        * Note(teddy) Returns the id of the created submission
+                        * Use the id to send the submission image
+                     */
 
                     val rawJson = response.body?.string() ?: throw IllegalStateException("Expected Submssion Id inside image data")
                     val json = JSONObject(rawJson)
+                    val submissionId = json.getString("id")
 
                     val imagebytes = ByteArrayOutputStream()
                     submission.image?.compress(Bitmap.CompressFormat.PNG, 100, imagebytes) ?:
@@ -110,20 +123,18 @@ class PostSubmissionRepo private constructor(){
 
                     val body = imagebytes.toByteArray()
                             .toRequestBody(HttpClient.MEDIA_TYPE_PNG, 0, imagebytes.toByteArray().size)
+
                     val imageRequestBody = MultipartBody.Builder()
                         .addFormDataPart("file", DateTime.now().toString(), body) //TODO(teddy) file naming, come up with something better
                         .build()
 
                     val imageRequest = Request.Builder()
-                        .url(HttpClient.SERVER_URL + "/api/creator/post_submission/" + json.getString("id"))
+                        .url("${HttpClient.SERVER_URL}/api/creator/post-submission-image/$submissionId")
                         .post(imageRequestBody)
                         .build()
 
-                    HttpClient.webClient.newCall(request).enqueue(object: Callback {
+                    HttpClient.webClient.newCall(imageRequest).enqueue(object: Callback {
                         override fun onResponse(call: Call, response: Response) {
-                            /**
-                             * ToDO(teddy) Implement a retry routine
-                             */
                             if(response.isSuccessful)
                                 networkTransmissionStatus.postValue(TransferStatus.SUCESSFULL)
                             else
@@ -150,4 +161,35 @@ class PostSubmissionRepo private constructor(){
         })
     }
 
+    private fun loadPostSubmissions()
+    {
+        val request = Request.Builder()
+            .url("${HttpClient.SERVER_URL}/api/creator/post_submission")
+            .header("Authorization", "Bearer ${HttpClient.accessKey}")
+            .get()
+            .build()
+
+        try
+        {
+            val response = HttpClient.webClient.newCall(request).execute()
+
+            if(response.isSuccessful)
+            {
+                //TODO(teddy) handle this gracefully
+                val rawJson: String = response.body?.string() ?: throw IllegalStateException("Expected a body")
+                val gson = Gson()
+
+                val submissions = gson.fromJson(rawJson, Array<PostSubmission>::class.java) //TODO(teddy) handle this gracefully
+
+                postSubmissions.postValue(submissions.map {
+                    MutableLiveData(it)
+                }.toMutableList())
+            }
+
+        }
+        catch (e: IOException)
+        {
+
+        }
+    }
 }

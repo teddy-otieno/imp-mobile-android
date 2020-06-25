@@ -13,9 +13,9 @@
 
     <fragment
         android:id="@+id/navigation_campaign_dashboard"
-        android:name="com.imp.impandroidclient.dashboards.ui.dashboard.DashboardFragment"
+        android:name="com.imp.impandroidclient.dashboards.ui.library.Library"
         android:label="@string/title_campaign_dashboard"
-        tools:layout="@layout/fragment_dashboard" />
+        tools:layout="@layout/fragment_library" />
 
     <fragment
         android:id="@+id/navigation_notifications"
