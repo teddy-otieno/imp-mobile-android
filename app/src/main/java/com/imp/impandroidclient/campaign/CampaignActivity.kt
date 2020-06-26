@@ -10,6 +10,7 @@ import androidx.constraintlayout.widget.ConstraintLayout
 import androidx.lifecycle.Observer
 import androidx.lifecycle.ViewModelProvider
 import com.google.android.material.bottomsheet.BottomSheetBehavior
+import com.imp.impandroidclient.CAMPAIGN_ID
 import com.imp.impandroidclient.R
 import com.imp.impandroidclient.app_state.Cache
 import com.imp.impandroidclient.submission_types.post.Post
@@ -38,25 +39,25 @@ class CampaignActivity : AppCompatActivity() {
 
         if(campaignId == -1) throw IndexOutOfBoundsException("CampaignID is out of range")
         campaignModelFactory = CampaignViewModelFactory(campaignId)
-        viewModel = ViewModelProvider(this, campaignModelFactory).get(CampaignViewModel::class.java)
+        viewModel = ViewModelProvider(this, campaignModelFactory)
+            .get(CampaignViewModel::class.java)
     }
 
-    private fun setUpListeners() {
-        post_submission.setOnClickListener {
-            val intent = Intent(this, Post::class.java).apply {
-                putExtra("campaignId",
-                    viewModel.campaignData.value?.run {
-                        this.id
-                    } ?: throw IllegalStateException("Attempting to create a campaign that has not been loaded")
-                )
-            }
-            sheetBehavior.state = BottomSheetBehavior.STATE_COLLAPSED
-            startActivity(intent)
+    private fun setUpListeners()
+    {
+        viewModel.campaignData.value?.let { campaignData ->
+            post_submission.setOnClickListener {
+                val intent = Intent(this, Post::class.java).apply {
+                    this.putExtra(CAMPAIGN_ID, campaignData.id)
+                }
+                sheetBehavior.state = BottomSheetBehavior.STATE_COLLAPSED
+                startActivity(intent)
         }
+        } ?: throw IllegalStateException("Attempting to create a campaign that has not been loaded")
     }
 
-    private fun setUpObservers() {
-
+    private fun setUpObservers()
+    {
         viewModel.campaignData.observe(this, Observer { campaign ->
             detailed_campaignCoverImage.setImageBitmap(Cache.getImageFromMemCache(campaign.cover_image))
             detail_campaignTitle.text = campaign.title
@@ -89,7 +90,8 @@ class CampaignActivity : AppCompatActivity() {
         })
     }
 
-    private fun setupBottomSheet() {
+    private fun setupBottomSheet()
+    {
 
         sheetBehavior = BottomSheetBehavior.from(submissionTypeChooser)
 

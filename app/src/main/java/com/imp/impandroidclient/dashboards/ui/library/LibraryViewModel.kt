@@ -31,7 +31,11 @@ class LibraryViewModel : ViewModel()
 
                 (submissions as MutableList).addAll(list.map {
                     it.value?.run {
-                        CombinedSubmission(this.postCaption, this.fee , this.image, this.timeOfSubmission, this.status)
+                        CombinedSubmission(SubmissionType.POST,
+                            this.id, this.campaignId,
+                            this.postCaption, this.fee,
+                            this.image, this.timeOfSubmission,
+                            this.status)
                     } ?: throw IllegalStateException("Expected value inside the post submission")
                 })
 
@@ -55,12 +59,21 @@ class LibraryViewModel : ViewModel()
 }
 
 
+enum class SubmissionType
+{
+    POST,
+    CAROUSEL,
+}
+
 /**
  * Note(teddy) Consider using inheritance
  * Later when we integrate with videos and other types of submission
  * TODO(teddy) When handling submissions is best to avoid null, create a temporary store for the data
  */
 data class CombinedSubmission(
+    val type: SubmissionType,
+    val submissionId: Int,
+    val campaignId: Int,
     val caption: String?,
     val rate: Int?,
     val thumbnail: Bitmap?,

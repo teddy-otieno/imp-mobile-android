@@ -8,14 +8,18 @@ import android.util.Log
 import android.widget.TextView
 import androidx.appcompat.app.AppCompatActivity
 import androidx.lifecycle.Observer
+import com.imp.impandroidclient.CAMPAIGN_ID
 import com.imp.impandroidclient.R
+import com.imp.impandroidclient.SUBMISSION_ID
 import com.imp.impandroidclient.app_state.Cache
 import com.imp.impandroidclient.media.MediaGallery
 import com.imp.impandroidclient.submission_types.MediaChoiceBottomSheet
 import kotlinx.android.synthetic.main.activity_post.*
 import kotlinx.android.synthetic.main.layout_submission_details.*
 
+//Note(teddy) This is a flag for result expected by this activity
 const val SELECT_IMAGE: Int = 0x1
+
 
 //TODO(teddy) Need to fix the post activity layout
 class Post : AppCompatActivity()
@@ -27,12 +31,19 @@ class Post : AppCompatActivity()
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_post)
 
-        val submissionId = intent.getIntExtra("submissionID", -1)
-        val campaignId = intent.getIntExtra("campaignId", -1)
+        val submissionId = intent.getIntExtra(SUBMISSION_ID, -1)
+        val campaignId = intent.getIntExtra(CAMPAIGN_ID, -1)
 
         if(campaignId < 0) throw IllegalStateException("Campaign was not supplied in the intent")
         viewModel = PostViewModelFactory(submissionId, campaignId).create(PostViewModel::class.java)
 
+        if(viewModel.isExisting)
+        {
+            /*
+                Note(teddy) Change the button string to update, when we are editing a submission
+             */
+            btn_submit_post.text = resources.getString(R.string.update)
+        }
         setUpListeners()
         setUpObservers()
     }

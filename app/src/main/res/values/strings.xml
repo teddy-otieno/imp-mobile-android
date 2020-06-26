@@ -45,6 +45,7 @@
     <string name="view">View</string>
     <string name="submission_image">Submission Image</string>
     <string name="library">Library</string>
+    <string name="update">Update</string>
     <string-array name="gender">
         <item>Male</item>
         <item>Female</item>

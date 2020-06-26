@@ -113,7 +113,8 @@ class PostSubmissionRepo private constructor(){
                         * Use the id to send the submission image
                      */
 
-                    val rawJson = response.body?.string() ?: throw IllegalStateException("Expected Submssion Id inside image data")
+                    val rawJson = response.body?.string()
+                        ?: throw IllegalStateException("Expected Submssion Id inside image data")
                     val json = JSONObject(rawJson)
                     val submissionId = json.getString("id")
 
@@ -161,6 +162,13 @@ class PostSubmissionRepo private constructor(){
         })
     }
 
+
+    /**
+     * Warning(teddy) This method blocks the main thread and \
+     * should not be called inside the main thread.
+     *
+     * Use inside a coroutine with an IO Dispatcher
+     */
     private fun loadPostSubmissions()
     {
         val request = Request.Builder()
@@ -176,7 +184,8 @@ class PostSubmissionRepo private constructor(){
             if(response.isSuccessful)
             {
                 //TODO(teddy) handle this gracefully
-                val rawJson: String = response.body?.string() ?: throw IllegalStateException("Expected a body")
+                val rawJson: String = response.body?.string()
+                    ?: throw IllegalStateException("Expected a body")
                 val gson = Gson()
 
                 val submissions = gson.fromJson(rawJson, Array<PostSubmission>::class.java) //TODO(teddy) handle this gracefully
@@ -189,6 +198,41 @@ class PostSubmissionRepo private constructor(){
         }
         catch (e: IOException)
         {
+
+        }
+    }
+
+    /**
+     * Launch a coroutine to patch the submission to the server
+     */
+    fun patchSubmission(submission: PostSubmission)
+    {
+        repoScope.launch(Dispatchers.IO) {
+            val gson = Gson()
+            val requestBody = gson.toJson(submission).toRequestBody(HttpClient.JSON)
+
+            val request = Request.Builder()
+                .url("${HttpClient.SERVER_URL}/api/creator/post_submission")
+                .header("Authorization", "Bearer ${HttpClient.accessKey}")
+                .patch(requestBody)
+                .build()
+
+            try {
+
+                val response = HttpClient.webClient.newCall(request).execute()
+                if(response.isSuccessful)
+                {
+                    //Do something
+                }
+                else
+                {
+                    TODO("Handle Unsucess in the code path")
+                }
+            }
+            catch (e: IOException)
+            {
+                TODO("Handle this error within the code path")
+            }
 
         }
     }

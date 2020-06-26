@@ -1,5 +1,7 @@
 package com.imp.impandroidclient.dashboards.ui.library
 
+import android.app.Activity
+import android.content.Intent
 import android.os.Bundle
 import android.view.LayoutInflater
 import android.view.View
@@ -12,7 +14,10 @@ import androidx.lifecycle.Observer
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
 import com.google.android.material.card.MaterialCardView
+import com.imp.impandroidclient.CAMPAIGN_ID
 import com.imp.impandroidclient.R
+import com.imp.impandroidclient.SUBMISSION_ID
+import com.imp.impandroidclient.submission_types.post.Post
 import java.lang.IllegalStateException
 
 class Library : Fragment()
@@ -21,7 +26,9 @@ class Library : Fragment()
     private val dashboardViewModel: LibraryViewModel by viewModels()
     private lateinit var submissionView: RecyclerView
 
-    override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?): View?
+    override fun onCreateView(inflater: LayoutInflater,
+                              container: ViewGroup?,
+                              savedInstanceState: Bundle?): View?
     {
         val root = inflater.inflate(R.layout.fragment_library, container, false)
         setupFrag(root)
@@ -42,10 +49,9 @@ class Library : Fragment()
 
         activity?.let {
             dashboardViewModel.combinedSubmission.observe(it, Observer {submissions ->
-                submissionsView.adapter = SubmissionsViewAdapter(submissions)
+                submissionsView.adapter = SubmissionsViewAdapter(submissions, it)
             })
         } ?: throw IllegalStateException("Activity is not supposed to be null")
-
     }
 
     private fun setUpListeners(rootView: View)
@@ -54,9 +60,9 @@ class Library : Fragment()
     }
 }
 
-class SubmissionViewHolder(private val view: View): RecyclerView.ViewHolder(view)
+private class SubmissionViewHolder(private val view: View): RecyclerView.ViewHolder(view)
 {
-    fun bind(submission: CombinedSubmission)
+    fun bind(submission: CombinedSubmission, activity: Activity)
     {
         val submissionCaption: TextView = view.findViewById(R.id.submission_caption)
         val submissionRate: TextView = view.findViewById(R.id.rates)
@@ -77,18 +83,31 @@ class SubmissionViewHolder(private val view: View): RecyclerView.ViewHolder(view
         }
 
         view.setOnClickListener {
-            TODO("Add onclick listener")
+            val activityClass = when(submission.type) {
+                SubmissionType.POST -> Post::class.java
+                SubmissionType.CAROUSEL -> Library::class.java
+            }
+            val intent = Intent(activity, activityClass).apply {
+                putExtra(CAMPAIGN_ID, submission.campaignId)
+                putExtra(SUBMISSION_ID, submission.submissionId)
+            }
+
+            activity.startActivity(intent)
+
+            //TODO("Add onclick listener")
         }
     }
 }
 
-class SubmissionsViewAdapter(private val submissions: List<CombinedSubmission>) : RecyclerView.Adapter<SubmissionViewHolder>()
+private class SubmissionsViewAdapter(private val submissions: List<CombinedSubmission>,
+                             private val activity: Activity
+) : RecyclerView.Adapter<SubmissionViewHolder>()
 {
     override fun getItemCount(): Int = submissions.size
 
     override fun onBindViewHolder(holder: SubmissionViewHolder, position: Int)
     {
-        holder.bind(submissions[position])
+        holder.bind(submissions[position], activity)
     }
 
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): SubmissionViewHolder
