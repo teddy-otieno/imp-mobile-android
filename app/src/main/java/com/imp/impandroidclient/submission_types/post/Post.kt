@@ -126,11 +126,15 @@ class Post : AppCompatActivity()
         {
             if(resultCode == RESULT_OK)
             {
-                data?.extras?.getParcelable<Uri>("IMAGE")?.run {
-                    val image = Cache.getImageFromMemCache(this.toString())
+                data?.extras?.getParcelable<Uri>("IMAGE")?.let {uri ->
+                    val image = Cache.getImageFromMemCache(uri.toString())
 
-                    viewModel.submission.value?.run {
-                        val tempSubmission = this.copy(image=image)
+                    /**
+                     * Note(teddy) Optimization : Maybe store all images in the cache \
+                     * instead of the object
+                     */
+                    viewModel.submission.value?.let {
+                        val tempSubmission = it.copy(image_url=uri.toString())
 
                         if(viewModel.isExisting)
                             viewModel.imageChanged = true
@@ -154,13 +158,11 @@ class Post : AppCompatActivity()
             post_image.imageTintMode = null
 
             //TODO(teddy) Problem will arise during patching
-            if(viewModel.isExisting)
-            {
-                post_image.setImageBitmap(Cache.getImageFromMemCache(it.image_url!!))
-            }
-            else
-            {
-                post_image.setImageBitmap(it.image)
+
+            it.image_url?.let { url ->
+                Cache.getImageFromMemCache(url)?.let { bitmap ->
+                    post_image.setImageBitmap(bitmap)
+                }
             }
         })
     }

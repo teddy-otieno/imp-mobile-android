@@ -5,6 +5,7 @@ import android.view.Display
 import androidx.lifecycle.MutableLiveData
 import com.google.gson.Gson
 import com.google.gson.JsonObject
+import com.imp.impandroidclient.app_state.Cache
 import com.imp.impandroidclient.app_state.repos.data.PostSubmission
 import com.imp.impandroidclient.app_state.web_client.HttpClient
 import com.imp.impandroidclient.helpers.loadImage
@@ -119,9 +120,15 @@ class PostSubmissionRepo private constructor(){
                     val json = JSONObject(rawJson)
                     val submissionId = json.getString("id")
 
-                    val body: RequestBody = submission.image?.let {
-                        val bytes = compressImageToPNG(it)
-                        bytes.toRequestBody(HttpClient.MEDIA_TYPE_PNG, 0, bytes.size)
+                    val body: RequestBody = submission.image_url?.let {
+                        /**
+                         * TODO(teddy) handle cache empty sceneario
+                         */
+                        Cache.getImageFromMemCache(it)?.let { bitmap ->
+                            val bytes = compressImageToPNG(bitmap)
+                            bytes.toRequestBody(HttpClient.MEDIA_TYPE_PNG, 0, bytes.size)
+                        } ?: throw IllegalStateException("Image Not found in the Cache")
+
                     } ?: throw IllegalStateException("Expected submission Image")
 
                     val imageRequestBody = MultipartBody.Builder()
@@ -239,9 +246,16 @@ class PostSubmissionRepo private constructor(){
                     if (imageChanged)
                     {
 
-                        val body: RequestBody = submission.image?.let {
-                            val bytes = compressImageToPNG(it)
-                            bytes.toRequestBody(HttpClient.MEDIA_TYPE_PNG, 0, bytes.size)
+                        val body: RequestBody = submission.image_url?.let {
+                            /**
+                             * TODO(teddy) handle cache empty sceneario
+                             * TODO(teddy) Refactor code duplication
+                             */
+                            Cache.getImageFromMemCache(it)?.let { bitmap ->
+                                val bytes = compressImageToPNG(bitmap)
+                                bytes.toRequestBody(HttpClient.MEDIA_TYPE_PNG, 0, bytes.size)
+                            } ?: throw IllegalStateException("Image Not found in the Cache")
+
                         } ?: throw IllegalStateException("Expected submission Image")
 
                         val fileName = "submission-${submission.id}.png"

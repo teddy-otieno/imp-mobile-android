@@ -14,7 +14,6 @@ data class PostSubmission(
     @SerializedName("submission_time")  var timeOfSubmission: Date? = null,
     @SerializedName("status")           var status: SubmissionStatus? = null,
     @SerializedName("image")            var image_url: String? = null,
-    @Transient                                val image: Bitmap? = null,
     @Transient var media_future: Deferred<Bitmap?>? = null
 ){
     fun isValid(): Boolean
