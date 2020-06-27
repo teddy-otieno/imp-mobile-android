@@ -1,6 +1,7 @@
 package com.imp.impandroidclient.app_state.repos
 
 import android.graphics.Bitmap
+import android.view.Display
 import androidx.lifecycle.MutableLiveData
 import com.google.gson.Gson
 import com.google.gson.JsonObject
@@ -13,6 +14,7 @@ import kotlinx.coroutines.launch
 import okhttp3.*
 import okhttp3.RequestBody.Companion.toRequestBody
 import org.joda.time.DateTime
+import org.joda.time.format.DateTimeFormatter
 import org.json.JSONArray
 import org.json.JSONObject
 import java.io.ByteArrayOutputStream
@@ -23,6 +25,9 @@ import kotlin.coroutines.CoroutineContext
 
 typealias PostSubmissionsMutableLiveData = MutableLiveData<MutableList<MutableLiveData<PostSubmission>>>
 
+/**
+ *
+ */
 class PostSubmissionRepo private constructor(){
     companion object
     {
@@ -52,9 +57,7 @@ class PostSubmissionRepo private constructor(){
     val transferStatus get() = networkTransmissionStatus
 
     init {
-        repoScope.launch {
-            loadPostSubmissions()
-        }
+        loadPostSubmissions()
     }
 
     fun getSubmissionById(id: Int): MutableLiveData<PostSubmission>
@@ -118,12 +121,10 @@ class PostSubmissionRepo private constructor(){
                     val json = JSONObject(rawJson)
                     val submissionId = json.getString("id")
 
-                    val imagebytes = ByteArrayOutputStream()
-                    submission.image?.compress(Bitmap.CompressFormat.PNG, 100, imagebytes) ?:
-                        throw IllegalStateException("Post submission image is required")
-
-                    val body = imagebytes.toByteArray()
-                            .toRequestBody(HttpClient.MEDIA_TYPE_PNG, 0, imagebytes.toByteArray().size)
+                    val body: RequestBody = submission.image?.let {
+                        val bytes = compressImageToPNG(it)
+                        bytes.toRequestBody(HttpClient.MEDIA_TYPE_PNG, 0, bytes.size)
+                    } ?: throw IllegalStateException("Expected submission Image")
 
                     val imageRequestBody = MultipartBody.Builder()
                         .addFormDataPart("file", DateTime.now().toString(), body) //TODO(teddy) file naming, come up with something better
@@ -163,14 +164,19 @@ class PostSubmissionRepo private constructor(){
     }
 
 
+    private fun compressImageToPNG(bitmap: Bitmap): ByteArray
+    {
+        val imagebytes = ByteArrayOutputStream()
+        bitmap.compress(Bitmap.CompressFormat.PNG, 100, imagebytes)
+
+        return imagebytes.toByteArray()
+    }
     /**
      * Warning(teddy) This method blocks the main thread and \
      * should not be called inside the main thread.
      *
-     * Use inside a coroutine with an IO Dispatcher
      */
-    private fun loadPostSubmissions()
-    {
+    private fun loadPostSubmissions() = repoScope.launch(Dispatchers.IO) {
         val request = Request.Builder()
             .url("${HttpClient.SERVER_URL}/api/creator/post_submission")
             .header("Authorization", "Bearer ${HttpClient.accessKey}")
@@ -198,14 +204,16 @@ class PostSubmissionRepo private constructor(){
         }
         catch (e: IOException)
         {
-
+            TODO("[Loading PostSubmissions Error] -> Handle this connection error")
         }
     }
 
     /**
-     * Launch a coroutine to patch the submission to the server
+     * @info Read the doc string on the PostViewModel class for \
+     * the use of imageChanged flag
+     * Launches a coroutine to patch the submission to the server
      */
-    fun patchSubmission(submission: PostSubmission)
+    fun patchSubmission(submission: PostSubmission, imageChanged: Boolean)
     {
         repoScope.launch(Dispatchers.IO) {
             val gson = Gson()
@@ -222,12 +230,53 @@ class PostSubmissionRepo private constructor(){
                 val response = HttpClient.webClient.newCall(request).execute()
                 if(response.isSuccessful)
                 {
+
+                    if (imageChanged)
+                    {
+
+                        val body: RequestBody = submission.image?.let {
+                            val bytes = compressImageToPNG(it)
+                            bytes.toRequestBody(HttpClient.MEDIA_TYPE_PNG, 0, bytes.size)
+                        } ?: throw IllegalStateException("Expected submission Image")
+
+                        val fileName = "submission-${submission.id}.png"
+
+                        /**
+                         * BugFix: Images were n
+                         *
+                         */
+                        val imageRequest = Request.Builder()
+                            .url("${HttpClient.SERVER_URL}/api/creator/post-submission-image/${submission.id}")
+                            .header("Authorization", "Bearer ${HttpClient.accessKey}")
+                            .header("Content-Disposition", "attachment;filename=${fileName}")
+                            .patch(body)
+                            .build()
+
+                        try
+                        {
+                            val imageResponse = HttpClient.webClient.newCall(imageRequest).execute()
+                            if(imageResponse.isSuccessful)
+                            {
+                                //TODO(Give user feed back)
+                            }
+
+                            imageResponse.close()
+
+                        }
+                        catch (e: IOException)
+                        {
+
+                        }
+
+                    }
                     //Do something
                 }
                 else
                 {
                     TODO("Handle Unsucess in the code path")
                 }
+
+                response.close()
             }
             catch (e: IOException)
             {
