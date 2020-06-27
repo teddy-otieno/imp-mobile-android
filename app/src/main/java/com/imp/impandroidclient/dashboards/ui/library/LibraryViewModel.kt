@@ -6,7 +6,7 @@ import androidx.lifecycle.Observer
 import com.imp.impandroidclient.app_state.repos.PostSubmissionRepo
 import com.imp.impandroidclient.app_state.repos.data.PostSubmission
 import com.imp.impandroidclient.app_state.repos.data.SubmissionStatus
-import com.imp.impandroidclient.submission_types.post.Post
+import kotlinx.coroutines.Deferred
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
 import java.lang.IllegalStateException
@@ -30,12 +30,18 @@ class LibraryViewModel : ViewModel()
                     ?: throw IllegalStateException("Expected a value in the combined Submission")
 
                 (submissions as MutableList).addAll(list.map {
-                    it.value?.run {
-                        CombinedSubmission(SubmissionType.POST,
-                            this.id, this.campaignId,
-                            this.postCaption, this.fee,
-                            this.image, this.timeOfSubmission,
-                            this.status)
+                    it.value?.let {submission ->
+                        CombinedSubmission(
+                            SubmissionType.POST,
+                            submission.id,
+                            submission.campaignId,
+                            submission.postCaption,
+                            submission.fee,
+                            submission.media_future,
+                            submission.timeOfSubmission,
+                            submission.status,
+                            submission.image_url
+                        )
                     } ?: throw IllegalStateException("Expected value inside the post submission")
                 })
 
@@ -69,6 +75,12 @@ enum class SubmissionType
  * Note(teddy) Consider using inheritance
  * Later when we integrate with videos and other types of submission
  * TODO(teddy) When handling submissions is best to avoid null, create a temporary store for the data
+ *
+ *
+ * @warning
+ * Note(teddy) To add support for views!!!
+ *
+ * @param url holds the key of the bitmap in the Image Cache
  */
 data class CombinedSubmission(
     val type: SubmissionType,
@@ -76,7 +88,8 @@ data class CombinedSubmission(
     val campaignId: Int,
     val caption: String?,
     val rate: Int?,
-    val thumbnail: Bitmap?,
+    val loading_img: Deferred<Bitmap?>?,
     val time: Date?,
-    val status: SubmissionStatus?
+    val status: SubmissionStatus?,
+    val url: String? = null
 )

@@ -8,6 +8,7 @@ import android.util.Log
 import android.widget.TextView
 import androidx.appcompat.app.AppCompatActivity
 import androidx.lifecycle.Observer
+import androidx.lifecycle.lifecycleScope
 import com.imp.impandroidclient.CAMPAIGN_ID
 import com.imp.impandroidclient.R
 import com.imp.impandroidclient.SUBMISSION_ID
@@ -16,6 +17,7 @@ import com.imp.impandroidclient.media.MediaGallery
 import com.imp.impandroidclient.submission_types.MediaChoiceBottomSheet
 import kotlinx.android.synthetic.main.activity_post.*
 import kotlinx.android.synthetic.main.layout_submission_details.*
+import kotlinx.coroutines.launch
 
 //Note(teddy) This is a flag for result expected by this activity
 const val SELECT_IMAGE: Int = 0x1
@@ -150,7 +152,16 @@ class Post : AppCompatActivity()
             post_notes.setText(it.note)
 
             post_image.imageTintMode = null
-            post_image.setImageBitmap(it.image)
+
+            //TODO(teddy) Problem will arise during patching
+            if(viewModel.isExisting)
+            {
+                post_image.setImageBitmap(Cache.getImageFromMemCache(it.image_url!!))
+            }
+            else
+            {
+                post_image.setImageBitmap(it.image)
+            }
         })
     }
 }

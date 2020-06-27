@@ -18,7 +18,9 @@ import com.google.android.material.card.MaterialCardView
 import com.imp.impandroidclient.CAMPAIGN_ID
 import com.imp.impandroidclient.R
 import com.imp.impandroidclient.SUBMISSION_ID
+import com.imp.impandroidclient.app_state.Cache
 import com.imp.impandroidclient.submission_types.post.Post
+import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
 import java.lang.IllegalStateException
@@ -68,6 +70,8 @@ class Library : Fragment()
 
 private class SubmissionViewHolder(private val view: View): RecyclerView.ViewHolder(view)
 {
+    private val scope: CoroutineScope= CoroutineScope(Dispatchers.Main)
+
     fun bind(submission: CombinedSubmission, activity: Activity)
     {
         val submissionCaption: TextView = view.findViewById(R.id.submission_caption)
@@ -84,8 +88,26 @@ private class SubmissionViewHolder(private val view: View): RecyclerView.ViewHol
 
         submissionRate.text = "FEES: ${submission.rate}"
         submissionStatus.text = submission.status?.toString() ?: "DRAFT"
-        submission.thumbnail?.let {
-            submissionImage.setImageBitmap(it)
+
+        /**
+         * Note(teddy) The bitmap image was being loaded asynchronously in the background \
+         * You'll need to wait for the loading to complete without blocking the main thread \
+         *
+         */
+        scope.launch {
+            submission.url?.let { url ->
+                Cache.getImageFromMemCache(url)?.let {
+                   submissionImage.setImageBitmap(it)
+                } ?: kotlin.run {
+                    submission.loading_img?.let {
+                        val image = it.await()
+                        image?.let { bitmap ->
+                            Cache.addImageToMemCache(url, bitmap)
+                            submissionImage.setImageBitmap(Cache.getImageFromMemCache(url))
+                        }
+                    }
+                }
+            }
         }
 
         view.setOnClickListener {
@@ -97,9 +119,7 @@ private class SubmissionViewHolder(private val view: View): RecyclerView.ViewHol
                 putExtra(CAMPAIGN_ID, submission.campaignId)
                 putExtra(SUBMISSION_ID, submission.submissionId)
             }
-
             activity.startActivity(intent)
-
             //TODO("Add onclick listener")
         }
     }

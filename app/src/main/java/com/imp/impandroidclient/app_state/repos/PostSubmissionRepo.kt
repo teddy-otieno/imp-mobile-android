@@ -7,10 +7,8 @@ import com.google.gson.Gson
 import com.google.gson.JsonObject
 import com.imp.impandroidclient.app_state.repos.data.PostSubmission
 import com.imp.impandroidclient.app_state.web_client.HttpClient
-import kotlinx.coroutines.CoroutineScope
-import kotlinx.coroutines.Dispatchers
-import kotlinx.coroutines.MainScope
-import kotlinx.coroutines.launch
+import com.imp.impandroidclient.helpers.loadImage
+import kotlinx.coroutines.*
 import okhttp3.*
 import okhttp3.RequestBody.Companion.toRequestBody
 import org.joda.time.DateTime
@@ -197,6 +195,13 @@ class PostSubmissionRepo private constructor(){
                 val submissions = gson.fromJson(rawJson, Array<PostSubmission>::class.java) //TODO(teddy) handle this gracefully
 
                 postSubmissions.postValue(submissions.map {
+                    it.image_url?.let { url ->
+                        //Note(teddy) Confirming if i got the correct image url
+                        if("/media/" in url)
+                        {
+                            it.media_future = async { loadImage(url) }
+                        }
+                    }
                     MutableLiveData(it)
                 }.toMutableList())
             }

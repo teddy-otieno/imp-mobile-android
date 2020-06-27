@@ -57,9 +57,8 @@ suspend fun loadImage(url: String): Bitmap? = withContext(Dispatchers.IO){
 
     if(response.isSuccessful) {
         val bytes = response.body!!.bytes()
-        val bitmap: Bitmap = BitmapFactory.decodeByteArray(bytes, 0, bytes.size)!!
 
-        return@withContext bitmap
+        return@withContext BitmapFactory.decodeByteArray(bytes, 0, bytes.size)!!
     }
 
     return@withContext null
