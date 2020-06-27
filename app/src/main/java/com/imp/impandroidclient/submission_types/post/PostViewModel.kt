@@ -13,6 +13,10 @@ import com.imp.impandroidclient.app_state.repos.data.PostSubmission
  *
  * Note(teddy) Modifications will only be permitted when submission is in a drafting stage(Review)
  *
+ * @member imageChanged -> To avoid sending the same image during patching submissions \
+ * set the flag to true only when the image of the post is changed!!
+ *
+ *
  * FIXME(teddy): BUG -> When creating a new post submission
  */
 class PostViewModel(private var submissionId: Int, campaignId: Int) : ViewModel()
@@ -20,6 +24,7 @@ class PostViewModel(private var submissionId: Int, campaignId: Int) : ViewModel(
     private val submissionRepo = PostSubmissionRepo.getInstance()
     var submission: MutableLiveData<PostSubmission>
     var isExisting: Boolean = true
+    var imageChanged: Boolean = false
 
     init {
         //Create new submission
@@ -40,7 +45,7 @@ class PostViewModel(private var submissionId: Int, campaignId: Int) : ViewModel(
                 {
                     //Note(teddy) Since all the updates are directly patch to the model
                     //No need to update submission in this method call
-                    submissionRepo.patchSubmission(this)
+                    submissionRepo.patchSubmission(this, imageChanged)
                 }
                 else
                 {

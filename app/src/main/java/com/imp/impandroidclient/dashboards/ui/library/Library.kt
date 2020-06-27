@@ -11,6 +11,7 @@ import android.widget.TextView
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.viewModels
 import androidx.lifecycle.Observer
+import androidx.lifecycle.lifecycleScope
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
 import com.google.android.material.card.MaterialCardView
@@ -18,6 +19,8 @@ import com.imp.impandroidclient.CAMPAIGN_ID
 import com.imp.impandroidclient.R
 import com.imp.impandroidclient.SUBMISSION_ID
 import com.imp.impandroidclient.submission_types.post.Post
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.launch
 import java.lang.IllegalStateException
 
 class Library : Fragment()
@@ -49,7 +52,10 @@ class Library : Fragment()
 
         activity?.let {
             dashboardViewModel.combinedSubmission.observe(it, Observer {submissions ->
-                submissionsView.adapter = SubmissionsViewAdapter(submissions, it)
+
+                lifecycleScope.launch(Dispatchers.Main){
+                    submissionsView.adapter = SubmissionsViewAdapter(submissions, it)
+                }
             })
         } ?: throw IllegalStateException("Activity is not supposed to be null")
     }

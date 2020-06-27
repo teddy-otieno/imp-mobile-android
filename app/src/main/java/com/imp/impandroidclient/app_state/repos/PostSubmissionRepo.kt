@@ -242,7 +242,7 @@ class PostSubmissionRepo private constructor(){
                         val fileName = "submission-${submission.id}.png"
 
                         /**
-                         * BugFix: Images were n
+                         * BugFix: Added the content-disposition hader
                          *
                          */
                         val imageRequest = Request.Builder()

@@ -62,12 +62,12 @@ class Post : AppCompatActivity()
                     //Redirect to the homepage,
                     //Display a dialog successful
                     //Change the color of the submit button
-                    TODO()
+                    TODO("Provide feedback to the user during the transfer process")
                 })
             }
             else
             {
-                TODO()
+                TODO("Provide feedback to the user during the transfer process")
             }
         }
 
@@ -112,6 +112,10 @@ class Post : AppCompatActivity()
         }
     }
 
+    /**
+     * TODO(teddy) cross check if the image is similiar to the previous \
+     * before setting the imageChanged flag
+     */
     override fun onActivityResult(requestCode: Int, resultCode: Int, data: Intent?)
     {
         super.onActivityResult(requestCode, resultCode, data)
@@ -125,6 +129,10 @@ class Post : AppCompatActivity()
 
                     viewModel.submission.value?.run {
                         val tempSubmission = this.copy(image=image)
+
+                        if(viewModel.isExisting)
+                            viewModel.imageChanged = true
+
                         viewModel.submission.value = tempSubmission
                     } ?: throw java.lang.IllegalStateException("Post Submission is not supposed to be null")
                 } ?: throw IllegalStateException("POST activity: Image uri was not passed in the intent")
