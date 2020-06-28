@@ -32,11 +32,12 @@ import kotlinx.android.synthetic.main.activity_media_gallery.*
 class MediaGallery : AppCompatActivity()
 {
 
-    private val viewModel: MediaGalleryViewModel by viewModels()
     companion object
     {
         const val REQUEST_READ_EXTERNAL_MEDIA = 2
     }
+
+    private val viewModel: MediaGalleryViewModel by viewModels()
 
     override fun onCreate(savedInstanceState: Bundle?)
     {

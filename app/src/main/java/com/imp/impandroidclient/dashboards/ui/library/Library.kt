@@ -119,8 +119,10 @@ private class SubmissionViewHolder(private val view: View): RecyclerView.ViewHol
                 putExtra(CAMPAIGN_ID, submission.campaignId)
                 putExtra(SUBMISSION_ID, submission.submissionId)
             }
+
+            //TODO(teddy) Maybe ask activity to a flag if the selected item was modified \
+            //Then update the item on this list
             activity.startActivity(intent)
-            //TODO("Add onclick listener")
         }
     }
 }

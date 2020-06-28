@@ -26,9 +26,10 @@
             app:layout_constraintWidth_percent="0.5"
             tools:srcCompat="@tools:sample/backgrounds/scenic"/>
 
-        <RelativeLayout
+        <androidx.constraintlayout.widget.ConstraintLayout
             android:layout_width="0dp"
-            android:layout_height="wrap_content"
+            android:layout_height="match_parent"
+            android:padding="8dp"
             app:layout_constraintWidth_percent="0.5"
             app:layout_constraintLeft_toRightOf="@id/image"
             >
@@ -37,28 +38,37 @@
                 android:id="@+id/submission_caption"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:text="hello world"
                 android:layout_alignParentStart="true"
+                android:textSize="16sp"
+                app:layout_constraintTop_toTopOf="parent"
                 />
             <TextView
                 android:id="@+id/rates"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:layout_marginTop="20dp"
-                android:layout_below="@+id/submission_caption"
+                android:layout_marginTop="16dp"
+                android:textColor="@color/warm_red"
+                android:text="Lolest"
+                android:textStyle="bold"
+                app:layout_constraintTop_toBottomOf="@+id/submission_caption"
                 />
 
-        </RelativeLayout>
+            <TextView
+                android:id="@+id/status"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginEnd="4dp"
+                android:layout_marginBottom="4dp"
+                android:text="DRAFT"
+                android:background="@drawable/draft_background"
+                android:paddingVertical="4dp"
+                android:paddingHorizontal="12dp"
 
-        <TextView
-            android:id="@+id/status"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_marginEnd="8dp"
-            android:layout_marginBottom="8dp"
-            android:text="Status"
-            app:layout_constraintBottom_toBottomOf="parent"
-            app:layout_constraintEnd_toEndOf="parent" />
+                app:layout_constraintBottom_toBottomOf="parent"
+                app:layout_constraintEnd_toEndOf="parent" />
+
+        </androidx.constraintlayout.widget.ConstraintLayout>
+
 
     </androidx.constraintlayout.widget.ConstraintLayout>
 

@@ -6,6 +6,7 @@
     <color name="outlineColor">#adadad</color>
     <color name="colorAccent">#47BC7A</color>
     <color name="colorError">#D81B60</color>
+    <color name="warm_red">#FF6060</color>
     <color name="inputBorder">#EEEEEE</color>
     <color name="primaryForeGround">#FFFFFF</color>
     <color name="white">#EEEEEE</color>
