@@ -4,7 +4,10 @@ import android.content.Intent
 import android.net.Uri
 import android.os.Bundle
 import android.text.SpannableStringBuilder
+import android.util.DisplayMetrics
 import android.util.Log
+import android.view.ViewGroup
+import android.widget.LinearLayout
 import android.widget.TextView
 import androidx.appcompat.app.AppCompatActivity
 import androidx.lifecycle.Observer
@@ -39,6 +42,9 @@ class Post : AppCompatActivity()
         if(campaignId < 0) throw IllegalStateException("Campaign was not supplied in the intent")
         viewModel = PostViewModelFactory(submissionId, campaignId).create(PostViewModel::class.java)
 
+        val metrics = DisplayMetrics()
+        val displayMetrics = windowManager.defaultDisplay.getMetrics(metrics)
+        linearLayout.layoutParams = LinearLayout.LayoutParams(metrics.widthPixels, metrics.widthPixels)
         if(viewModel.isExisting)
         {
             /*
