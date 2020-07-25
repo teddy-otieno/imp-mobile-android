@@ -13,6 +13,7 @@ import android.text.SpannableStringBuilder
 import android.util.DisplayMetrics
 import android.util.Log
 import android.view.ViewGroup
+import android.widget.FrameLayout
 import android.widget.LinearLayout
 import android.widget.TextView
 import androidx.appcompat.app.AppCompatActivity
@@ -36,15 +37,13 @@ const val SELECT_IMAGE: Int = 0x1
 /**
  * TODO(teddy) Need to fix the post activity layout
  */
-class Post : AppCompatActivity()
-{
+class Post : AppCompatActivity() {
     private lateinit var viewModel: PostViewModel
     private lateinit var buttonText: String
     private val shortAnimationDuration: Int = 1
 
 
-    override fun onCreate(savedInstanceState: Bundle?)
-    {
+    override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_post)
 
@@ -60,42 +59,41 @@ class Post : AppCompatActivity()
          */
         val metrics = DisplayMetrics()
         windowManager.defaultDisplay.getMetrics(metrics)
-        linearLayout.layoutParams = LinearLayout.LayoutParams(metrics.widthPixels, metrics.widthPixels)
-        if(viewModel.isExisting)
-        {
+        post_image.layoutParams = FrameLayout.LayoutParams(metrics.widthPixels - 50, metrics.widthPixels - 50)
+
+        if(viewModel.isExisting) {
             /*
                 Note(teddy) Change the button string to update, when we are editing a submission
              */
             val text = resources.getString(R.string.update)
             btn_submit_post.text = text
             buttonText = text
-        }
-        else
-        {
+
+        } else {
             buttonText = resources.getString(R.string.submit)
         }
         setUpListeners()
         setUpObservers()
     }
 
-    private fun getColorVal(id: Int): Int
-    {
+    private fun getColorVal(id: Int): Int {
+
         return if(Build.VERSION.SDK_INT >= 23)
             resources.getColor(R.color.transparent, null)
         else
             resources.getColor(R.color.transparent)
     }
 
-    private fun setUpListeners()
-    {
+    private fun setUpListeners() {
+
         post_back_button.setOnClickListener { finish() }
+
         btn_submit_post.setOnClickListener {
             post_notes.clearFocus()
             post_caption.clearFocus()
             post_fee_rates.clearFocus()
 
-            if(viewModel.submit())
-            {
+            if(viewModel.submit()) {
                 viewModel.transferStatus().observe(this, Observer {status ->
                     //Redirect to the homepage,
                     //Display a dialog successful
@@ -124,11 +122,12 @@ class Post : AppCompatActivity()
                     /**
                      * Going to animate the text buttons
                      */
-                    when(status)
-                    {
+                    when(status) {
+
                         TransferStatus.INPROGRESS -> {
                             btn_submit_post.text = resources.getString(R.string.uploading)
                         }
+
                         TransferStatus.SUCESSFULL -> {
                             /*
                             val backgroundColor = ObjectAnimator.ofArgb(
@@ -157,16 +156,16 @@ class Post : AppCompatActivity()
                         }
                     }
                 })
-            }
-            else
-            {
+
+            } else {
+
                 TODO("Validation failed")
             }
         }
 
         post_caption.setOnFocusChangeListener { v , hasFocus ->
-            if(!hasFocus)
-            {
+
+            if(!hasFocus) {
                 viewModel.submission.value?.run {
                     val copy = this.copy(postCaption=post_caption.text.toString())
                     viewModel.submission.value = copy
@@ -175,8 +174,8 @@ class Post : AppCompatActivity()
         }
 
         post_fee_rates.setOnFocusChangeListener { v, hasFocus ->
-            if(!hasFocus)
-            {
+
+            if(!hasFocus) {
                 val newSubmission = viewModel.submission.value!!
                 Log.d("PARSE", "|${(v as TextView).text}|")
                 newSubmission.fee = post_fee_rates.text.toString().toInt()
@@ -185,8 +184,8 @@ class Post : AppCompatActivity()
         }
 
         post_notes.setOnFocusChangeListener { v, hasFocus ->
-            if(!hasFocus)
-            {
+
+            if(!hasFocus) {
                 val newSubmission = viewModel.submission.value!!
                 newSubmission.note = post_notes.text.toString()
                 viewModel.submission.value = newSubmission
@@ -209,14 +208,14 @@ class Post : AppCompatActivity()
      * TODO(teddy) cross check if the image is similiar to the previous \
      * before setting the imageChanged flag
      */
-    override fun onActivityResult(requestCode: Int, resultCode: Int, data: Intent?)
-    {
+    override fun onActivityResult(requestCode: Int, resultCode: Int, data: Intent?) {
+
         super.onActivityResult(requestCode, resultCode, data)
 
-        if(requestCode == SELECT_IMAGE)
-        {
-            if(resultCode == RESULT_OK)
-            {
+        if(requestCode == SELECT_IMAGE) {
+
+            if(resultCode == RESULT_OK) {
+
                 data?.extras?.getParcelable<Uri>("IMAGE")?.let {uri ->
                     /**
                      * Note(teddy) Optimization : Maybe store all images in the cache \
@@ -235,8 +234,8 @@ class Post : AppCompatActivity()
         }
     }
 
-    private fun setUpObservers()
-    {
+    private fun setUpObservers() {
+
         viewModel.submission.observe(this, Observer {
             post_caption.setText(it.postCaption)
             it.fee?.let { fee ->

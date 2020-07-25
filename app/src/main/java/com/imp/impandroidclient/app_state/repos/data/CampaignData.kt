@@ -34,7 +34,7 @@ data class MoodBoard(
 
 data class Brand(
     val id: Int,
-    val brand_name: String,
-    val brand_image: String,
-    var brandImageFuture: Deferred<Bitmap?>? = null
+    val title: String,
+    val image: String,
+    val company: Int
 )

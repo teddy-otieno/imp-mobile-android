@@ -4,52 +4,63 @@ import android.graphics.Bitmap
 import android.util.Log
 import androidx.lifecycle.MutableLiveData
 import com.google.gson.Gson
+import com.imp.impandroidclient.app_state.repos.data.Brand
 import com.imp.impandroidclient.app_state.repos.data.CampaignData
 import com.imp.impandroidclient.app_state.web_client.HttpClient
 import kotlinx.coroutines.*
 import okhttp3.Request
 import okio.IOException
 import org.json.JSONArray
+import java.lang.IllegalStateException
 
 object CampaignRepository {
-    val campaignData: MutableLiveData<MutableList<CampaignData>> = MutableLiveData()
-    val errorDuringLoading: MutableLiveData<TransferStatus> = MutableLiveData()
+    val campaignData: MutableLiveData<MutableList<CampaignData>> by lazy { MutableLiveData( mutableListOf<CampaignData>()) }
+    val brands: MutableLiveData<MutableList<Brand>> by lazy { MutableLiveData(mutableListOf<Brand>()) }
+    val errorDuringLoading: MutableLiveData<TransferStatus> by lazy { MutableLiveData<TransferStatus>() }
+
     private val scope = CoroutineScope(Dispatchers.IO)
 
-
     init {
-        scope.launch {
-            getNewCampaignsFromServer()
-        }
+        getNewCampaignsFromServer()
     }
 
     //Note(teddy) this should be a suspended computation
     private fun getNewCampaignsFromServer() {
 
-        val request = Request.Builder()
-            .url(HttpClient.SERVER_URL + "/api/creator/campaigns")
-            .get()
-            .addHeader("Authorization", "Bearer " + HttpClient.accessKey)
-            .build()
+        scope.launch {
 
-        try {
-            val response = HttpClient.webClient.newCall(request).execute()
-            val rawJson = response.body!!.string()
-            val rawCampaigns = JSONArray(rawJson)
-            val gson = Gson()
-            val campaigns: MutableList<CampaignData> = mutableListOf()
+            val request = Request.Builder()
+                .url(HttpClient.SERVER_URL + "/api/creator/campaigns")
+                .get()
+                .addHeader("Authorization", "Bearer " + HttpClient.accessKey)
+                .build()
 
-            for(i in 0 until rawCampaigns.length()) {
-                val rawCampaign = rawCampaigns[i]
-                val campaign: CampaignData = gson.fromJson(rawCampaign.toString(), CampaignData::class.java)
-                campaigns.add(campaign)
+            try {
+                val response = HttpClient.webClient.newCall(request).execute()
+
+                if(response.code == 200)  {
+                    val rawJson = response.body?.string() ?: throw IllegalStateException("Response Body is Empty")
+                    val rawCampaigns = JSONArray(rawJson)
+                    val gson = Gson()
+                    val campaigns: MutableList<CampaignData> = mutableListOf()
+
+                    for(i in 0 until rawCampaigns.length()) {
+                        val rawCampaign = rawCampaigns[i]
+                        val campaign: CampaignData = gson.fromJson(rawCampaign.toString(), CampaignData::class.java)
+                        campaigns.add(campaign)
+                        getBrand(campaign.brand)
+                    }
+
+                    campaignData.postValue(campaigns)
+                } else {
+                    errorDuringLoading.postValue(TransferStatus.FAILED)
+                    Log.w("NETWORK", "Response Body is empty skipping")
+                }
+
+            } catch (e: IOException) {
+                errorDuringLoading.postValue(TransferStatus.FAILED)
+                Log.w("Connection", "${e.message}" )
             }
-
-            campaignData.postValue(campaigns)
-
-        } catch (e: IOException) {
-            errorDuringLoading.postValue(TransferStatus.FAILED)
-            Log.d("Connection", "${e.message}" )
         }
 
     }
@@ -62,5 +73,39 @@ object CampaignRepository {
         campaignData.value!![index] = campaign
     }
 
+    fun getBrand(brandId: Int) {
+        scope.launch {
 
+            val request = Request.Builder()
+                .url("${HttpClient.SERVER_URL}/api/company/brand/${brandId}")
+                .get()
+                .addHeader("Authorization", "Bearer ${HttpClient.accessKey}")
+                .build()
+
+            try {
+                val response = HttpClient.webClient.newCall(request).execute()
+
+                if(response.code == 200) {
+                    val rawJson = response.body?.string() ?: throw IllegalStateException("RESPONSE BODY IS EMPTY")
+                    val gson = Gson()
+
+                    val brand = gson.fromJson<Brand>(rawJson, Brand::class.java)
+
+                    brands.value?.let {
+
+                        val temp = it
+                        temp.add(brand)
+
+                        brands.postValue(temp)
+
+                    }
+                } else {
+                    Log.w("NETWORK", "Failed to get brands from server")
+                }
+
+            } catch (e: IOException) {
+                Log.w("NETWORK", "Failed to establish connection with server")
+            }
+        }
+    }
 }

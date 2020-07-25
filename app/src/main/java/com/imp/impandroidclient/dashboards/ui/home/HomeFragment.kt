@@ -26,7 +26,7 @@ import android.util.Pair as UtilPair
 
 class HomeFragment : Fragment() {
 
-    private val homeViewModel: HomeViewModel = HomeViewModel()
+    val homeViewModel: HomeViewModel = HomeViewModel()
 
     private var campaignAdapter: CampaignComponentAdapter? = null
 
@@ -56,7 +56,7 @@ class HomeFragment : Fragment() {
     }
 }
 
-class ViewHolder(val context: Fragment, inflator: LayoutInflater, parent: ViewGroup)
+private class ViewHolder(val context: HomeFragment, inflator: LayoutInflater, parent: ViewGroup)
 : RecyclerView.ViewHolder(inflator.inflate(R.layout.frame_campaign_view, parent, false)) {
 
     private val campaignCoverImage: ImageView = itemView.findViewById(R.id.card_campaign_cover_image)
@@ -82,33 +82,42 @@ class ViewHolder(val context: Fragment, inflator: LayoutInflater, parent: ViewGr
                     UtilPair.create(brandAvatar as View, "brand_avatar"),
                     UtilPair.create(brandTitle as View, "brand_title")
                 )
+
                 contextAdapter.canStart = false
                 context.startActivity(intent, activityOptions.toBundle())
             }
 
-            true
         }
 
         campaignTitle.text = campaign.title
         campaignDescription.text = campaign.about_you
 
-        context.lifecycleScope.launch(Dispatchers.Main) {
 
-            ResourceManager.onLoadImage(campaign.cover_image) {
-                campaignCoverImage.setImageBitmap(it)
-            }
 
-            //brandAvatar.setImageBitmap( CampaignRepository.getImage( campaign.brand.brandImageFuture, campaign.brand.brand_image))
-
-            brandAvatar.clipToOutline = true
-
+        ResourceManager.onLoadImage(campaign.cover_image) {
+            campaignCoverImage.setImageBitmap(it)
         }
 
+        context.homeViewModel.brands().observe(context.viewLifecycleOwner, Observer {
+            val brand = it.find { it.id == campaign.brand }
+
+            brand?.let {
+                ResourceManager.onLoadImage(it.image){
+                    brandAvatar.setImageBitmap(it)
+                    brandAvatar.clipToOutline = true
+                }
+
+                brandTitle.text = brand.title
+            }
+
+        })
+
     }
+
 }
 
-class CampaignComponentAdapter(
-    val context: Fragment,
+private class CampaignComponentAdapter(
+    val context: HomeFragment,
     private val campaignData: List<CampaignData>
 ) : RecyclerView.Adapter<ViewHolder>() {
 

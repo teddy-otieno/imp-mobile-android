@@ -4,6 +4,7 @@ import android.app.Application
 import android.content.Context
 import com.imp.impandroidclient.app_state.ResourceManager
 import com.imp.impandroidclient.app_state.database.AppDatabase
+import com.imp.impandroidclient.app_state.repos.FileSystemMedia
 import net.danlew.android.joda.JodaTimeAndroid
 
 class GlobalApplication : Application() {
@@ -19,6 +20,7 @@ class GlobalApplication : Application() {
 
         AppDatabase.createDatabase(this)
         JodaTimeAndroid.init(this)
+        FileSystemMedia.application = this
     }
 
     override fun onLowMemory() {
