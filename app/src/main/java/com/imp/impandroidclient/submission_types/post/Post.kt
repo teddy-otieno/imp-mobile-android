@@ -1,7 +1,13 @@
 package com.imp.impandroidclient.submission_types.post
 
+import android.animation.Animator
+import android.animation.AnimatorListenerAdapter
+import android.animation.AnimatorSet
+import android.animation.ObjectAnimator
 import android.content.Intent
 import android.net.Uri
+import android.os.Build
+import android.os.Build.VERSION.SDK
 import android.os.Bundle
 import android.text.SpannableStringBuilder
 import android.util.DisplayMetrics
@@ -15,7 +21,8 @@ import androidx.lifecycle.lifecycleScope
 import com.imp.impandroidclient.CAMPAIGN_ID
 import com.imp.impandroidclient.R
 import com.imp.impandroidclient.SUBMISSION_ID
-import com.imp.impandroidclient.app_state.Cache
+import com.imp.impandroidclient.app_state.ResourceManager
+import com.imp.impandroidclient.app_state.repos.TransferStatus
 import com.imp.impandroidclient.media.MediaGallery
 import com.imp.impandroidclient.submission_types.MediaChoiceBottomSheet
 import kotlinx.android.synthetic.main.activity_post.*
@@ -26,15 +33,21 @@ import kotlinx.coroutines.launch
 const val SELECT_IMAGE: Int = 0x1
 
 
-//TODO(teddy) Need to fix the post activity layout
+/**
+ * TODO(teddy) Need to fix the post activity layout
+ */
 class Post : AppCompatActivity()
 {
     private lateinit var viewModel: PostViewModel
+    private lateinit var buttonText: String
+    private val shortAnimationDuration: Int = 1
+
 
     override fun onCreate(savedInstanceState: Bundle?)
     {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_post)
+
 
         val submissionId = intent.getIntExtra(SUBMISSION_ID, -1)
         val campaignId = intent.getIntExtra(CAMPAIGN_ID, -1)
@@ -42,18 +55,35 @@ class Post : AppCompatActivity()
         if(campaignId < 0) throw IllegalStateException("Campaign was not supplied in the intent")
         viewModel = PostViewModelFactory(submissionId, campaignId).create(PostViewModel::class.java)
 
+        /*
+           FIXME(teddy) Proportion problem on different aspect ratios
+         */
         val metrics = DisplayMetrics()
-        val displayMetrics = windowManager.defaultDisplay.getMetrics(metrics)
+        windowManager.defaultDisplay.getMetrics(metrics)
         linearLayout.layoutParams = LinearLayout.LayoutParams(metrics.widthPixels, metrics.widthPixels)
         if(viewModel.isExisting)
         {
             /*
                 Note(teddy) Change the button string to update, when we are editing a submission
              */
-            btn_submit_post.text = resources.getString(R.string.update)
+            val text = resources.getString(R.string.update)
+            btn_submit_post.text = text
+            buttonText = text
+        }
+        else
+        {
+            buttonText = resources.getString(R.string.submit)
         }
         setUpListeners()
         setUpObservers()
+    }
+
+    private fun getColorVal(id: Int): Int
+    {
+        return if(Build.VERSION.SDK_INT >= 23)
+            resources.getColor(R.color.transparent, null)
+        else
+            resources.getColor(R.color.transparent)
     }
 
     private fun setUpListeners()
@@ -66,16 +96,71 @@ class Post : AppCompatActivity()
 
             if(viewModel.submit())
             {
-                viewModel.transferStatus().observe(this, Observer {
+                viewModel.transferStatus().observe(this, Observer {status ->
                     //Redirect to the homepage,
                     //Display a dialog successful
                     //Change the color of the submit button
-                    TODO("Provide feedback to the user during the transfer process")
+                    //TODO("Provide feedback to the user during the transfer process")
+
+                    /*
+                    val transparent = getColorVal(R.color.transparent)
+
+                    val textColorToTransparent = ObjectAnimator.ofArgb(btn_submit_post, "textColor", transparent).apply {
+                        duration = 1000
+                        addListener(object: AnimatorListenerAdapter() {
+                            override fun onAnimationEnd(animation: Animator?) {
+                                super.onAnimationEnd(animation)
+                                btn_submit_post.text = resources.getString(R.string.done)
+                            }
+                        })
+                    }
+
+                    val greenCol = getColorVal(R.color.white)
+                    val textColorToNormal = ObjectAnimator.ofArgb(btn_submit_post, "textColor", transparent, greenCol).apply {
+                        duration = 1000
+                    }
+                     */
+
+                    /**
+                     * Going to animate the text buttons
+                     */
+                    when(status)
+                    {
+                        TransferStatus.INPROGRESS -> {
+                            btn_submit_post.text = resources.getString(R.string.uploading)
+                        }
+                        TransferStatus.SUCESSFULL -> {
+                            /*
+                            val backgroundColor = ObjectAnimator.ofArgb(
+                                btn_submit_post,
+                                "background",
+                                getColorVal(R.color.colorPrimary),
+                                getColorVal(R.color.green)
+
+                            ).apply { duration = 1000 }
+
+                            AnimatorSet().apply {
+                                play(textColorToNormal).with(backgroundColor)
+                                start()
+                            }
+                             */
+
+                            btn_submit_post.text = resources.getString(R.string.done)
+                        }
+
+                        TransferStatus.FAILED -> {
+                            btn_submit_post.text = resources.getString(R.string.failed)
+                        }
+
+                        TransferStatus.NOTHING -> {
+                            btn_submit_post.text = buttonText
+                        }
+                    }
                 })
             }
             else
             {
-                TODO("Provide feedback to the user during the transfer process")
+                TODO("Validation failed")
             }
         }
 
@@ -133,8 +218,6 @@ class Post : AppCompatActivity()
             if(resultCode == RESULT_OK)
             {
                 data?.extras?.getParcelable<Uri>("IMAGE")?.let {uri ->
-                    val image = Cache.getImageFromMemCache(uri.toString())
-
                     /**
                      * Note(teddy) Optimization : Maybe store all images in the cache \
                      * instead of the object
@@ -166,7 +249,7 @@ class Post : AppCompatActivity()
             //TODO(teddy) Problem will arise during patching
 
             it.image_url?.let { url ->
-                Cache.getImageFromMemCache(url)?.let { bitmap ->
+                ResourceManager.getImage(url)?.let { bitmap ->
                     post_image.setImageBitmap(bitmap)
                 }
             }

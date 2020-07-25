@@ -2,7 +2,7 @@ package com.imp.impandroidclient.application
 
 import android.app.Application
 import android.content.Context
-import com.imp.impandroidclient.app_state.Cache
+import com.imp.impandroidclient.app_state.ResourceManager
 import com.imp.impandroidclient.app_state.database.AppDatabase
 import net.danlew.android.joda.JodaTimeAndroid
 
@@ -24,8 +24,7 @@ class GlobalApplication : Application() {
     override fun onLowMemory() {
         super.onLowMemory()
 
-        //Empty all caches
-        Cache.clearCaches()
+        ResourceManager.clear()
     }
 }
 

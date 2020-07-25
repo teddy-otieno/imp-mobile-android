@@ -16,7 +16,6 @@ class LibraryViewModel : ViewModel()
 {
     private val observer: Observer<MutableList<MutableLiveData<PostSubmission>>>
 
-    private val postSubmissionRepo: PostSubmissionRepo = PostSubmissionRepo.getInstance()
     val combinedSubmission: MutableLiveData<List<CombinedSubmission>> = MutableLiveData( mutableListOf())
 
     init {
@@ -30,14 +29,13 @@ class LibraryViewModel : ViewModel()
                     ?: throw IllegalStateException("Expected a value in the combined Submission")
 
                 (submissions as MutableList).addAll(list.map {
-                    it.value?.let {submission ->
+                    it.value?.let { submission ->
                         CombinedSubmission(
                             SubmissionType.POST,
                             submission.id,
                             submission.campaignId,
                             submission.postCaption,
                             submission.fee,
-                            submission.media_future,
                             submission.timeOfSubmission,
                             submission.status,
                             submission.image_url
@@ -54,13 +52,13 @@ class LibraryViewModel : ViewModel()
             }
         }
 
-        postSubmissionRepo.submissions.observeForever(observer)
+        PostSubmissionRepo.submissions.observeForever(observer)
     }
 
     override fun onCleared() {
         super.onCleared()
 
-        postSubmissionRepo.submissions.removeObserver(this.observer)
+        PostSubmissionRepo.submissions.removeObserver(this.observer)
     }
 }
 
@@ -88,7 +86,6 @@ data class CombinedSubmission(
     val campaignId: Int,
     val caption: String?,
     val rate: Int?,
-    val loading_img: Deferred<Bitmap?>?,
     val time: Date?,
     val status: SubmissionStatus?,
     val url: String? = null

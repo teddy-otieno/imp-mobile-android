@@ -1,11 +1,13 @@
 package com.imp.impandroidclient.helpers
 
 import android.graphics.*
+import android.util.Log
 import android.widget.ImageView
 import com.imp.impandroidclient.app_state.web_client.HttpClient
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.withContext
 import okhttp3.Request
+import java.io.IOException
 
 
 fun getRoundedCornerBitmap(bitmap: Bitmap, pixels: Int): Bitmap {
@@ -17,7 +19,7 @@ fun getRoundedCornerBitmap(bitmap: Bitmap, pixels: Int): Bitmap {
     val paint = Paint()
     val rect = Rect(0, 0, bitmap.width, bitmap.height)
     val rectf = RectF(rect)
-    val roundPx = pixels.toFloat();
+    val roundPx = pixels.toFloat()
 
     paint.isAntiAlias = true
     canvas.drawARGB(0, 0, 0, 0)
@@ -36,7 +38,7 @@ fun squareCropBitmap(bitmap: Bitmap): Bitmap {
 
     val output = Bitmap.createBitmap(bitmap, 0, 0, max, max)
 
-    return output;
+    return output
 }
 
 fun fillViewBitmap(bitmap: Bitmap, imageView: ImageView): Bitmap {
@@ -45,21 +47,10 @@ fun fillViewBitmap(bitmap: Bitmap, imageView: ImageView): Bitmap {
     return Bitmap.createBitmap(bitmap, 0, 0, imageView.width * widthScale, bitmap.height)
 }
 
-suspend fun loadImage(url: String): Bitmap? = withContext(Dispatchers.IO){
-
-    val request = Request.Builder()
-        .url(HttpClient.SERVER_URL + url)
-        .addHeader("Authorization", "Bearer " + HttpClient.accessKey)
-        .get()
-        .build()
-
-    val response = HttpClient.webClient.newCall(request).execute()
-
-    if(response.isSuccessful) {
-        val bytes = response.body!!.bytes()
-
-        return@withContext BitmapFactory.decodeByteArray(bytes, 0, bytes.size)!!
-    }
-
-    return@withContext null
-}
+/**
+ * @param url Takes a valid url and loads the image asynchronously
+ * This method should only be called inside an async block
+ * Return null means loading failed
+ *
+ * TODO(teddy) Inform the caller on the type of error that occured
+ */

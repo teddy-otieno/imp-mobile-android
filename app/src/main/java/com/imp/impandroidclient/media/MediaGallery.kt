@@ -80,7 +80,7 @@ class MediaGallery : AppCompatActivity()
 
     private fun setUpObservers()
     {
-        FileSystemMedia.initializeInstance(application)
+        FileSystemMedia.application = application
 
         viewModel.getImages().observe(this, Observer {
             val viewAdapter = GalleryAdapter(this, it)

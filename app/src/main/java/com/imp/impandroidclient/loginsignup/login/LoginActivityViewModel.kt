@@ -7,14 +7,13 @@ import com.imp.impandroidclient.app_state.repos.TransferStatus
 
 class LoginActivityViewModel : ViewModel(){
 
-    private val sessionRepo: SessionRepository = SessionRepository.getInstance()
     var username: String = ""
     var password: String = ""
 
-    fun isAuthenticated(): MutableLiveData<Boolean> = sessionRepo.isAuthenticated
-    fun errorOnAuth(): MutableLiveData<TransferStatus> = sessionRepo.errorOnAuth
+    fun isAuthenticated(): MutableLiveData<Boolean> = SessionRepository.isAuthenticated
+    fun errorOnAuth(): MutableLiveData<TransferStatus> = SessionRepository.errorOnAuth
 
     fun authenticate(username: String, password: String) {
-        sessionRepo.login(username, password)
+        SessionRepository.login(username, password)
     }
 }

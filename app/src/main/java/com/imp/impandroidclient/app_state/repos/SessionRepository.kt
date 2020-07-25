@@ -16,46 +16,25 @@ import org.json.JSONException
 import org.json.JSONObject
 import java.io.IOException
 
-class SessionRepository private constructor()
-{
+object SessionRepository {
     private val db = AppDatabase.getDatabaseInstance()
 
     val isAuthenticated: MutableLiveData<Boolean> = MutableLiveData()
     val errorOnAuth: MutableLiveData<TransferStatus> = MutableLiveData()
 
-    companion object
-    {
-        @Volatile
-        private var instance: SessionRepository? = null
-
-        fun getInstance(): SessionRepository
-        {
-            return if(instance == null)
-            {
-                instance = SessionRepository()
-                instance!!
-            }
-            else
-            {
-                instance!!
-            }
-        }
-    }
-
     init {
         authenticate()
     }
 
-    private fun authenticate()
-    {
+    private fun authenticate() {
+
         GlobalScope.launch(Dispatchers.IO) {
             val refreshKey = db.sessionDao().getCurrentCredentials()
-            if(refreshKey == null)
-            {
+
+            if(refreshKey == null) {
                 isAuthenticated.postValue(false)
-            }
-            else
-            {
+
+            } else {
                 val refreshMessage = JSONObject().put("refresh", refreshKey)
                 val request = Request.Builder()
                     .url(HttpClient.SERVER_URL + "/api/accounts/token/refresh")
@@ -63,22 +42,22 @@ class SessionRepository private constructor()
                     .build()
 
                 HttpClient.webClient.newCall(request).enqueue(object: Callback{
-                    override fun onResponse(call: Call, response: Response)
-                    {
+
+                    override fun onResponse(call: Call, response: Response) {
                         if(response.isSuccessful) {
                             val rawJson = response.body!!.string()
                             val json = JSONObject(rawJson)
                             HttpClient.accessKey = json.getString("access")
                             HttpClient.refreshKey = refreshKey
                             isAuthenticated.postValue(true)
+
                         } else {
                             Log.d("HTTP", "${response.body?.string()}")
                             isAuthenticated.postValue(false)
                         }
                     }
 
-                    override fun onFailure(call: Call, e: IOException)
-                    {
+                    override fun onFailure(call: Call, e: IOException) {
                         errorOnAuth.postValue(TransferStatus.FAILED)
                         Log.e("Connection", e.message ?: "Connection Error")
                     }
@@ -87,8 +66,8 @@ class SessionRepository private constructor()
         }
     }
 
-    fun login(username: String, password: String)
-    {
+    fun login(username: String, password: String) {
+
         GlobalScope.launch(Dispatchers.IO) {
             val userCredentialsObject = JSONObject()
                 .put("username", username)
@@ -100,20 +79,19 @@ class SessionRepository private constructor()
                 .build()
 
             HttpClient.webClient.newCall(request).enqueue(object: Callback {
-                override fun onResponse(call: Call, response: Response)
-                {
+
+                override fun onResponse(call: Call, response: Response) {
                     val body = response.body
-                    if(body == null)
-                    {
+
+                    if(body == null) {
                         errorOnAuth.postValue(TransferStatus.FAILED)
                         isAuthenticated.postValue(false)
-                    }
-                    else
-                    {
+
+                    } else {
                         val rawJson = body.string()
                         val json = JSONObject(rawJson)
-                        try
-                        {
+
+                        try {
                             Log.d("HTTP", json.toString())
                             //Incase a broken respone is returned
                             HttpClient.accessKey = json.getString("access")
@@ -125,18 +103,16 @@ class SessionRepository private constructor()
                             }
 
                             isAuthenticated.postValue(true)
-                        }
-                        catch(e: JSONException)
-                        {
-                            errorOnAuth.postValue(TransferStatus.BAD_RESPONSE)
+
+                        } catch(e: JSONException) {
+                            errorOnAuth.postValue(TransferStatus.FAILED)
                             isAuthenticated.postValue(false)
+
                         }
                     }
                 }
 
-                override fun onFailure(call: Call, e: IOException)
-                {
-                }
+                override fun onFailure(call: Call, e: IOException) { }
             })
 
         }

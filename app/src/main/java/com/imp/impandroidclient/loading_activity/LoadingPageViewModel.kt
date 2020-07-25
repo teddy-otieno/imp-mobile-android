@@ -7,9 +7,8 @@ import com.imp.impandroidclient.app_state.repos.TransferStatus
 
 class LoadingPageViewModel : ViewModel(){
 
-    private val sessionRepository: SessionRepository = SessionRepository.getInstance()
 
-    fun getAuth() : MutableLiveData<Boolean> = sessionRepository.isAuthenticated
+    fun getAuth() : MutableLiveData<Boolean> = SessionRepository.isAuthenticated
 
-    fun getError(): MutableLiveData<TransferStatus> = sessionRepository.errorOnAuth
+    fun getError(): MutableLiveData<TransferStatus> = SessionRepository.errorOnAuth
 }

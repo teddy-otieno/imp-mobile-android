@@ -11,41 +11,21 @@ import kotlinx.coroutines.cancel
 import kotlinx.coroutines.launch
 import org.joda.time.LocalDate
 
-class FileSystemMedia private  constructor(private val application: Application)
-{
-    companion object
-    {
-        private lateinit var instance: FileSystemMedia
-        fun getInstance(): FileSystemMedia
-        {
-            return if(this::instance.isInitialized)
-            {
-                instance
-            }
-            else
-            {
-                throw IllegalStateException("FileSystemMedia was not initialized")
-            }
-        }
+object FileSystemMedia {
 
-        fun initializeInstance(application: Application)
-        {
-            instance = FileSystemMedia(application)
-        }
-    }
-
+    lateinit var application: Application
     private val scope = CoroutineScope(Dispatchers.IO)
     private val localImages : MutableLiveData<List<LocalImage>> = MutableLiveData()
 
     val images get() = localImages
+
     init {
         scope.launch(Dispatchers.IO) {
             localImages.postValue(getImageThumbNails())
         }
     }
 
-    private suspend fun getImageThumbNails() : List<LocalImage>
-    {
+    private suspend fun getImageThumbNails() : List<LocalImage> {
         val projection = arrayOf(
             MediaStore.Images.Media._ID,
             MediaStore.Images.Media.DATE_ADDED,
@@ -72,8 +52,7 @@ class FileSystemMedia private  constructor(private val application: Application)
         query?.use { cursor ->
             val idColumn = cursor.getColumnIndexOrThrow(MediaStore.Images.Media._ID)
 
-            while(cursor.moveToNext())
-            {
+            while(cursor.moveToNext()) {
                 val id = cursor.getLong(idColumn)
                 val contentUri = ContentUris.withAppendedId(MediaStore.Images.Media.EXTERNAL_CONTENT_URI, id)
                 images += LocalImage(id, contentUri)
@@ -84,8 +63,8 @@ class FileSystemMedia private  constructor(private val application: Application)
         return images
     }
 
-    fun clean()
-    {
+    fun clean() {
+
         scope.cancel()
     }
 }

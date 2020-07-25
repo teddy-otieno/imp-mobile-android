@@ -18,7 +18,7 @@ import com.google.android.material.card.MaterialCardView
 import com.imp.impandroidclient.CAMPAIGN_ID
 import com.imp.impandroidclient.R
 import com.imp.impandroidclient.SUBMISSION_ID
-import com.imp.impandroidclient.app_state.Cache
+import com.imp.impandroidclient.app_state.ResourceManager
 import com.imp.impandroidclient.submission_types.post.Post
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
@@ -72,8 +72,7 @@ private class SubmissionViewHolder(private val view: View): RecyclerView.ViewHol
 {
     private val scope: CoroutineScope= CoroutineScope(Dispatchers.Main)
 
-    fun bind(submission: CombinedSubmission, activity: Activity)
-    {
+    fun bind(submission: CombinedSubmission, activity: Activity) {
         val submissionCaption: TextView = view.findViewById(R.id.submission_caption)
         val submissionRate: TextView = view.findViewById(R.id.rates)
         val submissionStatus: TextView = view.findViewById(R.id.status)
@@ -96,17 +95,11 @@ private class SubmissionViewHolder(private val view: View): RecyclerView.ViewHol
          */
         scope.launch {
             submission.url?.let { url ->
-                Cache.getImageFromMemCache(url)?.let {
-                   submissionImage.setImageBitmap(it)
-                } ?: kotlin.run {
-                    submission.loading_img?.let {
-                        val image = it.await()
-                        image?.let { bitmap ->
-                            Cache.addImageToMemCache(url, bitmap)
-                            submissionImage.setImageBitmap(Cache.getImageFromMemCache(url))
-                        }
-                    }
+
+                ResourceManager.onLoadImage(url) {
+                    submissionImage.setImageBitmap(it)
                 }
+
             }
         }
 

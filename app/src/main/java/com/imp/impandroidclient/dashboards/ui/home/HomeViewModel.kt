@@ -8,7 +8,6 @@ import com.imp.impandroidclient.app_state.repos.data.CampaignData
 class HomeViewModel : ViewModel()
 {
 
-    private val campaignRepository: CampaignRepository = CampaignRepository.getInstance()
 
-    fun getCampaigns(): MutableLiveData<MutableList<CampaignData>> = campaignRepository.campaignData
+    fun getCampaigns(): MutableLiveData<MutableList<CampaignData>> = CampaignRepository.campaignData
 }

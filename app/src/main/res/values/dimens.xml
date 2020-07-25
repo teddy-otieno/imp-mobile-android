@@ -6,4 +6,6 @@
     <dimen name="fab_margin">16dp</dimen>
     <dimen name="top_bar_horizontal_padding">16dp</dimen>
     <dimen name="top_bar_vertical_padding">8dp</dimen>
+    <dimen name="text_input_vertical_padding">8dp</dimen>
+    <dimen name="button_corner_radius">8dp</dimen>
 </resources>

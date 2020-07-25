@@ -7,15 +7,13 @@ import com.imp.impandroidclient.app_state.repos.data.LocalImage
 
 class MediaGalleryViewModel : ViewModel()
 {
-    private val fileSystemMediaSubscription: FileSystemMedia = FileSystemMedia.getInstance()
 
-    override fun onCleared()
-    {
+    override fun onCleared() {
         super.onCleared()
         //Incase the activity was destroyed during loading of images
         //Cancel all the computations
-        fileSystemMediaSubscription.clean()
+        FileSystemMedia.clean()
     }
 
-    fun getImages(): MutableLiveData<List<LocalImage>> = fileSystemMediaSubscription.images
+    fun getImages(): MutableLiveData<List<LocalImage>> = FileSystemMedia.images
 }

@@ -17,8 +17,7 @@ import kotlinx.android.synthetic.main.fragment_basic_creator_info.*
 import java.text.SimpleDateFormat
 import java.util.*
 
-class BasicSignUpFragment : Fragment()
-{
+class BasicSignUpFragment : Fragment() {
 
     val parentViewModel: SignUpViewModel by activityViewModels()
 
@@ -28,8 +27,7 @@ class BasicSignUpFragment : Fragment()
         savedInstanceState: Bundle?
     ): View? =  inflater.inflate(R.layout.fragment_basic_creator_info, container, false)
 
-    override fun onViewCreated(view: View, savedInstanceState: Bundle?)
-    {
+    override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
 
         setupListeners()
@@ -45,8 +43,7 @@ class BasicSignUpFragment : Fragment()
         }
     }
 
-    private fun validateInfo(): Boolean
-    {
+    private fun validateInfo(): Boolean {
         var result = true
         val validateInput = { view: TextView ->
             if (view.text.isEmpty() or view.text.isBlank())
@@ -62,8 +59,8 @@ class BasicSignUpFragment : Fragment()
         return result
     }
 
-    private fun setupListeners()
-    {
+    private fun setupListeners() {
+
         next_button.setOnClickListener {
             if (validateInfo())
             {
@@ -102,22 +99,20 @@ class BasicSignUpFragment : Fragment()
             }
         }
         gender_selector.onItemSelectedListener = object: AdapterView.OnItemSelectedListener {
-            override fun onItemSelected(parent: AdapterView<*>?, view: View?, position: Int, id: Long )
-            {
+
+            override fun onItemSelected(parent: AdapterView<*>?, view: View?, position: Int, id: Long ) {
                 parent?.run {
                     parentViewModel.gender.value = getItemAtPosition(position) as String
                 } ?: throw java.lang.IllegalStateException("Adapter view is not supposed to be null")
             }
 
-            override fun onNothingSelected(parent: AdapterView<*>?)
-            {
+            override fun onNothingSelected(parent: AdapterView<*>?) {
                 TODO("Not yet implemented")
             }
         }
     }
 
-    private fun setUpObservers()
-    {
+    private fun setUpObservers() {
         activity?.run {
             parentViewModel.fName.observe(this, Observer {
                 creator_first_name.text = SpannableStringBuilder(it)

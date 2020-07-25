@@ -19,46 +19,43 @@ import com.imp.impandroidclient.app_state.repos.data.PostSubmission
  *
  * FIXME(teddy): BUG -> When creating a new post submission
  */
-class PostViewModel(private var submissionId: Int, campaignId: Int) : ViewModel()
-{
-    private val submissionRepo = PostSubmissionRepo.getInstance()
+class PostViewModel(private var submissionId: Int, campaignId: Int) : ViewModel() {
+
     var submission: MutableLiveData<PostSubmission>
     var isExisting: Boolean = true
     var imageChanged: Boolean = false
 
     init {
         //Create new submission
-        if (submissionId < 0)
-        {
-            submissionId = submissionRepo.createSubmission(campaignId)
+        if (submissionId < 0) {
+            submissionId = PostSubmissionRepo.createSubmission(campaignId)
             isExisting = false
         }
-        submission = submissionRepo.getSubmissionById(submissionId)
+
+        submission = PostSubmissionRepo.getSubmissionById(submissionId)
     }
 
-    fun submit(): Boolean
-    {
+    fun submit(): Boolean {
+
         return submission.value?.run {
-            if(this.isValid())
-            {
-                if(isExisting)
-                {
+
+            if(this.isValid()) {
+
+                if(isExisting) {
                     //Note(teddy) Since all the updates are directly patch to the model
                     //No need to update submission in this method call
-                    submissionRepo.patchSubmission(this, imageChanged)
-                }
-                else
-                {
-                    submissionRepo.syncSubmission(this)
+                    PostSubmissionRepo.patchSubmission(this, imageChanged)
+
+                } else {
+                    PostSubmissionRepo.syncSubmission(this)
                 }
                 true
-            }
-            else
-            {
+
+            } else {
                 false
             }
         } ?: false
     }
 
-    fun transferStatus(): MutableLiveData<TransferStatus> = submissionRepo.transferStatus
+    fun transferStatus(): MutableLiveData<TransferStatus> = PostSubmissionRepo.transferStatus
 }

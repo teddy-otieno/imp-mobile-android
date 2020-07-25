@@ -1,11 +1,8 @@
 package com.imp.impandroidclient.app_state.repos
 
 enum class TransferStatus {
+    NOTHING,
     SUCESSFULL,
-    TIMEOUT,
-    INTERUPTED,
-    SIGN_IN_FAILED,
+    INPROGRESS,
     FAILED,
-    SERVER_ERROR,
-    BAD_RESPONSE
 }

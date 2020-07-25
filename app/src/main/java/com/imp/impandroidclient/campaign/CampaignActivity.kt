@@ -12,7 +12,7 @@ import androidx.lifecycle.ViewModelProvider
 import com.google.android.material.bottomsheet.BottomSheetBehavior
 import com.imp.impandroidclient.CAMPAIGN_ID
 import com.imp.impandroidclient.R
-import com.imp.impandroidclient.app_state.Cache
+import com.imp.impandroidclient.app_state.ResourceManager
 import com.imp.impandroidclient.submission_types.post.Post
 import kotlinx.android.synthetic.main.activity_campaign.*
 import kotlinx.android.synthetic.main.layout_campaign_info_details.*
@@ -43,8 +43,8 @@ class CampaignActivity : AppCompatActivity() {
             .get(CampaignViewModel::class.java)
     }
 
-    private fun setUpListeners()
-    {
+    private fun setUpListeners() {
+
         viewModel.campaignData.value?.let { campaignData ->
             post_submission.setOnClickListener {
                 val intent = Intent(this, Post::class.java).apply {
@@ -52,23 +52,28 @@ class CampaignActivity : AppCompatActivity() {
                 }
                 sheetBehavior.state = BottomSheetBehavior.STATE_COLLAPSED
                 startActivity(intent)
-        }
+            }
         } ?: throw IllegalStateException("Attempting to create a campaign that has not been loaded")
     }
 
-    private fun setUpObservers()
-    {
+    private fun setUpObservers() {
+
         viewModel.campaignData.observe(this, Observer { campaign ->
-            detailed_campaignCoverImage.setImageBitmap(Cache.getImageFromMemCache(campaign.cover_image))
+
+            ResourceManager.onLoadImage(campaign.cover_image) {
+                detailed_campaignCoverImage.setImageBitmap(it)
+            }
+
             detail_campaignTitle.text = campaign.title
             detailed_about_us.text = campaign.about_you
             detailed_contentWedLoveFromYou.text = campaign.content_wed_love_from_you
             detailed_whereToFindProduct.text = campaign.where_to_find_product
             detailed_callToAction.text = campaign.call_to_action
 
-            brand_avatar.setImageBitmap(Cache.getImageFromMemCache(campaign.brand.brand_image))
+            //brand_avatar.setImageBitmap(Cache.getImageFromMemCache(campaign.brand.brand_image))
             brand_avatar.clipToOutline = true
 
+            /*
             for (item in campaign.dos) {
                 val view: ConstraintLayout =
                     layoutInflater.inflate(R.layout.layout_list_row, null) as ConstraintLayout
@@ -86,12 +91,12 @@ class CampaignActivity : AppCompatActivity() {
 
                 campaignDonts.addView(view)
             }
+            */
 
         })
     }
 
-    private fun setupBottomSheet()
-    {
+    private fun setupBottomSheet() {
 
         sheetBehavior = BottomSheetBehavior.from(submissionTypeChooser)
 
@@ -105,10 +110,13 @@ class CampaignActivity : AppCompatActivity() {
         })
 
         submissionTypeChooser.setOnClickListener {
+
             if(sheetBehavior.state  != BottomSheetBehavior.STATE_EXPANDED) {
                 sheetBehavior.state = BottomSheetBehavior.STATE_EXPANDED
+
             } else {
                 sheetBehavior.state = BottomSheetBehavior.STATE_COLLAPSED
+
             }
         }
     }

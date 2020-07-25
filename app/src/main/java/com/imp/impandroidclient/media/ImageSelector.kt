@@ -10,7 +10,7 @@ import android.os.Bundle
 import android.provider.MediaStore
 import androidx.appcompat.app.AppCompatActivity
 import com.imp.impandroidclient.R
-import com.imp.impandroidclient.app_state.Cache
+import com.imp.impandroidclient.app_state.ResourceManager
 import kotlinx.android.synthetic.main.activity_image_selector.*
 
 class ImageSelector : AppCompatActivity()
@@ -56,7 +56,9 @@ class ImageSelector : AppCompatActivity()
         }
 
         submit.setOnClickListener {
-            Cache.addImageToMemCache(imageUri.toString(), selectedImage)
+
+            ResourceManager.addImage(imageUri.toString(), selectedImage)
+
             val intent = Intent().apply {
                 putExtra("IMAGE", imageUri)
             }

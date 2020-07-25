@@ -38,7 +38,7 @@ class LoginActivity : AppCompatActivity() {
         loginViewModel.errorOnAuth().observe(this, Observer { occurred ->
 
             when(occurred){
-                TransferStatus.SIGN_IN_FAILED -> greetings_message.run {
+                TransferStatus.FAILED -> greetings_message.run {
                     this.setText(R.string.login_error)
                     this.setTextColor(resources.getColor(R.color.colorError))
                     this.setTypeface(this.typeface, Typeface.BOLD)
