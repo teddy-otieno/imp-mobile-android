@@ -1,19 +1,13 @@
-package com.imp.impandroidclient.media
+package com.imp.impandroidclient.submission_types.pages.media_library
 
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
 import com.imp.impandroidclient.app_state.repos.FileSystemMedia
 import com.imp.impandroidclient.app_state.repos.data.LocalImage
 
-class MediaGalleryViewModel : ViewModel()
-{
+class MediaLibraryViewModel: ViewModel() {
 
-    override fun onCleared() {
-        super.onCleared()
-        //Incase the activity was destroyed during loading of images
-        //Cancel all the computations
-        FileSystemMedia.clean()
-    }
+    val selectedImage :MutableLiveData<LocalImage> by lazy { MutableLiveData<LocalImage>() }
 
     fun getImages(): MutableLiveData<List<LocalImage>> = FileSystemMedia.images
 }

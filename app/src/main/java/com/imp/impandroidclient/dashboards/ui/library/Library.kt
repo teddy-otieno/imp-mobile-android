@@ -19,22 +19,18 @@ import com.imp.impandroidclient.CAMPAIGN_ID
 import com.imp.impandroidclient.R
 import com.imp.impandroidclient.SUBMISSION_ID
 import com.imp.impandroidclient.app_state.ResourceManager
-import com.imp.impandroidclient.submission_types.post.Post
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
 import java.lang.IllegalStateException
 
-class Library : Fragment()
-{
+class Library : Fragment() {
 
     private val dashboardViewModel: LibraryViewModel by viewModels()
     private lateinit var submissionView: RecyclerView
 
-    override fun onCreateView(inflater: LayoutInflater,
-                              container: ViewGroup?,
-                              savedInstanceState: Bundle?): View?
-    {
+    override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?): View? {
+
         val root = inflater.inflate(R.layout.fragment_library, container, false)
         setupFrag(root)
         setUpObservers(root)
@@ -42,14 +38,12 @@ class Library : Fragment()
         return root
     }
 
-    private fun setupFrag(rootView: View)
-    {
+    private fun setupFrag(rootView: View) {
         submissionView = rootView.findViewById(R.id.submissions_view)
         submissionView.layoutManager = LinearLayoutManager(activity)
     }
 
-    private fun setUpObservers(rootView: View)
-    {
+    private fun setUpObservers(rootView: View) {
         val submissionsView: RecyclerView = rootView.findViewById(R.id.submissions_view)
 
         activity?.let {
@@ -62,14 +56,12 @@ class Library : Fragment()
         } ?: throw IllegalStateException("Activity is not supposed to be null")
     }
 
-    private fun setUpListeners(rootView: View)
-    {
-        
+    private fun setUpListeners(rootView: View) {
     }
 }
 
-private class SubmissionViewHolder(private val view: View): RecyclerView.ViewHolder(view)
-{
+
+private class SubmissionViewHolder(private val view: View): RecyclerView.ViewHolder(view) {
     private val scope: CoroutineScope= CoroutineScope(Dispatchers.Main)
 
     fun bind(submission: CombinedSubmission, activity: Activity) {
@@ -105,8 +97,9 @@ private class SubmissionViewHolder(private val view: View): RecyclerView.ViewHol
 
         view.setOnClickListener {
             val activityClass = when(submission.type) {
-                SubmissionType.POST -> Post::class.java
                 SubmissionType.CAROUSEL -> Library::class.java
+
+                else -> Library::class.java
             }
             val intent = Intent(activity, activityClass).apply {
                 putExtra(CAMPAIGN_ID, submission.campaignId)
@@ -122,17 +115,14 @@ private class SubmissionViewHolder(private val view: View): RecyclerView.ViewHol
 
 private class SubmissionsViewAdapter(private val submissions: List<CombinedSubmission>,
                              private val activity: Activity
-) : RecyclerView.Adapter<SubmissionViewHolder>()
-{
+) : RecyclerView.Adapter<SubmissionViewHolder>() {
     override fun getItemCount(): Int = submissions.size
 
-    override fun onBindViewHolder(holder: SubmissionViewHolder, position: Int)
-    {
+    override fun onBindViewHolder(holder: SubmissionViewHolder, position: Int) {
         holder.bind(submissions[position], activity)
     }
 
-    override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): SubmissionViewHolder
-    {
+    override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): SubmissionViewHolder {
         val view: MaterialCardView = LayoutInflater.from(parent.context)
             .inflate(R.layout.layout_post_submission_card, parent, false) as MaterialCardView
 

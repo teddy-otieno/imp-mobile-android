@@ -9,10 +9,11 @@ import androidx.appcompat.app.AppCompatActivity
 import com.google.android.material.bottomsheet.BottomSheetDialogFragment
 import com.imp.impandroidclient.R
 
-class MediaChoiceBottomSheet(private val parent: AppCompatActivity,
-                             private val postCallback: () -> Unit
-) : BottomSheetDialogFragment()
-{
+class MediaChoiceBottomSheet(
+    private val parent: AppCompatActivity,
+    private val postCallback: () -> Unit
+) : BottomSheetDialogFragment() {
+
     override fun onCreateView(
         inflater: LayoutInflater,
         container: ViewGroup?,

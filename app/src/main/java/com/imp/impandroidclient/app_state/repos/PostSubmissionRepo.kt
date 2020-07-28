@@ -1,10 +1,8 @@
 package com.imp.impandroidclient.app_state.repos
 
 import android.graphics.Bitmap
-import android.view.Display
 import androidx.lifecycle.MutableLiveData
 import com.google.gson.Gson
-import com.google.gson.JsonObject
 import com.imp.impandroidclient.app_state.ResourceManager
 import com.imp.impandroidclient.app_state.repos.data.PostSubmission
 import com.imp.impandroidclient.app_state.web_client.HttpClient
@@ -12,14 +10,10 @@ import kotlinx.coroutines.*
 import okhttp3.*
 import okhttp3.RequestBody.Companion.toRequestBody
 import org.joda.time.DateTime
-import org.joda.time.format.DateTimeFormatter
-import org.json.JSONArray
 import org.json.JSONObject
 import java.io.ByteArrayOutputStream
 import java.io.IOException
-import java.io.OutputStream
 import java.lang.IllegalStateException
-import kotlin.coroutines.CoroutineContext
 
 typealias PostSubmissionsMutableLiveData = MutableLiveData<MutableList<MutableLiveData<PostSubmission>>>
 
@@ -106,7 +100,7 @@ object PostSubmissionRepo {
                         /**
                          * TODO(teddy) handle cache empty sceneario
                          */
-                        ResourceManager.getImage(it)?.let { bitmap ->
+                        ResourceManager.getImageFromCache(it)?.let { bitmap ->
                             val bytes = compressImageToPNG(bitmap)
                             bytes.toRequestBody(HttpClient.MEDIA_TYPE_PNG, 0, bytes.size)
                         } ?: throw IllegalStateException("Image Not found in the Cache")
@@ -220,7 +214,7 @@ object PostSubmissionRepo {
                              * TODO(teddy) handle cache empty sceneario
                              * TODO(teddy) Refactor code duplication
                              */
-                            ResourceManager.getImage(it)?.let { bitmap ->
+                            ResourceManager.getImageFromCache(it)?.let { bitmap ->
 
                                 val bytes = compressImageToPNG(bitmap)
                                 bytes.toRequestBody(HttpClient.MEDIA_TYPE_PNG, 0, bytes.size)

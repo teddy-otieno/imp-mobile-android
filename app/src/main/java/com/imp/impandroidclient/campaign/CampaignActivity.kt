@@ -1,6 +1,7 @@
 package com.imp.impandroidclient.campaign
 
 import android.content.Intent
+import android.graphics.Bitmap
 import android.os.Bundle
 import android.view.View
 import android.widget.LinearLayout
@@ -13,7 +14,7 @@ import com.google.android.material.bottomsheet.BottomSheetBehavior
 import com.imp.impandroidclient.CAMPAIGN_ID
 import com.imp.impandroidclient.R
 import com.imp.impandroidclient.app_state.ResourceManager
-import com.imp.impandroidclient.submission_types.post.Post
+import com.imp.impandroidclient.submission_types.ChooseMedia
 import kotlinx.android.synthetic.main.activity_campaign.*
 import kotlinx.android.synthetic.main.layout_campaign_info_details.*
 import kotlinx.android.synthetic.main.layout_choose_submission.*
@@ -30,7 +31,7 @@ class CampaignActivity : AppCompatActivity() {
 
         initMembers()
         setUpObservers()
-        setupBottomSheet()
+        //setupBottomSheet()
         setUpListeners()
     }
 
@@ -43,18 +44,7 @@ class CampaignActivity : AppCompatActivity() {
             .get(CampaignViewModel::class.java)
     }
 
-    private fun setUpListeners() {
-
-        viewModel.campaignData.value?.let { campaignData ->
-            post_submission.setOnClickListener {
-                val intent = Intent(this, Post::class.java).apply {
-                    this.putExtra(CAMPAIGN_ID, campaignData.id)
-                }
-                sheetBehavior.state = BottomSheetBehavior.STATE_COLLAPSED
-                startActivity(intent)
-            }
-        } ?: throw IllegalStateException("Attempting to create a campaign that has not been loaded")
-    }
+    private fun setUpListeners() { }
 
     private fun setUpObservers() {
 
@@ -71,7 +61,6 @@ class CampaignActivity : AppCompatActivity() {
             detailed_callToAction.text = campaign.call_to_action
 
             //brand_avatar.setImageBitmap(Cache.getImageFromMemCache(campaign.brand.brand_image))
-            brand_avatar.clipToOutline = true
 
             /*
             for (item in campaign.dos) {

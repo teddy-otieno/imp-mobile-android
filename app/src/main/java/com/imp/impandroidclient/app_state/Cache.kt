@@ -1,13 +1,19 @@
 package com.imp.impandroidclient.app_state
 
+import android.content.ContentResolver
 import android.graphics.Bitmap
 import android.graphics.BitmapFactory
+import android.os.Build
+import android.provider.MediaStore
 import android.util.Log
 import android.util.LruCache
+import android.util.Size
+import com.imp.impandroidclient.app_state.repos.data.LocalImage
 import com.imp.impandroidclient.app_state.web_client.HttpClient
 import kotlinx.coroutines.*
 import okhttp3.Request
 import java.io.IOException
+import java.lang.IllegalStateException
 
 /**
  * TODO(teddy) Implement resource cache/manager to handle images \
@@ -33,11 +39,28 @@ private class ImageCache {
     }
 }
 
+private class ThumbnailCache {
+    private val cache: LruCache<String, Bitmap> = LruCache(1024 * 1024 * 10)
+
+    fun addImage(key: LocalImage, value: Bitmap) {
+        if(getImage(key) == null) {
+            cache.put(key.toString(), value)
+        }
+    }
+
+    fun clearCache() {
+        cache.evictAll()
+    }
+
+    fun getImage(key: LocalImage) : Bitmap? = cache.get(key.toString())
+}
+
 private data class ImageFuture(val url: String, val image: Deferred<Bitmap?>)
 
 object ResourceManager {
 
     private val imageCache: ImageCache = ImageCache()
+    private val thumbnailCache: ThumbnailCache = ThumbnailCache()
 
     private val mainThreadScope: CoroutineScope = CoroutineScope(Dispatchers.Main)
     private val ioNetworkScope: CoroutineScope = CoroutineScope(Dispatchers.IO)
@@ -76,6 +99,58 @@ object ResourceManager {
         }
     }
 
+    fun getLocalImage(
+        contentResolver: ContentResolver,
+        image: LocalImage,
+        size: Size? = null,
+        callback: (image: Bitmap?) -> Unit
+    ) {
+
+        val cachedThumbnail = thumbnailCache.getImage(image)
+
+        if(cachedThumbnail == null) {
+
+            mainThreadScope.launch {
+
+                if (Build.VERSION.SDK_INT >= 29) {
+
+                    size?.let {
+                        val bitmap = contentResolver.loadThumbnail(image.contentUri, size, null)
+                        thumbnailCache.addImage(image, bitmap)
+                        callback(bitmap)
+                    } ?: throw IllegalStateException("Size parameter was not passed")
+
+                } else {
+
+                    val bitmapFactory = BitmapFactory.Options().apply {
+                        inJustDecodeBounds = true
+                        inMutable = false
+                        inSampleSize = 2
+                    }
+
+                    val bitmap = MediaStore.Images.Thumbnails.getThumbnail(
+                        contentResolver,
+                        image.imageID,
+                        MediaStore.Images.Thumbnails.MINI_KIND,
+                        bitmapFactory
+                    )
+
+                    if (bitmap != null) {
+
+                        thumbnailCache.addImage(image, bitmap)
+                        callback(bitmap)
+
+                    }
+
+                }
+            }
+
+        } else {
+            callback(cachedThumbnail)
+        }
+
+    }
+
     private suspend fun getImageFromServer(url: String) : Bitmap? {
 
         val image = loadImage(url);
@@ -87,7 +162,7 @@ object ResourceManager {
         return image
     }
 
-    fun getImage(url: String) : Bitmap? = imageCache.getImageFromMemCache(url)
+    fun getImageFromCache(url: String) : Bitmap? = imageCache.getImageFromMemCache(url)
 
     fun clear() {}
 
@@ -110,7 +185,8 @@ private suspend fun loadImage(url: String): Bitmap? = withContext(Dispatchers.IO
         if(response.isSuccessful) {
             val bytes = response.body!!.bytes()
 
-            return@withContext BitmapFactory.decodeByteArray(bytes, 0, bytes.size)!!
+            val bitmap = BitmapFactory.decodeByteArray(bytes, 0, bytes.size)!!
+            return@withContext bitmap
 
         } else {
             Log.w("NETWORK", "Failed with Status Code ${response.code} ")

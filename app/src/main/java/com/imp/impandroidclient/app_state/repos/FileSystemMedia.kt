@@ -19,8 +19,8 @@ object FileSystemMedia {
 
     val images get() = localImages
 
-    init {
-        scope.launch(Dispatchers.IO) {
+    fun load_images() {
+        scope.launch {
             localImages.postValue(getImageThumbNails())
         }
     }
