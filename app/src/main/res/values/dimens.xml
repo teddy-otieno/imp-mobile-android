@@ -8,4 +8,10 @@
     <dimen name="top_bar_vertical_padding">8dp</dimen>
     <dimen name="text_input_vertical_padding">8dp</dimen>
     <dimen name="button_corner_radius">8dp</dimen>
+    <dimen name="item_padding">8dp</dimen>
+    <dimen name="item_vertical_margin">8dp</dimen>
+    <dimen name="root_horizontal_padding">16dp</dimen>
+    <dimen name="root_top_padding">16dp</dimen>
+    <dimen name="frame_bottom_padding">16dp</dimen>
+    <dimen name="dimen_margin">8dp</dimen>
 </resources>

@@ -7,7 +7,7 @@ import com.imp.impandroidclient.app_state.repos.data.LocalImage
 
 class MediaLibraryViewModel: ViewModel() {
 
-    val selectedImage :MutableLiveData<LocalImage> by lazy { MutableLiveData<LocalImage>() }
 
-    fun getImages(): MutableLiveData<List<LocalImage>> = FileSystemMedia.images
+    fun getImages(): MutableLiveData<MutableList<LocalImage>> = FileSystemMedia.images
+    fun newImage(): MutableLiveData<LocalImage> = FileSystemMedia.newImage
 }

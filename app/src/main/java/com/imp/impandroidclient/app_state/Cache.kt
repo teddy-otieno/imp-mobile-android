@@ -3,6 +3,7 @@ package com.imp.impandroidclient.app_state
 import android.content.ContentResolver
 import android.graphics.Bitmap
 import android.graphics.BitmapFactory
+import android.net.Uri
 import android.os.Build
 import android.provider.MediaStore
 import android.util.Log
@@ -43,7 +44,7 @@ private class ThumbnailCache {
     private val cache: LruCache<String, Bitmap> = LruCache(1024 * 1024 * 10)
 
     fun addImage(key: LocalImage, value: Bitmap) {
-        if(getImage(key) == null) {
+        if(getImage(key.toString()) == null) {
             cache.put(key.toString(), value)
         }
     }
@@ -52,7 +53,7 @@ private class ThumbnailCache {
         cache.evictAll()
     }
 
-    fun getImage(key: LocalImage) : Bitmap? = cache.get(key.toString())
+    fun getImage(key: String) : Bitmap? = cache.get(key)
 }
 
 private data class ImageFuture(val url: String, val image: Deferred<Bitmap?>)
@@ -106,7 +107,7 @@ object ResourceManager {
         callback: (image: Bitmap?) -> Unit
     ) {
 
-        val cachedThumbnail = thumbnailCache.getImage(image)
+        val cachedThumbnail = thumbnailCache.getImage(image.contentUri.toString())
 
         if(cachedThumbnail == null) {
 
@@ -149,6 +150,10 @@ object ResourceManager {
             callback(cachedThumbnail)
         }
 
+    }
+
+    fun getThumbnailBitmap(uri: Uri): Bitmap? {
+        return thumbnailCache.getImage(uri.toString())
     }
 
     private suspend fun getImageFromServer(url: String) : Bitmap? {

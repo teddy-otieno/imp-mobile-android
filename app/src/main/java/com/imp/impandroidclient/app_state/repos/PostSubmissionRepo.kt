@@ -1,8 +1,11 @@
 package com.imp.impandroidclient.app_state.repos
 
 import android.graphics.Bitmap
+import android.net.Uri
+import android.util.Log
 import androidx.lifecycle.MutableLiveData
 import com.google.gson.Gson
+import com.google.gson.JsonObject
 import com.imp.impandroidclient.app_state.ResourceManager
 import com.imp.impandroidclient.app_state.repos.data.PostSubmission
 import com.imp.impandroidclient.app_state.web_client.HttpClient
@@ -10,12 +13,16 @@ import kotlinx.coroutines.*
 import okhttp3.*
 import okhttp3.RequestBody.Companion.toRequestBody
 import org.joda.time.DateTime
+import org.json.JSONException
 import org.json.JSONObject
 import java.io.ByteArrayOutputStream
+import java.io.File
+import java.io.FileInputStream
 import java.io.IOException
 import java.lang.IllegalStateException
 
-typealias PostSubmissionsMutableLiveData = MutableLiveData<MutableList<MutableLiveData<PostSubmission>>>
+typealias PostSubmissionsMutableLiveData =
+        MutableLiveData<MutableList<MutableLiveData<PostSubmission>>>
 
 /**
  *
@@ -51,25 +58,7 @@ object PostSubmissionRepo {
         } ?: throw RuntimeException("Undefined behaviour: Submission is supposed to exist")
     }
 
-    fun createSubmission(campaignId: Int): Int {
-
-        return if(postSubmissions.value!!.isEmpty()) {
-            val post = PostSubmission(1, campaignId)
-            postSubmissions.value = mutableListOf(MutableLiveData(post))
-            1
-
-        } else {
-            val newSubmissionId = postSubmissions.value!!.last().value!!.id
-            val newSubmission = PostSubmission(newSubmissionId, campaignId)
-
-            val newSubmissions = postSubmissions.value!!
-            newSubmissions.add(MutableLiveData(newSubmission))
-            postSubmissions.value = newSubmissions
-            newSubmissionId
-        }
-    }
-
-    fun syncSubmission(submission: PostSubmission) {
+    fun syncSubmission(submission: PostSubmission, imageUri: Uri) {
 
         val gson = Gson()
         val requestBody = gson.toJson(submission).toRequestBody(HttpClient.JSON)
@@ -80,68 +69,62 @@ object PostSubmissionRepo {
             .post(requestBody)
             .build()
 
-        HttpClient.webClient.newCall(request).enqueue(object: Callback {
+        val imageByteArray = getImageByteArray(imageUri)
 
-            override fun onResponse(call: Call, response: Response) {
+        repoScope.launch(Dispatchers.IO) {
+
+            try {
+
+                val response = HttpClient.webClient.newCall(request).execute()
+
                 if(response.isSuccessful) {
-                    /*
-                        * The response returns the id for the send submission
-                        * Use the id to submit the image
-                        * Note(teddy) Returns the id of the created submission
-                        * Use the id to send the submission image
-                     */
+                    val rawBody = response.body?.string()
+                        ?: throw IllegalStateException("EXPECTED RESPONSE BODY")
 
-                    val rawJson = response.body?.string()
-                        ?: throw IllegalStateException("Expected Submssion Id inside image data")
-                    val json = JSONObject(rawJson)
-                    val submissionId = json.getString("id")
+                    Log.i("POST_SUBMISSION", rawBody)
 
-                    val body: RequestBody = submission.image_url?.let {
-                        /**
-                         * TODO(teddy) handle cache empty sceneario
-                         */
-                        ResourceManager.getImageFromCache(it)?.let { bitmap ->
-                            val bytes = compressImageToPNG(bitmap)
-                            bytes.toRequestBody(HttpClient.MEDIA_TYPE_PNG, 0, bytes.size)
-                        } ?: throw IllegalStateException("Image Not found in the Cache")
+                    val json = JSONObject(rawBody)
+                    val submissionId = json.getInt("pk")
 
-                    } ?: throw IllegalStateException("Expected submission Image")
+                    if(imageByteArray != null) {
 
-                    val imageRequestBody = MultipartBody.Builder()
-                        .addFormDataPart("file", DateTime.now().toString(), body) //TODO(teddy) file naming, come up with something better
-                        .build()
+                        val imageRequest = Request.Builder().apply {
+                            url("${HttpClient.SERVER_URL}/api/creator/post_submission_image/${submissionId}")
+                            header("Authorization", "Bearer ${HttpClient.accessKey}")
 
-                    val imageRequest = Request.Builder()
-                        .url("${HttpClient.SERVER_URL}/api/creator/post-submission-image/$submissionId")
-                        .post(imageRequestBody)
-                        .build()
+                            val filePath = imageUri.path ?: throw IllegalStateException("EXPECTED FILE PATH")
+                            val extension = filePath.substring(filePath.lastIndexOf(".")).toLowerCase()
 
-                    HttpClient.webClient.newCall(imageRequest).enqueue(object: Callback {
+                            if(extension == "png") {
+                                post(imageByteArray.toRequestBody(contentType = HttpClient.MEDIA_TYPE_PNG))
 
-                        override fun onResponse(call: Call, response: Response) {
-                            if(response.isSuccessful)
-                                networkTransmissionStatus.postValue(TransferStatus.SUCESSFULL)
-                            else
-                                networkTransmissionStatus.postValue(TransferStatus.FAILED)
+                            } else {
+                                post(imageByteArray.toRequestBody(contentType = HttpClient.MEDIA_TYPE_JPEG))
+                            }
+
+                        }.build()
+
+                        val imageResponse = HttpClient.webClient.newCall(imageRequest).execute()
+                        if(!imageResponse.isSuccessful) {
+                            TODO("DO SOMETHING")
                         }
 
-                        override fun onFailure(call: Call, e: IOException) {
-                            networkTransmissionStatus.postValue(TransferStatus.FAILED)
-                        }
-                    })
-                    networkTransmissionStatus.postValue(TransferStatus.SUCESSFULL)
+                    } else {
 
+                        TODO("IMPLEMENT THIS ERROR PATH")
+                    }
                 } else {
-                    networkTransmissionStatus.postValue(TransferStatus.FAILED)
+                    Log.i("POST_SUBMISSION", response.body?.string() ?: "Errorr")
 
                 }
 
-            }
+            } catch (e: IOException) {
 
-            override fun onFailure(call: Call, e: IOException) {
-                networkTransmissionStatus.value = TransferStatus.FAILED
+                Log.w("NETWORK", e.message ?: "FAILED TO SEND SUBMISSION")
+            } catch (e: JSONException) {
+                Log.w("NETWORK", e.message ?: "")
             }
-        })
+        }
     }
 
 
@@ -151,6 +134,26 @@ object PostSubmissionRepo {
 
         return imagebytes.toByteArray()
     }
+
+    private fun getImageByteArray(content: Uri): ByteArray? {
+        val file = File(content.path
+            ?: throw IllegalStateException("EXPECTED FILE PATH"))
+
+        val byteArray = ByteArray(file.length().toInt())
+
+        try {
+            val inputStream = FileInputStream(file)
+            inputStream.read(byteArray)
+            return byteArray
+
+        } catch (e: IOException) {
+            Log.e("FILE", "Unable to load file")
+            e.printStackTrace()
+
+            return null
+        }
+    }
+
     /**
      * Warning(teddy) This method blocks the main thread and \
      * should not be called inside the main thread.

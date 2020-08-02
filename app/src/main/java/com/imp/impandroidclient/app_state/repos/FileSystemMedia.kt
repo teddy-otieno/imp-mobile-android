@@ -15,17 +15,27 @@ object FileSystemMedia {
 
     lateinit var application: Application
     private val scope = CoroutineScope(Dispatchers.IO)
-    private val localImages : MutableLiveData<List<LocalImage>> = MutableLiveData()
+    private val localImages : MutableLiveData<MutableList<LocalImage>> = MutableLiveData(
+        mutableListOf()
+    )
+    private var imagesLoaded: Boolean = false
 
     val images get() = localImages
+    val newImage: MutableLiveData<LocalImage> by lazy {
+        MutableLiveData<LocalImage>()
+    }
 
-    fun load_images() {
-        scope.launch {
-            localImages.postValue(getImageThumbNails())
+    fun loadImages() {
+        newImage.postValue(null)
+        if(!imagesLoaded) {
+            scope.launch {
+                getImageThumbNails()
+                imagesLoaded = true
+            }
         }
     }
 
-    private suspend fun getImageThumbNails() : List<LocalImage> {
+    private fun getImageThumbNails()  {
         val projection = arrayOf(
             MediaStore.Images.Media._ID,
             MediaStore.Images.Media.DATE_ADDED,
@@ -55,12 +65,22 @@ object FileSystemMedia {
             while(cursor.moveToNext()) {
                 val id = cursor.getLong(idColumn)
                 val contentUri = ContentUris.withAppendedId(MediaStore.Images.Media.EXTERNAL_CONTENT_URI, id)
-                images += LocalImage(id, contentUri)
 
+                val imageDat = LocalImage(id, contentUri)
+                localImages.value?.let { images ->
+
+                    val tempItem = images.find { it.contentUri == contentUri }
+
+                    if(tempItem == null) {
+                        images += imageDat
+                        localImages.postValue(images)
+                    }
+
+                }
+
+                newImage.postValue(imageDat)
             }
         } ?: throw IllegalStateException("Media Query cannot be null")
-
-        return images
     }
 
     fun clean() {

@@ -1,26 +1,26 @@
 package com.imp.impandroidclient.submission_types.pages.media_library
 
-import android.content.ContentResolver
-import android.graphics.BitmapFactory
-import android.os.Build
 import android.os.Bundle
-import android.provider.MediaStore
-import android.util.Size
 import androidx.fragment.app.Fragment
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import android.widget.ImageView
 import android.widget.RadioButton
-import androidx.core.app.ActivityCompat
+import androidx.fragment.app.activityViewModels
+import androidx.fragment.app.viewModels
 import androidx.lifecycle.Observer
 import androidx.lifecycle.ViewModelProvider
+import androidx.lifecycle.lifecycleScope
 import androidx.recyclerview.widget.GridLayoutManager
 import androidx.recyclerview.widget.RecyclerView
 import com.imp.impandroidclient.R
 import com.imp.impandroidclient.app_state.ResourceManager
 import com.imp.impandroidclient.app_state.repos.FileSystemMedia
 import com.imp.impandroidclient.app_state.repos.data.LocalImage
+import com.imp.impandroidclient.submission_types.ChooseMediaViewModel
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.launch
 import java.lang.IllegalStateException
 
 // TODO: Rename parameter arguments, choose names that match
@@ -35,21 +35,27 @@ private const val ARG_PARAM2 = "param2"
  */
 class MediaLibrary : Fragment() {
 
-    lateinit var libViewModel : MediaLibraryViewModel
+    val activityViewModel : ChooseMediaViewModel by activityViewModels()
+    private val libViewModel : MediaLibraryViewModel by activityViewModels()
+
     private lateinit var mediaGrid : RecyclerView
     private lateinit var imagePreview: ImageView
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
 
-        libViewModel = ViewModelProvider(this).get(MediaLibraryViewModel::class.java)
+        activity?.let {
+
+            FileSystemMedia.loadImages()
+
+        } ?: throw IllegalStateException("ACTIVITY NOT EXPECTED TO BE NULL")
     }
 
     override fun onCreateView(
-        inflater: LayoutInflater, container: ViewGroup?,
+        inflater: LayoutInflater,
+        container: ViewGroup?,
         savedInstanceState: Bundle?
     ): View? {
-        FileSystemMedia.load_images()
         // Inflate the layout for this fragment
         val libraryView = inflater.inflate(R.layout.fragment_media_library, container, false)
         val ref = this
@@ -57,14 +63,20 @@ class MediaLibrary : Fragment() {
         mediaGrid = libraryView.findViewById<RecyclerView>(R.id.media_grid).apply {
             layoutManager = GridLayoutManager(context, 4)
 
-            libViewModel.getImages().observe(viewLifecycleOwner, Observer {
-                adapter = MediaViewAdapter(ref, it)
+
+            val images = libViewModel.getImages().value ?: mutableListOf()
+
+            adapter = MediaViewAdapter(ref, images)
+
+            libViewModel.newImage().observe(viewLifecycleOwner, Observer {
+                if(it != null)
+                    (adapter as MediaViewAdapter).addItem(it)
             })
         }
 
         imagePreview = libraryView.findViewById(R.id.preview)
 
-        libViewModel.selectedImage.observe(this.viewLifecycleOwner, Observer {
+        activityViewModel.selectedImage.observe(this.viewLifecycleOwner, Observer {
             activity?.let { activity ->
                 ResourceManager.getLocalImage(activity.contentResolver, it) {
                     imagePreview.setImageBitmap(it)
@@ -76,22 +88,17 @@ class MediaLibrary : Fragment() {
     }
 
     companion object {
-        /**
-         * Use this factory method to create a new instance of
-         * this fragment using the provided parameters.
-         *
-         * @param param1 Parameter 1.
-         * @param param2 Parameter 2.
-         * @return A new instance of fragment MediaLibrary.
-         */
         // TODO: Rename and change types and number of parameters
         @JvmStatic
         fun newInstance() = MediaLibrary().apply { }
     }
 }
 
-private class MediaViewHolder(private val parentFragment: MediaLibrary, itemView: View, parent: ViewGroup)
-    : RecyclerView.ViewHolder(itemView) {
+private class MediaViewHolder(
+    private val parentFragment: MediaLibrary,
+    itemView: View,
+    parent: ViewGroup
+): RecyclerView.ViewHolder(itemView) {
 
     fun bind(item: LocalImage) {
 
@@ -101,7 +108,7 @@ private class MediaViewHolder(private val parentFragment: MediaLibrary, itemView
             }
 
             itemView.setOnClickListener {
-                parentFragment.libViewModel.selectedImage.value = item
+                parentFragment.activityViewModel.selectedImage.value = item
             }
 
             ResourceManager.getLocalImage(activity.contentResolver, item) { bitmap ->
@@ -110,7 +117,7 @@ private class MediaViewHolder(private val parentFragment: MediaLibrary, itemView
 
         } ?: throw IllegalStateException("")
 
-        parentFragment.libViewModel.selectedImage.observe(parentFragment.viewLifecycleOwner, Observer {
+        parentFragment.activityViewModel.selectedImage.observe(parentFragment.viewLifecycleOwner, Observer {
             val selectedItemRadio = itemView.findViewById<RadioButton>(R.id.selected_item).apply {
                 if(item.contentUri == it.contentUri) {
                     visibility =  View.VISIBLE
@@ -126,7 +133,10 @@ private class MediaViewHolder(private val parentFragment: MediaLibrary, itemView
     }
 }
 
-private class MediaViewAdapter(private val parentFragment: MediaLibrary, private val media_objects :List<LocalImage>): RecyclerView.Adapter<MediaViewHolder>() {
+private class MediaViewAdapter(
+    private val parentFragment: MediaLibrary,
+    private val media_objects :List<LocalImage>
+): RecyclerView.Adapter<MediaViewHolder>() {
 
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): MediaViewHolder {
 
@@ -144,5 +154,10 @@ private class MediaViewAdapter(private val parentFragment: MediaLibrary, private
 
     override fun onBindViewHolder(holder: MediaViewHolder, position: Int) {
         holder.bind(media_objects[position])
+    }
+
+    fun addItem(item: LocalImage) {
+        (media_objects as MutableList) += item
+        notifyItemInserted(media_objects.size - 1)
     }
 }

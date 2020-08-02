@@ -9,8 +9,9 @@ import java.lang.IllegalStateException
 
 class HomeViewModel : ViewModel() {
 
-    fun getCampaigns(): MutableLiveData<MutableList<CampaignData>> = CampaignRepository.campaignData
+    var menuSet: Boolean =  false
 
+    fun getCampaigns(): MutableLiveData<MutableList<CampaignData>> = CampaignRepository.campaignData
     fun brands() : MutableLiveData<MutableList<Brand>> = CampaignRepository.brands
 
 }

@@ -4,17 +4,22 @@ import android.app.ActivityOptions
 import android.content.Intent
 import android.graphics.Bitmap
 import android.os.Bundle
+import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import android.widget.ImageView
 import android.widget.TextView
+import androidx.appcompat.app.ActionBar
 import androidx.fragment.app.Fragment
 import androidx.lifecycle.Observer
 import androidx.lifecycle.ViewModelProvider
 import androidx.lifecycle.lifecycleScope
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
+import com.google.android.material.appbar.AppBarLayout
+import com.google.android.material.appbar.MaterialToolbar
+import com.imp.impandroidclient.CAMPAIGN_ID
 import com.imp.impandroidclient.R
 import com.imp.impandroidclient.app_state.ResourceManager
 import com.imp.impandroidclient.app_state.repos.CampaignRepository
@@ -23,6 +28,7 @@ import com.imp.impandroidclient.campaign.CampaignActivity
 import kotlinx.android.synthetic.main.fragment_home.*
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
+import java.lang.IllegalStateException
 import android.util.Pair as UtilPair
 
 
@@ -31,16 +37,43 @@ class HomeFragment : Fragment() {
     lateinit var homeViewModel: HomeViewModel
 
     private var campaignAdapter: CampaignComponentAdapter? = null
+    private lateinit  var activityToolBar: MaterialToolbar
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
 
-        homeViewModel = ViewModelProvider(this).get(HomeViewModel::class.java)
-        retainInstance = true
+
+        activityToolBar = activity?.let{
+            homeViewModel = ViewModelProvider(it).get(HomeViewModel::class.java)
+            retainInstance = true
+
+            it.findViewById<MaterialToolbar>(R.id.tool_bar)
+        } ?: throw IllegalStateException("ACTIVITY SHOULD BE NULL")
+
+        if(!homeViewModel.menuSet) {
+            activityToolBar.title = resources.getString(R.string.home)
+            activityToolBar.inflateMenu(R.menu.home_fragment_toolbar_menu)
+
+            activityToolBar.setOnMenuItemClickListener {
+                when(it.itemId) {
+                    R.id.search -> {
+                        Log.i("TAG", "SEARCH CLICKED")
+                        true
+                    }
+
+                    else -> false
+                }
+            }
+            homeViewModel.menuSet = true
+        }
     }
 
-    override fun onCreateView( inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle? ): View? {
-        println("View was created")
+    override fun onCreateView(
+        inflater: LayoutInflater,
+        container: ViewGroup?,
+        savedInstanceState: Bundle?
+    ): View? {
+
         return inflater.inflate(R.layout.fragment_home, container, false)
     }
 
@@ -52,6 +85,7 @@ class HomeFragment : Fragment() {
             campaignAdapter = CampaignComponentAdapter(this, it)
             home_campaign_list_view.adapter = campaignAdapter!!
         })
+
     }
 
     override fun onResume() {
@@ -73,17 +107,23 @@ private class ViewHolder(val context: HomeFragment, inflator: LayoutInflater, pa
         itemView.setOnClickListener {
 
             if (contextAdapter.canStart) {
-                val intent: Intent = Intent(context.context, CampaignActivity::class.java).also {
-                    it.putExtra("campaignId", index)
+
+                val bundle = Bundle().apply {
+                    putInt(CAMPAIGN_ID, campaign.id)
+                };
+
+                val intent: Intent = Intent(context.context, CampaignActivity::class.java).apply {
+                    putExtras(bundle)
                 }
 
                 val activityOptions = ActivityOptions.makeSceneTransitionAnimation(
                     context.activity,
                     UtilPair.create(campaignCoverImage as View, "campaign_cover_image"),
-                    UtilPair.create(campaignTitle as View, "campaign_title"),
-                    UtilPair.create(brandAvatar as View, "brand_avatar"),
-                    UtilPair.create(brandTitle as View, "brand_title")
+                    UtilPair.create(itemView, "campaign_container"),
+                    UtilPair.create(campaignTitle as View, "campaign_title")
+                    //UtilPair.create(brandTitle as View, "brand_title")
                 )
+
 
                 contextAdapter.canStart = false
                 context.startActivity(intent, activityOptions.toBundle())
@@ -96,16 +136,7 @@ private class ViewHolder(val context: HomeFragment, inflator: LayoutInflater, pa
 
 
         ResourceManager.onLoadImage(campaign.cover_image) {
-            campaignCoverImage.setImageBitmap(
-                it?.let { image ->
-                    Bitmap.createScaledBitmap(
-                        image,
-                        campaignCoverImage.measuredWidth,
-                        campaignCoverImage.measuredHeight,
-                        true
-                    )
-                }
-            )
+            campaignCoverImage.setImageBitmap(it)
         }
 
         context.homeViewModel.brands().observe(context.viewLifecycleOwner, Observer {

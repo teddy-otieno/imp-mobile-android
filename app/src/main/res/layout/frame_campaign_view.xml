@@ -1,12 +1,12 @@
 <?xml version="1.0" encoding="utf-8"?>
-<com.google.android.material.card.MaterialCardView xmlns:android="http://schemas.android.com/apk/res/android"
+<androidx.appcompat.widget.LinearLayoutCompat xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
-    android:background="@color/backgroundColor"
+    android:background="@drawable/campaign_frame_outline"
     android:clickable="true"
-    android:focusable="true"
-    android:elevation="0dp"
-    android:layout_height="wrap_content">
+    android:layout_height="wrap_content"
+    android:paddingBottom="@dimen/frame_bottom_padding"
+    android:focusable="true" >
 
     <LinearLayout
         android:layout_width="match_parent"
@@ -38,7 +38,7 @@
                 android:orientation="horizontal"
                 android:paddingVertical="2dp"
                 android:paddingHorizontal="8dp"
-                >
+                android:transitionName="campaign_container">
 
                 <ImageView
                     android:id="@+id/card_brand_avatar"
@@ -50,25 +50,31 @@
                     android:scaleType="centerCrop"
                     tools:srcCompat="@tools:sample/avatars" />
 
-                <com.google.android.material.textview.MaterialTextView
-                    android:id="@+id/card_campaign_title"
+                <androidx.appcompat.widget.LinearLayoutCompat
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
-                    android:text="Title"
-                    android:textSize="16sp"
-                    android:textStyle="bold"
-                    android:layout_marginVertical="4dp"
-                    />
+                    android:orientation="vertical"
+                    >
+
+                    <TextView
+                        android:id="@+id/card_campaign_title"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:textSize="16sp"
+                        android:transitionName="campaign_title"
+                        android:layout_marginVertical="4dp"
+                        />
+
+                    <TextView
+                        android:id="@+id/card_brand_name"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:layout_gravity="center_vertical" />
+                </androidx.appcompat.widget.LinearLayoutCompat>
             </LinearLayout>
-            <com.google.android.material.textview.MaterialTextView
-                android:id="@+id/card_brand_name"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:text="Kenya Brewerires"
-                android:layout_gravity="center_vertical" />
 
         </LinearLayout>
     </LinearLayout>
 
 
-</com.google.android.material.card.MaterialCardView>
+</androidx.appcompat.widget.LinearLayoutCompat>

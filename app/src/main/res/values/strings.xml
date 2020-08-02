@@ -34,9 +34,9 @@
     <string name="header_campaignDonts">DONTs</string>
     <string name="campaign_apply">APPLY</string>
     <string name="post_activity_title">Instagram Post</string>
-    <string name="instagram_post_hint">Enter the caption you want your submission to have…</string>
-    <string name="fee">Add a fee you\'d like to be paid</string>
-    <string name="notes">Notes \nAdd notes for the brand</string>
+    <string name="caption_hint">Caption</string>
+    <string name="fee">Fee</string>
+    <string name="notes">Notes</string>
     <string name="dummy">Lorem ipsum dolor sit amet, consectetur adipiscing elit. Fusce dictum libero sapien, a vulputate dolor aliquam vel. Pellentesque ut sollicitudin turpis, non malesuada neque. Vestibulum et lorem sodales, congue dui eu, laoreet orci. Pellentesque sit amet ultrices massa, sit amet bibendum justo</string>
     <string name="connection_failed">Oops… Sorry we were unable to connect. Please check your internet connection</string>
     <string name="post_caption">Post Caption</string>
@@ -56,6 +56,15 @@
     <string name="storage_permission_granted">Permission is granted!</string>
     <string name="storage_permission_denied">Permission is denied!</string>
     <string name="ok">OK</string>
+    <string name="home">Home</string>
+    <string name="search">Search</string>
+    <string name="caption_details">Write a caption the way you\'d post it</string>
+    <string name="fees_details">The amount you\'d like to be paid</string>
+    <string name="notes_details">Leave a note for the brand</string>
+    <string name="post_to">Post To</string>
+    <string name="instagram">Instagram</string>
+    <string name="twitter">Twitter</string>
+
     <string-array name="gender">
         <item>Male</item>
         <item>Female</item>

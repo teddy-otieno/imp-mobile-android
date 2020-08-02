@@ -6,6 +6,7 @@ import androidx.lifecycle.MutableLiveData
 import com.google.gson.Gson
 import com.imp.impandroidclient.app_state.repos.data.Brand
 import com.imp.impandroidclient.app_state.repos.data.CampaignData
+import com.imp.impandroidclient.app_state.repos.data.HashTag
 import com.imp.impandroidclient.app_state.web_client.HttpClient
 import kotlinx.coroutines.*
 import okhttp3.Request
@@ -14,11 +15,22 @@ import org.json.JSONArray
 import java.lang.IllegalStateException
 
 object CampaignRepository {
-    val campaignData: MutableLiveData<MutableList<CampaignData>> by lazy { MutableLiveData( mutableListOf<CampaignData>()) }
-    val brands: MutableLiveData<MutableList<Brand>> by lazy { MutableLiveData(mutableListOf<Brand>()) }
-    val errorDuringLoading: MutableLiveData<TransferStatus> by lazy { MutableLiveData<TransferStatus>() }
+
+    val campaignData: MutableLiveData<MutableList<CampaignData>> by lazy {
+        MutableLiveData( mutableListOf<CampaignData>())
+    }
+    val brands: MutableLiveData<MutableList<Brand>> by lazy {
+        MutableLiveData(mutableListOf<Brand>())
+    }
+    val hashTags: MutableLiveData<List<HashTag>> by lazy {
+        MutableLiveData<List<HashTag>>()
+    }
+    val errorDuringLoading: MutableLiveData<TransferStatus> by lazy {
+        MutableLiveData<TransferStatus>()
+    }
 
     private val scope = CoroutineScope(Dispatchers.IO)
+    private val hashTagForCampaignsAlreadyLoaded: MutableList<Int> = mutableListOf()
 
     init {
         getNewCampaignsFromServer()
@@ -66,7 +78,9 @@ object CampaignRepository {
     }
 
     fun getCampaignOfId(campaignId: Int): CampaignData {
-        return campaignData.value!![campaignId]
+        return campaignData.value?.find {
+            it.id == campaignId
+        } ?: throw IllegalStateException("EXPECTED A VALID CAMPAIGN ID")
     }
 
     fun updateCampaign(campaign: CampaignData, index: Int) {
@@ -74,7 +88,7 @@ object CampaignRepository {
     }
 
     fun getBrand(brandId: Int) {
-        scope.launch {
+        scope.launch(Dispatchers.IO) {
 
             val request = Request.Builder()
                 .url("${HttpClient.SERVER_URL}/api/company/brand/${brandId}")
@@ -97,7 +111,6 @@ object CampaignRepository {
                         temp.add(brand)
 
                         brands.postValue(temp)
-
                     }
                 } else {
                     Log.w("NETWORK", "Failed to get brands from server")
@@ -106,6 +119,46 @@ object CampaignRepository {
             } catch (e: IOException) {
                 Log.w("NETWORK", "Failed to establish connection with server")
             }
+        }
+    }
+
+    fun loadHashTags(campaignId: Int) {
+
+        val campaign = hashTagForCampaignsAlreadyLoaded.find {
+            it == campaignId
+        }
+
+        if(campaign == null) {
+
+            val request = Request.Builder()
+                .url("${HttpClient.SERVER_URL}/api/company/hashtags/${campaignId}")
+                .get()
+                .addHeader("Authorization", "Bearer ${HttpClient.accessKey}")
+                .build()
+
+            scope.launch(Dispatchers.IO) {
+                try {
+                    val response = HttpClient.webClient.newCall(request).execute()
+
+                    if(response.isSuccessful) {
+
+                        val rawJson = response.body?.string()
+                            ?: throw IllegalStateException("RESPONSE BODY IS EMPTY")
+
+                        val gson = Gson()
+
+                        val loadedHashtags = gson.fromJson<Array<HashTag>>(rawJson, Array<HashTag>::class.java)
+                        hashTags.postValue(loadedHashtags.asList())
+
+                        hashTagForCampaignsAlreadyLoaded.add(campaignId)
+                    }
+
+                } catch (exception: IOException) {
+                    Log.w("NETWORK", "Failed to establish server connection")
+
+                }
+            }
+
         }
     }
 }

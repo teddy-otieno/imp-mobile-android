@@ -38,3 +38,10 @@ data class Brand(
     val image: String,
     val company: Int
 )
+
+data class HashTag(
+    val id: Int,
+    val hashtag: String,
+    val channel: String,
+    val campaign: Int
+)
