@@ -22,11 +22,7 @@ object SessionRepository {
     val isAuthenticated: MutableLiveData<Boolean> = MutableLiveData()
     val errorOnAuth: MutableLiveData<TransferStatus> = MutableLiveData()
 
-    init {
-        authenticate()
-    }
-
-    private fun authenticate() {
+    fun authenticate() {
 
         GlobalScope.launch(Dispatchers.IO) {
             val refreshKey = db.sessionDao().getCurrentCredentials()
@@ -93,16 +89,23 @@ object SessionRepository {
 
                         try {
                             Log.d("HTTP", json.toString())
-                            //Incase a broken respone is returned
-                            HttpClient.accessKey = json.getString("access")
-                            HttpClient.refreshKey = json.getString("refresh")
-                            //Remove this Global scope
                             GlobalScope.launch(Dispatchers.IO) {
-                                db.sessionDao().addRefreshToken(HttpClient.refreshKey)
+                                HttpClient.accessKey = json.getString("access")
+                                HttpClient.refreshKey = json.getString("refresh")
+
+                                val prevKey = db.sessionDao().getCurrentCredentials()
+                                if(prevKey == null) {
+                                    db.sessionDao().insertToken(HttpClient.refreshKey)
+
+                                } else {
+                                    db.sessionDao().addRefreshToken(HttpClient.refreshKey)
+
+                                }
+
+                                isAuthenticated.postValue(true)
                                 println("Reached this")
                             }
 
-                            isAuthenticated.postValue(true)
 
                         } catch(e: JSONException) {
                             errorOnAuth.postValue(TransferStatus.FAILED)

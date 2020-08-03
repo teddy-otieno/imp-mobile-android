@@ -7,7 +7,8 @@ import androidx.room.*
 
 @Entity
 data class SessionCredentials(
-    @PrimaryKey val uid: Int,
+    @PrimaryKey val pk: Int,
+    @ColumnInfo(name = "uid") val uid: Int,
     @ColumnInfo(name = "refreshToken") val refreshToken: String?
 )
 
@@ -51,11 +52,14 @@ data class SubmissionImage (
 
 @Dao
 interface SessionCredentialsDao {
-    @Query("SELECT refreshToken FROM SessionCredentials WHERE uid=1;")
+    @Query("SELECT refreshToken FROM SessionCredentials WHERE uid=0;")
     fun getCurrentCredentials(): String?
 
-    @Query("UPDATE SessionCredentials SET refreshToken = (:token) WHERE uid=1;")
+    @Query("UPDATE SessionCredentials SET refreshToken = (:token) WHERE uid=0;")
     fun addRefreshToken(token: String)
+
+    @Query("INSERT INTO SessionCredentials (uid, refreshToken) VALUES (0, :token)")
+    fun insertToken(token: String)
 }
 
 @Dao
@@ -75,7 +79,7 @@ interface UserDao { }
     User::class,
     Submission::class,
     SubmissionImage::class
-], version = 2, exportSchema = false)
+], version = 3, exportSchema = false)
 abstract class AppDatabase : RoomDatabase() {
     abstract fun sessionDao(): SessionCredentialsDao
     abstract fun userDao() : UserDao
