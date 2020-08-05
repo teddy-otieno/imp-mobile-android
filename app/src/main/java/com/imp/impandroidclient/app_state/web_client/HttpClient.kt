@@ -7,11 +7,7 @@ import okhttp3.OkHttpClient
 import java.util.concurrent.TimeUnit
 
 object HttpClient {
-    /**
-     * @Warning(teddy) Implement thread safety
-     *
-     * Not sure if what i'm implementing is pure evil
-     */
+
     val webClient: OkHttpClient = OkHttpClient.Builder()
         .callTimeout(10, TimeUnit.SECONDS)
         .connectTimeout(5, TimeUnit.SECONDS)

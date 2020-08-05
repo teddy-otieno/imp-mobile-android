@@ -36,6 +36,10 @@ object FileSystemMedia {
     }
 
     private fun getImageThumbNails()  {
+
+        /**
+         * TODO(teddy) Lazy load chunks instead of entire library
+         */
         val projection = arrayOf(
             MediaStore.Images.Media._ID,
             MediaStore.Images.Media.DATE_ADDED,

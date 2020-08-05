@@ -6,6 +6,7 @@ import androidx.activity.viewModels
 import androidx.appcompat.app.AppCompatActivity
 import androidx.lifecycle.Observer
 import com.imp.impandroidclient.R
+import com.imp.impandroidclient.app_state.repos.SessionRepository
 import com.imp.impandroidclient.app_state.repos.TransferStatus
 import com.imp.impandroidclient.dashboards.MainDashboard
 import com.imp.impandroidclient.loginsignup.login.LoginActivity
@@ -18,6 +19,7 @@ class LoadingPage : AppCompatActivity() {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_loading_page)
 
+        SessionRepository.authenticate()
         model.getAuth().observe(this, Observer {authenticated: Boolean ->
             if(authenticated) {
                 //redirect to homepage

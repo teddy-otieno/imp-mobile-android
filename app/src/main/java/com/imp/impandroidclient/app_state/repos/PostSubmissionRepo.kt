@@ -1,7 +1,11 @@
 package com.imp.impandroidclient.app_state.repos
 
+import android.content.ContentResolver
+import android.content.Context
+import android.database.AbstractCursor
 import android.graphics.Bitmap
 import android.net.Uri
+import android.provider.MediaStore
 import android.util.Log
 import androidx.lifecycle.MutableLiveData
 import com.google.gson.Gson
@@ -15,14 +19,11 @@ import okhttp3.RequestBody.Companion.toRequestBody
 import org.joda.time.DateTime
 import org.json.JSONException
 import org.json.JSONObject
-import java.io.ByteArrayOutputStream
-import java.io.File
-import java.io.FileInputStream
-import java.io.IOException
+import java.io.*
 import java.lang.IllegalStateException
 
 typealias PostSubmissionsMutableLiveData =
-        MutableLiveData<MutableList<MutableLiveData<PostSubmission>>>
+        MutableLiveData<MutableList<PostSubmission>>
 
 /**
  *
@@ -47,18 +48,14 @@ object PostSubmissionRepo {
         networkTransmissionStatus.value = TransferStatus.NOTHING
     }
 
-    fun getSubmissionById(id: Int): MutableLiveData<PostSubmission> {
+    fun getSubmissionById(id: Int): PostSubmission {
 
         return postSubmissions.value?.find {
-            if(it.value != null) {
-                it.value!!.id == id
-            } else {
-                false
-            }
+            it.id == id
         } ?: throw RuntimeException("Undefined behaviour: Submission is supposed to exist")
     }
 
-    fun syncSubmission(submission: PostSubmission, imageUri: Uri) {
+    fun syncSubmission(submission: PostSubmission, imageUri: Uri, contentResolver: ContentResolver) {
 
         val gson = Gson()
         val requestBody = gson.toJson(submission).toRequestBody(HttpClient.JSON)
@@ -69,7 +66,7 @@ object PostSubmissionRepo {
             .post(requestBody)
             .build()
 
-        val imageByteArray = getImageByteArray(imageUri)
+        val imageByteArray = getImageByteArray(imageUri, contentResolver)
 
         repoScope.launch(Dispatchers.IO) {
 
@@ -92,21 +89,13 @@ object PostSubmissionRepo {
                             url("${HttpClient.SERVER_URL}/api/creator/post_submission_image/${submissionId}")
                             header("Authorization", "Bearer ${HttpClient.accessKey}")
 
-                            val filePath = imageUri.path ?: throw IllegalStateException("EXPECTED FILE PATH")
-                            val extension = filePath.substring(filePath.lastIndexOf(".")).toLowerCase()
+                            post(imageByteArray.toRequestBody(contentType = HttpClient.MEDIA_TYPE_PNG))
 
-                            if(extension == "png") {
-                                post(imageByteArray.toRequestBody(contentType = HttpClient.MEDIA_TYPE_PNG))
-
-                            } else {
-                                post(imageByteArray.toRequestBody(contentType = HttpClient.MEDIA_TYPE_JPEG))
-                            }
 
                         }.build()
 
                         val imageResponse = HttpClient.webClient.newCall(imageRequest).execute()
                         if(!imageResponse.isSuccessful) {
-                            TODO("DO SOMETHING")
                         }
 
                     } else {
@@ -135,16 +124,25 @@ object PostSubmissionRepo {
         return imagebytes.toByteArray()
     }
 
-    private fun getImageByteArray(content: Uri): ByteArray? {
-        val file = File(content.path
-            ?: throw IllegalStateException("EXPECTED FILE PATH"))
-
-        val byteArray = ByteArray(file.length().toInt())
+    private fun getImageByteArray(content: Uri, contentResolver: ContentResolver): ByteArray? {
 
         try {
-            val inputStream = FileInputStream(file)
-            inputStream.read(byteArray)
-            return byteArray
+            val inputStream = contentResolver.openInputStream(content)
+            val byteArrayStream = ByteArrayOutputStream()
+
+            if(inputStream != null) {
+
+                inputStream.use { input ->
+                    byteArrayStream.use { output->
+                        input.copyTo(output)
+                    }
+                }
+
+                return byteArrayStream.toByteArray()
+
+            } else {
+                return null
+            }
 
         } catch (e: IOException) {
             Log.e("FILE", "Unable to load file")
@@ -153,6 +151,7 @@ object PostSubmissionRepo {
             return null
         }
     }
+
 
     /**
      * Warning(teddy) This method blocks the main thread and \
@@ -176,10 +175,7 @@ object PostSubmissionRepo {
                 val gson = Gson()
 
                 val submissions = gson.fromJson(rawJson, Array<PostSubmission>::class.java) //TODO(teddy) handle this gracefully
-
-                postSubmissions.postValue(submissions.map {
-                    MutableLiveData(it)
-                }.toMutableList())
+                postSubmissions.postValue(submissions.toMutableList())
             }
 
         } catch (e: IOException) {

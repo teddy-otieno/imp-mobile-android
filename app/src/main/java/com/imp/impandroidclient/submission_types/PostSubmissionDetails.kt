@@ -1,5 +1,6 @@
 package com.imp.impandroidclient.submission_types
 
+import android.content.ContentResolver
 import android.net.Uri
 import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
@@ -98,7 +99,7 @@ class PostSubmissionDetails : AppCompatActivity() {
         activity_tool_bar.setOnMenuItemClickListener {
             when(it.itemId) {
                 R.id.submit -> {
-                    model.submit(campaignId, imageUri)
+                    model.submit(campaignId, imageUri, contentResolver)
                     true
                 }
                 else -> throw IllegalStateException("UNKNOWN ITEM")
@@ -147,14 +148,16 @@ class PostSubmissionDetailsViewModel : ViewModel() {
 
     fun getHashTags(): MutableLiveData<List<HashTag>> = CampaignRepository.hashTags
 
-    fun submit(campaign: Int, image: Uri) {
+    fun submit(campaign: Int, image: Uri, contentResolver: ContentResolver) {
         PostSubmissionRepo.syncSubmission(
             PostSubmission(
                 campaignId = campaign,
                 postCaption = captionData.value,
                 fee = feeData.value,
-                note = noteData.value),
-            image
+                note = noteData.value
+            ),
+            image,
+            contentResolver
         )
     }
 }

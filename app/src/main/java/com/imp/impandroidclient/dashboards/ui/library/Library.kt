@@ -19,6 +19,7 @@ import com.imp.impandroidclient.CAMPAIGN_ID
 import com.imp.impandroidclient.R
 import com.imp.impandroidclient.SUBMISSION_ID
 import com.imp.impandroidclient.app_state.ResourceManager
+import com.imp.impandroidclient.submission_types.PostSubmissionView
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
@@ -66,7 +67,6 @@ private class SubmissionViewHolder(private val view: View): RecyclerView.ViewHol
 
     fun bind(submission: CombinedSubmission, activity: Activity) {
         val submissionCaption: TextView = view.findViewById(R.id.submission_caption)
-        val submissionRate: TextView = view.findViewById(R.id.rates)
         val submissionStatus: TextView = view.findViewById(R.id.status)
         val submissionImage: ImageView = view.findViewById(R.id.image)
 
@@ -77,7 +77,6 @@ private class SubmissionViewHolder(private val view: View): RecyclerView.ViewHol
                 submissionCaption.text = it
         }
 
-        submissionRate.text = "FEES: ${submission.rate}"
         submissionStatus.text = submission.status?.toString() ?: "DRAFT"
 
         /**
@@ -97,12 +96,11 @@ private class SubmissionViewHolder(private val view: View): RecyclerView.ViewHol
 
         view.setOnClickListener {
             val activityClass = when(submission.type) {
-                SubmissionType.CAROUSEL -> Library::class.java
+                SubmissionType.POST -> PostSubmissionView::class.java
 
                 else -> Library::class.java
             }
             val intent = Intent(activity, activityClass).apply {
-                putExtra(CAMPAIGN_ID, submission.campaignId)
                 putExtra(SUBMISSION_ID, submission.submissionId)
             }
 
@@ -123,8 +121,8 @@ private class SubmissionsViewAdapter(private val submissions: List<CombinedSubmi
     }
 
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): SubmissionViewHolder {
-        val view: MaterialCardView = LayoutInflater.from(parent.context)
-            .inflate(R.layout.layout_post_submission_card, parent, false) as MaterialCardView
+        val view = LayoutInflater.from(parent.context)
+            .inflate(R.layout.layout_post_submission_card, parent, false)
 
         return SubmissionViewHolder(view)
     }

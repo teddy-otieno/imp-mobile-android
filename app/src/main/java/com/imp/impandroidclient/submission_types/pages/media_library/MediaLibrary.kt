@@ -1,6 +1,7 @@
 package com.imp.impandroidclient.submission_types.pages.media_library
 
 import android.os.Bundle
+import android.util.Log
 import androidx.fragment.app.Fragment
 import android.view.LayoutInflater
 import android.view.View
@@ -19,7 +20,9 @@ import com.imp.impandroidclient.app_state.ResourceManager
 import com.imp.impandroidclient.app_state.repos.FileSystemMedia
 import com.imp.impandroidclient.app_state.repos.data.LocalImage
 import com.imp.impandroidclient.submission_types.ChooseMediaViewModel
+import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.cancel
 import kotlinx.coroutines.launch
 import java.lang.IllegalStateException
 
@@ -100,7 +103,17 @@ private class MediaViewHolder(
     parent: ViewGroup
 ): RecyclerView.ViewHolder(itemView) {
 
+    val scope: CoroutineScope = CoroutineScope(Dispatchers.Main)
+
     fun bind(item: LocalImage) {
+
+        //Cancel previous scope
+        try {
+            scope.cancel()
+        } catch (e: IllegalStateException) {
+
+            Log.w("COROUTINE", "No job was found in this scope")
+        }
 
         parentFragment.activity?.let { activity ->
             val thumbnailView = itemView.findViewById<ImageView>(R.id.thumbnail_view).apply{

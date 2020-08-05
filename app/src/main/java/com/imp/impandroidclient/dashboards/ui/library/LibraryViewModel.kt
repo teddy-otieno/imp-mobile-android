@@ -14,7 +14,7 @@ import java.util.*
 
 class LibraryViewModel : ViewModel()
 {
-    private val observer: Observer<MutableList<MutableLiveData<PostSubmission>>>
+    private val observer: Observer<MutableList<PostSubmission>>
 
     val combinedSubmission: MutableLiveData<List<CombinedSubmission>> = MutableLiveData( mutableListOf())
 
@@ -28,8 +28,7 @@ class LibraryViewModel : ViewModel()
                 val submissions = combinedSubmission.value
                     ?: throw IllegalStateException("Expected a value in the combined Submission")
 
-                (submissions as MutableList).addAll(list.map {
-                    it.value?.let { submission ->
+                (submissions as MutableList).addAll(list.map {submission ->
                         CombinedSubmission(
                             SubmissionType.POST,
                             submission.id,
@@ -40,7 +39,6 @@ class LibraryViewModel : ViewModel()
                             submission.status,
                             submission.image_url
                         )
-                    } ?: throw IllegalStateException("Expected value inside the post submission")
                 })
 
                 //FIXME(teddy) on the server side submission time is not implemented
@@ -63,8 +61,7 @@ class LibraryViewModel : ViewModel()
 }
 
 
-enum class SubmissionType
-{
+enum class SubmissionType {
     POST,
     CAROUSEL,
 }
