@@ -25,6 +25,12 @@ import java.lang.IllegalStateException
 typealias PostSubmissionsMutableLiveData =
         MutableLiveData<MutableList<PostSubmission>>
 
+
+private enum class ImageRequestMethod {
+    POST,
+    PATCH
+}
+
 /**
  *
  */
@@ -66,7 +72,6 @@ object PostSubmissionRepo {
             .post(requestBody)
             .build()
 
-        val imageByteArray = getImageByteArray(imageUri, contentResolver)
 
         repoScope.launch(Dispatchers.IO) {
 
@@ -83,25 +88,7 @@ object PostSubmissionRepo {
                     val json = JSONObject(rawBody)
                     val submissionId = json.getInt("pk")
 
-                    if(imageByteArray != null) {
-
-                        val imageRequest = Request.Builder().apply {
-                            url("${HttpClient.SERVER_URL}/api/creator/post_submission_image/${submissionId}")
-                            header("Authorization", "Bearer ${HttpClient.accessKey}")
-
-                            post(imageByteArray.toRequestBody(contentType = HttpClient.MEDIA_TYPE_PNG))
-
-
-                        }.build()
-
-                        val imageResponse = HttpClient.webClient.newCall(imageRequest).execute()
-                        if(!imageResponse.isSuccessful) {
-                        }
-
-                    } else {
-
-                        TODO("IMPLEMENT THIS ERROR PATH")
-                    }
+                    sendImage(imageUri, contentResolver, submissionId, ImageRequestMethod.POST)
                 } else {
                     Log.i("POST_SUBMISSION", response.body?.string() ?: "Errorr")
 
@@ -113,6 +100,50 @@ object PostSubmissionRepo {
             } catch (e: JSONException) {
                 Log.w("NETWORK", e.message ?: "")
             }
+        }
+    }
+
+
+    private suspend fun sendImage(
+        imageUri: Uri,
+        contentResolver: ContentResolver,
+        subId: Int,
+        method: ImageRequestMethod
+    ) = withContext(Dispatchers.IO){
+
+        val imageByteArray = getImageByteArray(imageUri, contentResolver)
+
+        if(imageByteArray != null) {
+
+            val requestBody =
+                imageByteArray.toRequestBody(contentType = HttpClient.MEDIA_TYPE_PNG)
+
+            val fileName = "submission-${subId}.png"
+
+            val imageRequest = Request.Builder().apply {
+                url("${HttpClient.SERVER_URL}/api/creator/post_submission_image/${subId}")
+                header("Authorization", "Bearer ${HttpClient.accessKey}")
+                header("Content-Disposition", "attachment;filename=${fileName}")
+
+                when(method) {
+                    ImageRequestMethod.POST -> {
+                        post(requestBody)
+                    }
+
+                    ImageRequestMethod.PATCH-> {
+                        patch(requestBody)
+                    }
+                }
+
+            }.build()
+
+            val imageResponse = HttpClient.webClient.newCall(imageRequest).execute()
+
+            if(!imageResponse.isSuccessful) { }
+
+        } else {
+
+            TODO("IMPLEMENT THIS ERROR PATH")
         }
     }
 
@@ -188,11 +219,12 @@ object PostSubmissionRepo {
      * the use of imageChanged flag
      * Launches a coroutine to patch the submission to the server
      */
-    fun patchSubmission(submission: PostSubmission, imageChanged: Boolean) {
+    fun patchSubmission(submission: PostSubmission){
 
         repoScope.launch(Dispatchers.IO) {
-            val gson = Gson()
-            val requestBody = gson.toJson(submission).toRequestBody(HttpClient.JSON)
+            val requestBody = HttpClient.gson
+                .toJson(submission)
+                .toRequestBody(HttpClient.JSON)
 
             val request = Request.Builder()
                 .url("${HttpClient.SERVER_URL}/api/creator/post_submission")
@@ -205,51 +237,10 @@ object PostSubmissionRepo {
                 networkTransmissionStatus.postValue(TransferStatus.INPROGRESS)
                 val response = HttpClient.webClient.newCall(request).execute()
                 if(response.isSuccessful) {
-
-                    if (imageChanged) {
-
-                        val body: RequestBody = submission.image_url?.let {
-                            /**
-                             * TODO(teddy) handle cache empty sceneario
-                             * TODO(teddy) Refactor code duplication
-                             */
-                            ResourceManager.getImageFromCache(it)?.let { bitmap ->
-
-                                val bytes = compressImageToPNG(bitmap)
-                                bytes.toRequestBody(HttpClient.MEDIA_TYPE_PNG, 0, bytes.size)
-
-                            } ?: throw IllegalStateException("Image Not found in the Cache")
-
-                        } ?: throw IllegalStateException("Expected submission Image")
-
-                        val fileName = "submission-${submission.id}.png"
-
-                        val imageRequest = Request.Builder()
-                            .url("${HttpClient.SERVER_URL}/api/creator/post-submission-image/${submission.id}")
-                            .header("Authorization", "Bearer ${HttpClient.accessKey}")
-                            .header("Content-Disposition", "attachment;filename=${fileName}")
-                            .patch(body)
-                            .build()
-
-                        try {
-                            val imageResponse = HttpClient.webClient.newCall(imageRequest).execute()
-
-                            if(imageResponse.isSuccessful) {
-                                //TODO(Give user feed back)
-                                networkTransmissionStatus.postValue(TransferStatus.SUCESSFULL)
-                            }
-
-                            imageResponse.close()
-
-                        } catch (e: IOException) {
-                            TODO()
-                        }
-
-                    }
-
                     networkTransmissionStatus.postValue(TransferStatus.SUCESSFULL)
 
                 } else {
+                    Log.d("NETWORK", response.body?.string() ?: "NOT THERE")
                     TODO("Handle Unsucess in the code path")
                 }
 

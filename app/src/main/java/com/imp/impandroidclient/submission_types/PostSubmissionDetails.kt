@@ -12,9 +12,7 @@ import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.Observer
 import androidx.lifecycle.ViewModel
 import com.google.android.material.chip.Chip
-import com.imp.impandroidclient.CAMPAIGN_ID
-import com.imp.impandroidclient.IMAGE_URI
-import com.imp.impandroidclient.R
+import com.imp.impandroidclient.*
 import com.imp.impandroidclient.app_state.ResourceManager
 import com.imp.impandroidclient.app_state.repos.CampaignRepository
 import com.imp.impandroidclient.app_state.repos.PostSubmissionRepo
@@ -22,29 +20,46 @@ import com.imp.impandroidclient.app_state.repos.data.CampaignData
 import com.imp.impandroidclient.app_state.repos.data.HashTag
 import com.imp.impandroidclient.app_state.repos.data.PostSubmission
 import kotlinx.android.synthetic.main.activity_post_submission_details.*
-import java.lang.NumberFormatException
+import kotlin.NumberFormatException
 import kotlin.properties.Delegates
 
 
+/**
+ *
+ * When Edit mode pass the submissionID
+ */
 class PostSubmissionDetails : AppCompatActivity() {
 
     private val model: PostSubmissionDetailsViewModel by viewModels()
 
-    private lateinit var imageUri: Uri
+    private var imageUri: Uri? = null
     private var campaignId by Delegates.notNull<Int>()
+    private var editMode by Delegates.notNull<Int>()
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_post_submission_details)
 
         val bundle = intent.extras ?: throw IllegalStateException("EXPECTED A BUNDLE")
-
+        editMode = bundle.getInt(EDIT_MODE)
         campaignId = bundle.getInt(CAMPAIGN_ID)
-        if(campaignId == 0) { throw IllegalStateException("EXPECTED A CAMPAIGN ID") }
 
-        imageUri = bundle.getParcelable(IMAGE_URI) ?: throw IllegalStateException("EXPECTED IMAGE URI")
+
+        imageUri = bundle.getParcelable(IMAGE_URI)
 
         CampaignRepository.loadHashTags(campaignId)
+
+        if(editMode == EDIT_SUBMISSION_RESULT) {
+            val submissionId = bundle.getInt(SUBMISSION_ID)
+            if(submissionId == 0) {
+                throw IllegalStateException("SUBMISSION WAS EXPECTED WHEN EDITING")
+            }
+
+            model.loadSubmission(submissionId)
+        } else {
+            if(campaignId == 0) { throw IllegalStateException("EXPECTED A CAMPAIGN ID") }
+            if(imageUri == null) throw IllegalStateException("EXPECTED IMAGE URI")
+        }
 
         setUp()
     }
@@ -71,9 +86,11 @@ class PostSubmissionDetails : AppCompatActivity() {
 
         })
 
-        val submissionBitmap = ResourceManager.getThumbnailBitmap(imageUri)
-            ?: throw IllegalStateException("EXPECTED AN BITMAP")
-        submission_thumbnail.setImageBitmap(submissionBitmap)
+        imageUri?.let {
+            val submissionBitmap = ResourceManager.getThumbnailBitmap(it)
+                ?: throw IllegalStateException("EXPECTED AN BITMAP")
+            submission_thumbnail.setImageBitmap(submissionBitmap)
+        }
 
         model.captionData.observe(this, Observer {
 
@@ -84,7 +101,13 @@ class PostSubmissionDetails : AppCompatActivity() {
 
         model.feeData.observe(this, Observer {
 
-            if(Integer.parseInt(fee_rate.text.toString()) != it) {
+            try {
+
+                if(Integer.parseInt(fee_rate.text.toString()) != it) {
+                    fee_rate.setText(it.toString())
+                }
+            } catch(e: NumberFormatException) {
+                Log.i("EXCEPTION", e.message ?: "Fee field was empty")
                 fee_rate.setText(it.toString())
             }
         })
@@ -99,7 +122,13 @@ class PostSubmissionDetails : AppCompatActivity() {
         activity_tool_bar.setOnMenuItemClickListener {
             when(it.itemId) {
                 R.id.submit -> {
-                    model.submit(campaignId, imageUri, contentResolver)
+
+                    if(editMode == EDIT_SUBMISSION_RESULT) {
+                        model.submitEdit()
+                    } else {
+                        imageUri?.let { it1 -> model.submit(campaignId, it1, contentResolver) }
+
+                    }
                     true
                 }
                 else -> throw IllegalStateException("UNKNOWN ITEM")
@@ -146,6 +175,9 @@ class PostSubmissionDetailsViewModel : ViewModel() {
         MutableLiveData<String>()
     }
 
+    private lateinit var submissionTobeEdited: PostSubmission
+    private var subId: Int by Delegates.notNull()
+
     fun getHashTags(): MutableLiveData<List<HashTag>> = CampaignRepository.hashTags
 
     fun submit(campaign: Int, image: Uri, contentResolver: ContentResolver) {
@@ -159,5 +191,29 @@ class PostSubmissionDetailsViewModel : ViewModel() {
             image,
             contentResolver
         )
+    }
+
+    fun loadSubmission(submissionId: Int) {
+        subId = submissionId
+
+        submissionTobeEdited = PostSubmissionRepo.getSubmissionById(submissionId)
+
+        submissionTobeEdited.apply {
+            captionData.value = postCaption
+            feeData.value = fee
+            noteData.value = note
+        }
+
+    }
+
+    fun submitEdit() {
+
+        submissionTobeEdited.apply {
+            postCaption = captionData.value
+            fee = feeData.value
+            note = noteData.value
+        }
+
+        PostSubmissionRepo.patchSubmission(submissionTobeEdited)
     }
 }

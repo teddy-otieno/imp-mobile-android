@@ -17,21 +17,24 @@
         android:id="@+id/image"
         android:layout_width="100dp"
         android:layout_height="56dp"
-        android:scaleType="centerCrop"
         android:layout_gravity="center"
         android:contentDescription="@string/submission_image"
+        android:scaleType="centerCrop"
+        app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="parent"
         app:layout_constraintWidth_percent="0.5"
-        tools:srcCompat="@tools:sample/backgrounds/scenic"/>
+        tools:srcCompat="@tools:sample/backgrounds/scenic" />
 
     <TextView
         android:id="@+id/submission_caption"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:textSize="16sp"
-        app:layout_constraintTop_toTopOf="parent"
+        android:layout_marginStart="@dimen/dimen_margin"
+        app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintLeft_toRightOf="@id/image"
+        app:layout_constraintTop_toTopOf="parent"
         />
 
     <TextView
@@ -47,14 +50,6 @@
         app:layout_constraintTop_toTopOf="parent"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
-        />
-
-    <View
-        android:layout_width="match_parent"
-        android:layout_height="1dp"
-        style="@style/Divider"
-        android:layout_marginTop="2dp"
-        app:layout_constraintBottom_toBottomOf="parent"
         />
 
 </androidx.constraintlayout.widget.ConstraintLayout>
