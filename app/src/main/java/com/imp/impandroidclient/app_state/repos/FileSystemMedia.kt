@@ -2,6 +2,10 @@ package com.imp.impandroidclient.app_state.repos
 
 import android.app.Application
 import android.content.ContentUris
+import android.graphics.Bitmap
+import android.graphics.Canvas
+import android.graphics.Matrix
+import android.graphics.Paint
 import android.provider.MediaStore
 import androidx.lifecycle.MutableLiveData
 import com.imp.impandroidclient.app_state.repos.data.LocalImage
@@ -67,7 +71,7 @@ object FileSystemMedia {
             val idColumn = cursor.getColumnIndexOrThrow(MediaStore.Images.Media._ID)
 
             var counter = 0
-            while(cursor.moveToNext() && counter < 100) {
+            while(cursor.moveToNext()) {
                 val id = cursor.getLong(idColumn)
                 val contentUri = ContentUris.withAppendedId(MediaStore.Images.Media.EXTERNAL_CONTENT_URI, id)
 
@@ -93,4 +97,28 @@ object FileSystemMedia {
 
         scope.cancel()
     }
+}
+
+fun resize(image: Bitmap, width: Int, height: Int): Bitmap {
+    val background = Bitmap.createBitmap(width, height, Bitmap.Config.ARGB_8888)
+
+    val originalWidth = image.width
+    val originalHeight = image.height
+
+    val canvas = Canvas(background)
+
+    val scale = (width / originalWidth).toFloat()
+    val xTranslation = 0.0f
+    val yTranslation = (height - originalHeight * scale) / 2.0f
+
+    val transformation = Matrix()
+    transformation.postTranslate(xTranslation, yTranslation)
+    transformation.preScale(scale, scale)
+
+    val paint = Paint()
+    paint.isFilterBitmap = true
+
+    canvas.drawBitmap(image, transformation, paint)
+
+    return background
 }

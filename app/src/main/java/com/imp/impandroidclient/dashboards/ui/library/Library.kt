@@ -2,6 +2,7 @@ package com.imp.impandroidclient.dashboards.ui.library
 
 import android.app.Activity
 import android.content.Intent
+import android.graphics.Bitmap
 import android.os.Bundle
 import android.view.LayoutInflater
 import android.view.View
@@ -19,6 +20,7 @@ import com.imp.impandroidclient.CAMPAIGN_ID
 import com.imp.impandroidclient.R
 import com.imp.impandroidclient.SUBMISSION_ID
 import com.imp.impandroidclient.app_state.ResourceManager
+import com.imp.impandroidclient.app_state.repos.resize
 import com.imp.impandroidclient.submission_types.PostSubmissionView
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
@@ -84,14 +86,29 @@ private class SubmissionViewHolder(private val view: View): RecyclerView.ViewHol
          * You'll need to wait for the loading to complete without blocking the main thread \
          *
          */
-        scope.launch {
-            submission.url?.let { url ->
+        submission.url?.let { url ->
+            ResourceManager.onLoadImage(url) {resultImage ->
 
-                ResourceManager.onLoadImage(url) {
-                    submissionImage.setImageBitmap(it)
+                if(resultImage == null) {
+                    submissionImage.setImageBitmap(null)
+
+                } else {
+                    //Note(teddy) Cache when possible
+                    scope.launch(Dispatchers.Main) {
+                        val scale = 4.0
+                        val scaledBitmap = Bitmap.createScaledBitmap(
+                            resultImage,
+                            (resultImage.width / scale).toInt(),
+                            (resultImage.height / scale).toInt(),
+                            true
+                        )
+                        val _scaledBitmap =
+                            resize(resultImage, submissionImage.width, submissionImage.height)
+                        submissionImage.setImageBitmap(scaledBitmap)
+                    }
                 }
-
             }
+
         }
 
         view.setOnClickListener {
