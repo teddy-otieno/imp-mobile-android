@@ -20,7 +20,8 @@ import java.lang.IllegalStateException
 import kotlin.properties.Delegates
 
 
-const val EDIT_SUBMISSION_RESULT = 0x001
+const val EDIT_SUBMISSION_RESULT    = 0x001
+const val PATCH_NEW_IMAGE           = 0x002
 
 /**
  * Expect SUBMISSION_ID
@@ -69,6 +70,18 @@ class PostSubmissionView : AppCompatActivity() {
             }
 
             startActivityForResult(intent, EDIT_SUBMISSION_RESULT)
+        }
+
+        submission_image.setOnClickListener {
+            val bundle = Bundle().apply {
+                putInt(SUBMISSION_ID, submissionId)
+                putInt(EDIT_MODE, PATCH_NEW_IMAGE)
+            }
+            val intent = Intent(this, ChooseMedia::class.java).apply {
+                putExtras(bundle)
+            }
+
+            startActivityForResult(intent, PATCH_NEW_IMAGE)
         }
     }
 

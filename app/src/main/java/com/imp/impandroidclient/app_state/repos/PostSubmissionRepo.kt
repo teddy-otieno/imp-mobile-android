@@ -25,8 +25,7 @@ import java.lang.IllegalStateException
 typealias PostSubmissionsMutableLiveData =
         MutableLiveData<MutableList<PostSubmission>>
 
-
-private enum class ImageRequestMethod {
+enum class ImageRequestMethod {
     POST,
     PATCH
 }
@@ -104,7 +103,7 @@ object PostSubmissionRepo {
     }
 
 
-    private suspend fun sendImage(
+    suspend fun sendImage(
         imageUri: Uri,
         contentResolver: ContentResolver,
         subId: Int,

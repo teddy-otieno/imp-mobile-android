@@ -66,7 +66,8 @@ object FileSystemMedia {
         query?.use { cursor ->
             val idColumn = cursor.getColumnIndexOrThrow(MediaStore.Images.Media._ID)
 
-            while(cursor.moveToNext()) {
+            var counter = 0
+            while(cursor.moveToNext() && counter < 100) {
                 val id = cursor.getLong(idColumn)
                 val contentUri = ContentUris.withAppendedId(MediaStore.Images.Media.EXTERNAL_CONTENT_URI, id)
 
@@ -83,6 +84,7 @@ object FileSystemMedia {
                 }
 
                 newImage.postValue(imageDat)
+                counter++
             }
         } ?: throw IllegalStateException("Media Query cannot be null")
     }

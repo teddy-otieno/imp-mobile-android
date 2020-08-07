@@ -6,7 +6,7 @@
     android:layout_height="90dp"
     android:layout_width="match_parent"
     android:clickable="true"
-    android:background="@color/white"
+    android:background="@drawable/drawable_list_card"
     android:orientation="vertical"
     android:paddingTop="16dp"
     android:paddingBottom="14dp"

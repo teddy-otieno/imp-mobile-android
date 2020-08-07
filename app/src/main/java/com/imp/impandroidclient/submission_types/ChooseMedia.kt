@@ -1,6 +1,7 @@
 package com.imp.impandroidclient.submission_types
 
 import android.Manifest
+import android.content.ContentResolver
 import android.content.Intent
 import android.content.pm.PackageManager
 import android.os.Build
@@ -12,16 +13,20 @@ import androidx.fragment.app.Fragment
 import androidx.fragment.app.FragmentManager
 import androidx.fragment.app.FragmentPagerAdapter
 import androidx.lifecycle.MutableLiveData
+import androidx.lifecycle.Observer
 import androidx.lifecycle.ViewModel
+import androidx.lifecycle.viewModelScope
 import com.google.android.material.snackbar.Snackbar
-import com.imp.impandroidclient.CAMPAIGN_ID
-import com.imp.impandroidclient.IMAGE_URI
-import com.imp.impandroidclient.R
+import com.imp.impandroidclient.*
+import com.imp.impandroidclient.app_state.repos.ImageRequestMethod
+import com.imp.impandroidclient.app_state.repos.PostSubmissionRepo
+import com.imp.impandroidclient.app_state.repos.TransferStatus
 import com.imp.impandroidclient.app_state.repos.data.LocalImage
 import com.imp.impandroidclient.app_state.repos.data.PostSubmission
 import com.imp.impandroidclient.submission_types.pages.camera_capture.PhotoCapture
 import com.imp.impandroidclient.submission_types.pages.media_library.MediaLibrary
 import kotlinx.android.synthetic.main.activity_choose_media.*
+import kotlinx.coroutines.launch
 import java.lang.IllegalStateException
 import kotlin.properties.Delegates
 
@@ -35,7 +40,9 @@ private const val READ_STORAGE_PERMISSION_ID = 0x01
  */
 class ChooseMedia :AppCompatActivity() , ActivityCompat.OnRequestPermissionsResultCallback {
 
-    private var campaignId: Int by Delegates.notNull()
+    private var campaignId: Int     by Delegates.notNull()
+    private var submissionId: Int   by Delegates.notNull()
+    private var editMode: Int       by Delegates.notNull()
 
     private val viewPagerAdapter: ChooseMediaViewPageAdapter
             = ChooseMediaViewPageAdapter(supportFragmentManager)
@@ -47,8 +54,6 @@ class ChooseMedia :AppCompatActivity() , ActivityCompat.OnRequestPermissionsResu
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_choose_media)
 
-        val bundle: Bundle = intent.extras ?: throw IllegalStateException("EXPECTED A BUNDLE")
-        campaignId = bundle.getInt(CAMPAIGN_ID)
 
         if(Build.VERSION.SDK_INT >= 23) {
 
@@ -95,31 +100,69 @@ class ChooseMedia :AppCompatActivity() , ActivityCompat.OnRequestPermissionsResu
         media_chooser_pager.adapter = viewPagerAdapter
         tab_option.setupWithViewPager(media_chooser_pager)
 
-        choose_media_toolbar.setOnMenuItemClickListener {
+        val bundle: Bundle = intent.extras ?: throw IllegalStateException("EXPECTED A BUNDLE")
+        campaignId = bundle.getInt(CAMPAIGN_ID)
+        editMode = bundle.getInt(EDIT_MODE)
 
-            when(it.itemId) {
+        if(editMode == PATCH_NEW_IMAGE) {
+            submissionId = bundle.getInt(SUBMISSION_ID)
+            if(submissionId == 0) throw IllegalStateException("EXPECTED SUBMISSION_ID")
 
-                R.id.next_button -> {
-                    val bundle = Bundle().apply {
-                        val imageUri = model.selectedImage.value?.contentUri
-                            ?: throw IllegalStateException("IMAGE SHOULD NOT SELECTED")
+            choose_media_toolbar.inflateMenu(R.menu.media_menu_patch)
+            choose_media_toolbar.setOnMenuItemClickListener {
 
-                        putParcelable(IMAGE_URI, imageUri)
-                        putInt(CAMPAIGN_ID, campaignId)
+                when(it.itemId) {
+                    R.id.update_button -> {
+                        model.patchSubmissionImage(submissionId, contentResolver)
+
+                        model.patchTransferStatus.observe(this, Observer { transferStatus ->
+                            when(transferStatus) {
+                                TransferStatus.SUCESSFULL -> {
+
+                                }
+
+                                else -> {}
+                            }
+                        })
+                        true
                     }
-
-                    val intent = Intent(this, PostSubmissionDetails::class.java).apply {
-                        putExtras(bundle)
-                    }
-
-                    startActivity(intent)
-                    true
+                    else -> throw IllegalStateException("UNEXPECTED MENU ID")
                 }
-
-                else -> false
             }
 
+        } else {
+
+            if(campaignId == 0) throw IllegalStateException("EXPECTED A CAMPAIGN_ID")
+
+            choose_media_toolbar.inflateMenu(R.menu.media_menu)
+            choose_media_toolbar.setOnMenuItemClickListener {
+
+                when(it.itemId) {
+
+                    R.id.next_button -> {
+                        val bundle = Bundle().apply {
+                            val imageUri = model.selectedImage.value?.contentUri
+                                ?: throw IllegalStateException("IMAGE SHOULD NOT SELECTED")
+
+                            putParcelable(IMAGE_URI, imageUri)
+                            putInt(CAMPAIGN_ID, campaignId)
+                        }
+
+                        val intent = Intent(this, PostSubmissionDetails::class.java).apply {
+                            putExtras(bundle)
+                        }
+
+                        startActivity(intent)
+                        true
+                    }
+
+                    else -> false
+                }
+
+            }
         }
+
+
 
     }
 
@@ -171,7 +214,24 @@ class ChooseMediaViewModel : ViewModel() {
         MutableLiveData<LocalImage>()
     }
 
-    val selectedSubmission: MutableLiveData<PostSubmission> by lazy {
-        MutableLiveData<PostSubmission>()
+    private val _patchTransferStatus: MutableLiveData<TransferStatus> by lazy {
+        MutableLiveData<TransferStatus>()
+    }
+
+    val patchTransferStatus get() = _patchTransferStatus
+
+    fun patchSubmissionImage(subID: Int, contentResolver: ContentResolver) {
+        viewModelScope.launch {
+
+            selectedImage.value?.let {
+                PostSubmissionRepo.sendImage(
+                    it.contentUri,
+                    contentResolver,
+                    subID,
+                    ImageRequestMethod.PATCH
+                )
+                _patchTransferStatus.value = TransferStatus.SUCESSFULL
+            }
+        }
     }
 }
