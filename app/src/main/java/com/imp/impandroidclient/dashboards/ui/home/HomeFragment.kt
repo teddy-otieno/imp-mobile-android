@@ -28,7 +28,12 @@ import com.imp.impandroidclient.campaign.CampaignActivity
 import kotlinx.android.synthetic.main.fragment_home.*
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
+import org.joda.time.DateTime
+import org.joda.time.LocalDate
+import org.joda.time.Duration
 import java.lang.IllegalStateException
+import java.time.Period
+import java.util.*
 import android.util.Pair as UtilPair
 
 
@@ -94,13 +99,14 @@ class HomeFragment : Fragment() {
     }
 }
 
-private class ViewHolder(val context: HomeFragment, inflator: LayoutInflater, parent: ViewGroup)
-: RecyclerView.ViewHolder(inflator.inflate(R.layout.frame_campaign_view, parent, false)) {
+private class ViewHolder(val context: HomeFragment, view: View, parent: ViewGroup)
+: RecyclerView.ViewHolder(view) {
 
-    private val campaignCoverImage: ImageView = itemView.findViewById(R.id.card_campaign_cover_image)
-    private val campaignTitle: TextView = itemView.findViewById(R.id.card_campaign_title)
-    private val brandTitle: TextView = itemView.findViewById(R.id.card_brand_name)
-    private val brandAvatar: ImageView = itemView.findViewById(R.id.card_brand_avatar)
+    private val campaignCoverImage: ImageView   = itemView.findViewById(R.id.card_campaign_cover_image)
+    private val campaignTitle: TextView         = itemView.findViewById(R.id.card_campaign_title)
+    private val brandTitle: TextView            = itemView.findViewById(R.id.card_brand_name)
+    private val brandAvatar: ImageView          = itemView.findViewById(R.id.card_brand_avatar)
+    private val campaignPeriod: TextView        = itemView.findViewById(R.id.time_left)
 
     fun bind(contextAdapter: CampaignComponentAdapter, campaign: CampaignData, index: Int) {
 
@@ -133,7 +139,8 @@ private class ViewHolder(val context: HomeFragment, inflator: LayoutInflater, pa
 
         campaignTitle.text = campaign.title
 
-
+        val period = calculateTimeLeft(campaign.start_date, campaign.campaign_period)
+        campaignPeriod.text = "${period}days left"
 
         ResourceManager.onLoadImage(campaign.cover_image) {
             campaignCoverImage.setImageBitmap(it)
@@ -155,6 +162,15 @@ private class ViewHolder(val context: HomeFragment, inflator: LayoutInflater, pa
 
     }
 
+    private fun calculateTimeLeft(startDate: Date, period: Int) : Int {
+        val endDate = DateTime(startDate).plusDays(period)
+
+
+        val difference = Duration(endDate, DateTime.now())
+
+        return difference.standardDays.toInt()
+    }
+
 }
 
 private class CampaignComponentAdapter(
@@ -163,8 +179,12 @@ private class CampaignComponentAdapter(
 ) : RecyclerView.Adapter<ViewHolder>() {
 
     var canStart: Boolean = true
-    override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): ViewHolder =
-        ViewHolder(context, LayoutInflater.from(parent.context), parent)
+    override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): ViewHolder  {
+
+        val view = LayoutInflater.from(parent.context)
+            .inflate(R.layout.frame_campaign_view, parent, false)
+        return ViewHolder(context, view , parent)
+    }
 
     override fun getItemCount() = campaignData.size
 

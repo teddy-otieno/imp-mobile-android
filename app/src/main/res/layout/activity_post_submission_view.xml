@@ -28,6 +28,7 @@
                 />
 
             <com.google.android.material.appbar.MaterialToolbar
+                android:id="@+id/app_toolbar"
                 android:layout_width="match_parent"
                 android:layout_height="?attr/actionBarSize"
                 app:navigationIcon="@drawable/ic_arrow_back_24px"
@@ -49,19 +50,27 @@
         <LinearLayout
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
+            android:paddingTop="@dimen/root_top_padding"
             android:orientation="vertical">
 
             <LinearLayout
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
+                android:background="@drawable/drawable_list_card"
                 android:orientation="vertical"
+                android:layout_marginVertical="@dimen/item_vertical_margin"
+
+                android:paddingVertical="@dimen/container_vertical_padding"
+                android:paddingHorizontal="@dimen/container_horizontal_padding"
                 >
 
                 <TextView
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:text="@string/post_caption"
-                    android:layout_gravity="center"
+                    android:textSize="@dimen/submission_view_font_size"
+                    android:textStyle="bold"
+                    android:layout_gravity="start"
                     android:layout_marginVertical="@dimen/item_vertical_margin"
                     />
 
@@ -69,6 +78,8 @@
                     android:id="@+id/caption"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
+                    android:layout_marginTop="8dp"
+                    android:textSize="@dimen/submission_view_font_size"
                     />
 
 
@@ -85,18 +96,24 @@
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:orientation="vertical"
+                android:paddingHorizontal="@dimen/container_horizontal_padding"
+                android:paddingVertical="@dimen/container_vertical_padding"
+                android:layout_marginVertical="@dimen/item_vertical_margin"
                 >
 
                 <LinearLayout
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
                     android:orientation="horizontal"
+                    android:background="@drawable/drawable_list_card"
                     >
 
                     <TextView
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
                         android:text="@string/fee"
+                        android:textStyle="bold"
+                        android:textSize="@dimen/submission_view_font_size"
                         android:layout_gravity="center"
                         android:layout_marginVertical="@dimen/item_vertical_margin"
                         />
@@ -105,6 +122,9 @@
                         android:id="@+id/fee_rate"
                         android:layout_width="match_parent"
                         android:layout_height="wrap_content"
+                        android:textSize="@dimen/submission_view_font_size"
+                        android:layout_gravity="center_vertical"
+                        android:layout_marginStart="8dp"
                         />
 
                 </LinearLayout>
@@ -122,27 +142,30 @@
             <LinearLayout
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
+                android:layout_marginVertical="@dimen/item_vertical_margin"
+                android:paddingHorizontal="@dimen/container_horizontal_padding"
+                android:background="@drawable/drawable_list_card"
+                android:paddingVertical="@dimen/container_vertical_padding"
                 android:orientation="vertical">
 
                 <TextView
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:text="@string/notes"
-                    android:layout_gravity="center"/>
+                    android:textStyle="bold"
+                    android:layout_gravity="start"
+                    android:textSize="@dimen/submission_view_font_size"
+                    />
 
                 <TextView
                     android:id="@+id/notes"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
+                    android:layout_marginTop="8dp"
+                    android:textSize="@dimen/submission_view_font_size"
                     />
             </LinearLayout>
 
-            <View
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:layout_margin="@dimen/item_vertical_margin"
-                style="@style/Divider"
-                />
 
         </LinearLayout>
 

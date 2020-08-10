@@ -14,4 +14,7 @@
     <dimen name="root_top_padding">16dp</dimen>
     <dimen name="frame_bottom_padding">16dp</dimen>
     <dimen name="dimen_margin">8dp</dimen>
+    <dimen name="submission_view_font_size">16sp</dimen>
+    <dimen name="container_horizontal_padding">8dp</dimen>
+    <dimen name="container_vertical_padding">8dp</dimen>
 </resources>

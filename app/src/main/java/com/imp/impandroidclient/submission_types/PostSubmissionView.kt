@@ -83,6 +83,10 @@ class PostSubmissionView : AppCompatActivity() {
 
             startActivityForResult(intent, PATCH_NEW_IMAGE)
         }
+
+        app_toolbar.setNavigationOnClickListener {
+            finishAfterTransition()
+        }
     }
 
     override fun onActivityResult(requestCode: Int, resultCode: Int, data: Intent?) {

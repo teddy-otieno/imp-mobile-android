@@ -25,55 +25,67 @@
         <LinearLayout
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:orientation="vertical"
+            android:orientation="horizontal"
+            android:layout_marginTop="8dp"
             android:paddingVertical="4dp"
             android:paddingHorizontal="8dp"
             >
 
 
+            <ImageView
+                android:id="@+id/card_brand_avatar"
+                android:layout_width="32dp"
+                android:layout_height="32dp"
+                android:layout_gravity="center_horizontal"
+                android:layout_marginEnd="8dp"
+                android:background="@drawable/avatar_background"
+                android:scaleType="centerCrop"
+                tools:srcCompat="@tools:sample/avatars" />
 
             <LinearLayout
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:orientation="horizontal"
-                android:paddingVertical="2dp"
+                android:orientation="vertical"
                 android:paddingHorizontal="8dp"
                 android:transitionName="campaign_container">
 
-                <ImageView
-                    android:id="@+id/card_brand_avatar"
-                    android:layout_width="32dp"
-                    android:layout_height="32dp"
-                    android:layout_gravity="center_vertical"
-                    android:layout_marginEnd="16dp"
-                    android:background="@drawable/avatar_background"
-                    android:scaleType="centerCrop"
-                    tools:srcCompat="@tools:sample/avatars" />
-
-                <androidx.appcompat.widget.LinearLayoutCompat
+                <TextView
+                    android:id="@+id/card_campaign_title"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
-                    android:orientation="vertical"
-                    >
+                    android:textSize="16sp"
+                    android:transitionName="campaign_title"
+                    />
 
-                    <TextView
-                        android:id="@+id/card_campaign_title"
-                        android:layout_width="match_parent"
-                        android:layout_height="wrap_content"
-                        android:textSize="16sp"
-                        android:transitionName="campaign_title"
-                        android:layout_marginVertical="4dp"
-                        />
+
+                <LinearLayout
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:orientation="horizontal"
+                    android:layout_marginTop="8dp"
+                    >
 
                     <TextView
                         android:id="@+id/card_brand_name"
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
-                        android:layout_gravity="center_vertical" />
-                </androidx.appcompat.widget.LinearLayoutCompat>
+                        android:textSize="11sp"
+                        android:layout_gravity="center_vertical"
+                        android:layout_weight="1"
+                        />
+
+                    <TextView
+                        android:id="@+id/time_left"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:text="3 days Left"
+                        android:textSize="11sp"
+                        android:layout_gravity="end"/>
+                </LinearLayout>
             </LinearLayout>
 
         </LinearLayout>
+
     </LinearLayout>
 
 

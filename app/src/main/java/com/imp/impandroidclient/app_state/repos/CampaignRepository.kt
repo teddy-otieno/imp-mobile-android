@@ -6,15 +6,33 @@ import androidx.lifecycle.MutableLiveData
 import com.google.gson.Gson
 import com.imp.impandroidclient.app_state.repos.data.Brand
 import com.imp.impandroidclient.app_state.repos.data.CampaignData
+import com.imp.impandroidclient.app_state.repos.data.GenericCampaignItem
 import com.imp.impandroidclient.app_state.repos.data.HashTag
 import com.imp.impandroidclient.app_state.web_client.HttpClient
 import kotlinx.coroutines.*
 import okhttp3.Request
+import okhttp3.Response
 import okio.IOException
 import org.json.JSONArray
 import java.lang.IllegalStateException
+import java.util.*
+import kotlin.collections.HashMap
+
+private enum class CacheItemNames {
+    HASH_TAG,
+    DOS,
+    DONTS,
+    MOODBOARDS
+};
+
+private const val CONNECTION_FAILED_MESSAGE = "Unable to connect with the server"
+private const val SERVER_ERROR = "Request was not processed"
+
 
 object CampaignRepository {
+
+    private val scope = CoroutineScope(Dispatchers.IO)
+    private val alreadyLoadedCache: EnumMap<CacheItemNames, MutableList<Int>> = EnumMap(CacheItemNames::class.java)
 
     val campaignData: MutableLiveData<MutableList<CampaignData>> by lazy {
         MutableLiveData( mutableListOf<CampaignData>())
@@ -25,15 +43,28 @@ object CampaignRepository {
     val hashTags: MutableLiveData<List<HashTag>> by lazy {
         MutableLiveData<List<HashTag>>()
     }
+    val dosData: MutableLiveData<List<GenericCampaignItem>> by lazy {
+        MutableLiveData<List<GenericCampaignItem>>()
+    }
+    val dontsData: MutableLiveData<List<GenericCampaignItem>> by lazy {
+        MutableLiveData<List<GenericCampaignItem>>()
+    }
+
     val errorDuringLoading: MutableLiveData<TransferStatus> by lazy {
         MutableLiveData<TransferStatus>()
     }
 
-    private val scope = CoroutineScope(Dispatchers.IO)
-    private val hashTagForCampaignsAlreadyLoaded: MutableList<Int> = mutableListOf()
+
 
     init {
         getNewCampaignsFromServer()
+
+
+        alreadyLoadedCache.apply {
+            put(CacheItemNames.HASH_TAG, mutableListOf())
+            put(CacheItemNames.DOS, mutableListOf())
+            put(CacheItemNames.DONTS, mutableListOf())
+        }
     }
 
     //Note(teddy) this should be a suspended computation
@@ -124,7 +155,10 @@ object CampaignRepository {
 
     fun loadHashTags(campaignId: Int) {
 
-        val campaign = hashTagForCampaignsAlreadyLoaded.find {
+        val hashTagCache = alreadyLoadedCache[CacheItemNames.HASH_TAG]
+            ?: throw IllegalStateException("ITEM INSIDE THE HASHTAG WAS ALREADY LOADED")
+
+        val campaign = hashTagCache.find {
             it == campaignId
         }
 
@@ -150,7 +184,7 @@ object CampaignRepository {
                         val loadedHashtags = gson.fromJson<Array<HashTag>>(rawJson, Array<HashTag>::class.java)
                         hashTags.postValue(loadedHashtags.asList())
 
-                        hashTagForCampaignsAlreadyLoaded.add(campaignId)
+                        hashTagCache.add(campaignId)
                     }
 
                 } catch (exception: IOException) {
@@ -160,5 +194,91 @@ object CampaignRepository {
             }
 
         }
+    }
+
+    fun loadDosAndDonts(campaignId: Int) {
+
+        val dosCache = alreadyLoadedCache[CacheItemNames.DOS]
+            ?: throw IllegalStateException("ITEM INSIDE THE HASHTAG WAS ALREADY LOADED")
+        val dontsCache = alreadyLoadedCache[CacheItemNames.DONTS]
+            ?: throw IllegalStateException("ITEM INSIDE THE HASHTAG WAS ALREADY LOADED")
+
+        val campaignForDos = dosCache.find { it == campaignId }
+        val campaignForDonts = dontsCache.find { it == campaignId }
+
+        val processResponse
+                = { response: Response, store: MutableLiveData<List<GenericCampaignItem>> ->
+
+            val rawJSonBody = response.body?.string()
+                ?: throw IllegalStateException("RESPONSE BODY IS EMPTY")
+
+            val data: Array<GenericCampaignItem> = HttpClient.gson.fromJson(
+                rawJSonBody,
+                Array<GenericCampaignItem>::class.java
+            )
+
+            store.postValue(data.toList())
+
+        }
+
+        if(campaignForDonts == null) {
+
+            scope.launch(Dispatchers.IO) {
+
+                val request = Request.Builder().apply {
+                    url("${HttpClient.SERVER_URL}/api/company/dos/${campaignId}")
+                    addHeader("Authorization", "Bearer ${HttpClient.accessKey}")
+                    get()
+                }.build()
+
+                try {
+
+                    val response = HttpClient.webClient.newCall(request).execute()
+
+                    if(response.isSuccessful) {
+                        processResponse(response, dosData)
+
+                    } else {
+                        Log.d("SERVER ERROR", "Unable to process the server request ")
+                    }
+                } catch (e: IOException) {
+                    Log.d(
+                        "SERVER CONNECTION",
+                        e.message ?: CONNECTION_FAILED_MESSAGE
+                    )
+                }
+
+            }
+        }
+
+        if(campaignForDos == null) {
+            scope.launch(Dispatchers.IO) {
+
+                val request = Request.Builder().apply {
+                    url("${HttpClient.SERVER_URL}/api/company/donts/${campaignId}")
+                    addHeader("Authorization", "Bearer ${HttpClient.accessKey}")
+                    get()
+                }.build()
+
+                try {
+
+                    val response = HttpClient.webClient.newCall(request).execute()
+
+                    if(response.isSuccessful) {
+                        processResponse(response, dontsData)
+
+                    } else {
+                        Log.d( "SERVER ERROR", SERVER_ERROR )
+                    }
+
+                } catch (e: IOException) {
+
+                    Log.d( "SERVER CONNECTION", e.message ?: CONNECTION_FAILED_MESSAGE )
+
+                }
+
+            }
+        }
+
     }
 }

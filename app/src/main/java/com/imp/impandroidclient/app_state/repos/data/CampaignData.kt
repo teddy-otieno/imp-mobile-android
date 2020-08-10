@@ -16,9 +16,7 @@ data class CampaignData(
     var about_you: String,
     var start_date: Date,
     var campaign_period: Int,
-    var content_wed_love_from_you: String,
-
-    var coverImageFuture: Deferred<Bitmap?>? = null
+    var content_wed_love_from_you: String
 )
 
 data class Indexed(
@@ -43,5 +41,16 @@ data class HashTag(
     val id: Int,
     val hashtag: String,
     val channel: String,
+    val campaign: Int
+)
+
+
+/**
+ * Shared data structure for the dos and donts
+ */
+data class GenericCampaignItem(
+    val id: Int,
+    val index: Int,
+    val text: String,
     val campaign: Int
 )
