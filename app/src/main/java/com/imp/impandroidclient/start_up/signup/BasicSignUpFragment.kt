@@ -1,4 +1,4 @@
-package com.imp.impandroidclient.loginsignup.signup
+package com.imp.impandroidclient.start_up.signup
 
 import android.app.DatePickerDialog
 import android.os.Bundle
@@ -65,7 +65,9 @@ class BasicSignUpFragment : Fragment() {
             if (validateInfo())
             {
                 requireActivity().supportFragmentManager.beginTransaction()
-                    .replace(R.id.sign_up_stage_fragment_container, ContactInfoFragment())
+                    .replace(R.id.sign_up_stage_fragment_container,
+                        ContactInfoFragment()
+                    )
                     .addToBackStack(null).commit()
             }
         }

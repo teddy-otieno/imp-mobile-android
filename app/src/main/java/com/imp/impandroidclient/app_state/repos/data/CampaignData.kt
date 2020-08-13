@@ -19,16 +19,6 @@ data class CampaignData(
     var content_wed_love_from_you: String
 )
 
-data class Indexed(
-    val id: Int,
-    val name: String
-)
-
-data class MoodBoard(
-    val id: Int,
-    val file: String
-)
-
 
 data class Brand(
     val id: Int,
@@ -54,3 +44,10 @@ data class GenericCampaignItem(
     val text: String,
     val campaign: Int
 )
+
+data class MoodBoard(
+    val id: Int,
+    val image: String,
+    val campaign: Int
+)
+

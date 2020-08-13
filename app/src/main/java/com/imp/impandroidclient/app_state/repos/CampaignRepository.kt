@@ -4,10 +4,7 @@ import android.graphics.Bitmap
 import android.util.Log
 import androidx.lifecycle.MutableLiveData
 import com.google.gson.Gson
-import com.imp.impandroidclient.app_state.repos.data.Brand
-import com.imp.impandroidclient.app_state.repos.data.CampaignData
-import com.imp.impandroidclient.app_state.repos.data.GenericCampaignItem
-import com.imp.impandroidclient.app_state.repos.data.HashTag
+import com.imp.impandroidclient.app_state.repos.data.*
 import com.imp.impandroidclient.app_state.web_client.HttpClient
 import kotlinx.coroutines.*
 import okhttp3.Request
@@ -27,6 +24,7 @@ private enum class CacheItemNames {
 
 private const val CONNECTION_FAILED_MESSAGE = "Unable to connect with the server"
 private const val SERVER_ERROR = "Request was not processed"
+private const val EMPTY_RESPONSE = "EMPTY RESPONSE BODY"
 
 
 object CampaignRepository {
@@ -49,6 +47,9 @@ object CampaignRepository {
     val dontsData: MutableLiveData<List<GenericCampaignItem>> by lazy {
         MutableLiveData<List<GenericCampaignItem>>()
     }
+    val moodBoards: MutableLiveData<List<MoodBoard>> by lazy {
+        MutableLiveData<List<MoodBoard>>()
+    }
 
     val errorDuringLoading: MutableLiveData<TransferStatus> by lazy {
         MutableLiveData<TransferStatus>()
@@ -64,6 +65,7 @@ object CampaignRepository {
             put(CacheItemNames.HASH_TAG, mutableListOf())
             put(CacheItemNames.DOS, mutableListOf())
             put(CacheItemNames.DONTS, mutableListOf())
+            put(CacheItemNames.MOODBOARDS, mutableListOf())
         }
     }
 
@@ -210,7 +212,7 @@ object CampaignRepository {
                 = { response: Response, store: MutableLiveData<List<GenericCampaignItem>> ->
 
             val rawJSonBody = response.body?.string()
-                ?: throw IllegalStateException("RESPONSE BODY IS EMPTY")
+                ?: throw IllegalStateException(EMPTY_RESPONSE)
 
             val data: Array<GenericCampaignItem> = HttpClient.gson.fromJson(
                 rawJSonBody,
@@ -271,14 +273,52 @@ object CampaignRepository {
                         Log.d( "SERVER ERROR", SERVER_ERROR )
                     }
 
+                    response.close()
+
                 } catch (e: IOException) {
 
-                    Log.d( "SERVER CONNECTION", e.message ?: CONNECTION_FAILED_MESSAGE )
+                    Log.d("SERVER CONNECTION", e.message ?: CONNECTION_FAILED_MESSAGE)
 
                 }
 
             }
         }
 
+    }
+
+    suspend fun loadMoodBoards(campaignId: Int) = withContext(Dispatchers.IO) {
+
+        val moodBoardCache = alreadyLoadedCache[CacheItemNames.MOODBOARDS]
+            ?: throw IllegalStateException("ITEM WAS EXPECTED")
+
+        val campaign = moodBoardCache.find { it == campaignId }
+
+        if(campaign == null) {
+
+            val request = Request.Builder().apply {
+
+                url("${HttpClient.SERVER_URL}/api/company/mood_boards/${campaignId}")
+                addHeader("Authorization", "Bearer ${HttpClient.accessKey}")
+                get()
+
+            }.build()
+
+            try {
+                val response = HttpClient.webClient.newCall(request).execute()
+                val rawJson = response.body?.string()
+                    ?: throw IllegalStateException(EMPTY_RESPONSE)
+
+                val moodBoardsArray = HttpClient.gson.fromJson(rawJson, Array<MoodBoard>::class.java)
+
+                moodBoards.postValue(moodBoardsArray.toList())
+
+                response.close()
+
+            } catch(e: IOException) {
+
+                Log.d("SERVER CONNECTION", e.message ?: CONNECTION_FAILED_MESSAGE)
+
+            }
+        }
     }
 }

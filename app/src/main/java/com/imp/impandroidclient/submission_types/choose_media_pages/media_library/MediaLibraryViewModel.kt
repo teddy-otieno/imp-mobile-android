@@ -1,4 +1,4 @@
-package com.imp.impandroidclient.submission_types.pages.media_library
+package com.imp.impandroidclient.submission_types.choose_media_pages.media_library
 
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel

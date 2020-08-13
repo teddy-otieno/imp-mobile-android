@@ -1,16 +1,19 @@
-package com.imp.impandroidclient.loginsignup.login
+package com.imp.impandroidclient.start_up
 
 import android.content.Intent
 import android.graphics.Typeface
 import android.os.Bundle
 import androidx.activity.viewModels
 import androidx.appcompat.app.AppCompatActivity
+import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.Observer
+import androidx.lifecycle.ViewModel
 import androidx.lifecycle.lifecycleScope
 import com.imp.impandroidclient.R
+import com.imp.impandroidclient.app_state.repos.SessionRepository
 import com.imp.impandroidclient.app_state.repos.TransferStatus
 import com.imp.impandroidclient.dashboards.MainDashboard
-import com.imp.impandroidclient.loginsignup.signup.SignUp
+import com.imp.impandroidclient.start_up.signup.SignUp
 import kotlinx.android.synthetic.main.activity_login.*
 import kotlinx.coroutines.launch
 
@@ -99,32 +102,16 @@ class LoginActivity : AppCompatActivity() {
     }
 }
 
+class LoginActivityViewModel : ViewModel(){
 
-/*
-fun authenticateLogin(
-context: Activity,
-username: String,
-password: String,
-onErrorCallback: Response.ErrorListener
-) {
+    var username: String = ""
+    var password: String = ""
 
-val appViewModel = ViewModelProvider(context as ViewModelStoreOwner).get(ApplicationViewModel::class.java)
-val credentials = JSONObject()
-    .put("username", username)
-    .put("password", password)
+    fun isAuthenticated(): MutableLiveData<Boolean> = SessionRepository.isAuthenticated
+    fun errorOnAuth(): MutableLiveData<TransferStatus> = SessionRepository.errorOnAuth
 
-val request = JsonObjectRequest(
-    credentials,
-    Response.Listener {
-        app.receiveKeyTokens(it.get("access").toString(), it.get("refresh").toString())
-        println("access token received, starting Main activity")
-        val intent = Intent(context, MainDashboard::class.java)
-        intent.flags = Intent.FLAG_ACTIVITY_NEW_TASK or Intent.FLAG_ACTIVITY_CLEAR_TASK
-        context.startActivity(intent)
-    },
-    onErrorCallback
-)
-
-GlobalApplication.httpRequestQueue.add(request);
+    fun authenticate(username: String, password: String) {
+        SessionRepository.login(username, password)
+    }
 }
- */
+

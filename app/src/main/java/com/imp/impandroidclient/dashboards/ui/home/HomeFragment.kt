@@ -142,20 +142,24 @@ private class ViewHolder(val context: HomeFragment, view: View, parent: ViewGrou
         val period = calculateTimeLeft(campaign.start_date, campaign.campaign_period)
         campaignPeriod.text = "${period}days left"
 
-        ResourceManager.onLoadImage(campaign.cover_image) {
-            campaignCoverImage.setImageBitmap(it)
+        context.lifecycleScope.launch {
+            ResourceManager.onLoadImage(campaign.cover_image) {
+                campaignCoverImage.setImageBitmap(it)
+            }
         }
 
         context.homeViewModel.brands().observe(context.viewLifecycleOwner, Observer {
             val brand = it.find { it.id == campaign.brand }
 
-            brand?.let {
-                ResourceManager.onLoadImage(it.image){
-                    brandAvatar.setImageBitmap(it)
-                    brandAvatar.clipToOutline = true
-                }
+            context.lifecycleScope.launch {
+                brand?.let {
+                    ResourceManager.onLoadImage(it.image){
+                        brandAvatar.setImageBitmap(it)
+                        brandAvatar.clipToOutline = true
+                    }
 
-                brandTitle.text = brand.title
+                    brandTitle.text = brand.title
+                }
             }
 
         })
@@ -168,7 +172,9 @@ private class ViewHolder(val context: HomeFragment, view: View, parent: ViewGrou
 
         val difference = Duration(endDate, DateTime.now())
 
-        return difference.standardDays.toInt()
+        val result = difference.standardDays.toInt()
+
+        return if(result < 0) { 0 } else { result }
     }
 
 }

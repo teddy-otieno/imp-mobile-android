@@ -22,9 +22,8 @@ import com.imp.impandroidclient.app_state.repos.ImageRequestMethod
 import com.imp.impandroidclient.app_state.repos.PostSubmissionRepo
 import com.imp.impandroidclient.app_state.repos.TransferStatus
 import com.imp.impandroidclient.app_state.repos.data.LocalImage
-import com.imp.impandroidclient.app_state.repos.data.PostSubmission
-import com.imp.impandroidclient.submission_types.pages.camera_capture.PhotoCapture
-import com.imp.impandroidclient.submission_types.pages.media_library.MediaLibrary
+import com.imp.impandroidclient.submission_types.choose_media_pages.camera_capture.PhotoCapture
+import com.imp.impandroidclient.submission_types.choose_media_pages.media_library.MediaLibrary
 import kotlinx.android.synthetic.main.activity_choose_media.*
 import kotlinx.coroutines.launch
 import java.lang.IllegalStateException

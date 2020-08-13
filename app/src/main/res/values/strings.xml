@@ -64,6 +64,7 @@
     <string name="post_to">Post To</string>
     <string name="instagram">Instagram</string>
     <string name="twitter">Twitter</string>
+    <string name="moodboards">Moodboards</string>
 
     <string-array name="gender">
         <item>Male</item>

@@ -1,15 +1,16 @@
-package com.imp.impandroidclient.loading_activity
+package com.imp.impandroidclient.start_up
 
 import android.content.Intent
 import android.os.Bundle
 import androidx.activity.viewModels
 import androidx.appcompat.app.AppCompatActivity
+import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.Observer
+import androidx.lifecycle.ViewModel
 import com.imp.impandroidclient.R
 import com.imp.impandroidclient.app_state.repos.SessionRepository
 import com.imp.impandroidclient.app_state.repos.TransferStatus
 import com.imp.impandroidclient.dashboards.MainDashboard
-import com.imp.impandroidclient.loginsignup.login.LoginActivity
 import kotlinx.android.synthetic.main.activity_loading_page.*
 
 class LoadingPage : AppCompatActivity() {
@@ -45,4 +46,12 @@ class LoadingPage : AppCompatActivity() {
             }
         })
     }
+}
+
+class LoadingPageViewModel : ViewModel(){
+
+
+    fun getAuth() : MutableLiveData<Boolean> = SessionRepository.isAuthenticated
+
+    fun getError(): MutableLiveData<TransferStatus> = SessionRepository.errorOnAuth
 }

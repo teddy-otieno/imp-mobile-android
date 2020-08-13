@@ -1,10 +1,13 @@
-package com.imp.impandroidclient.loginsignup.signup
+package com.imp.impandroidclient.start_up.signup
 
+import android.os.Bundle
 import android.util.Log
+import androidx.appcompat.app.AppCompatActivity
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
 import com.google.gson.Gson
 import com.imp.impandroidclient.BuildConfig
+import com.imp.impandroidclient.R
 import com.imp.impandroidclient.app_state.repos.SessionRepository
 import com.imp.impandroidclient.app_state.repos.data.CreatorSignUpInfo
 import com.imp.impandroidclient.app_state.web_client.HttpClient
@@ -17,17 +20,32 @@ import java.io.IOException
 import java.text.SimpleDateFormat
 import java.util.*
 
+
+class SignUp : AppCompatActivity()
+{
+    override fun onCreate(savedInstanceState: Bundle?)
+    {
+        super.onCreate(savedInstanceState)
+        setContentView(R.layout.activity_sign_up)
+
+        supportFragmentManager.beginTransaction()
+            .add(R.id.sign_up_stage_fragment_container,
+                BasicSignUpFragment()
+            ).commit()
+    }
+}
+
 class SignUpViewModel: ViewModel() {
 
-    val fName: MutableLiveData<String>          by lazy{ MutableLiveData<String>() }
-    val lName: MutableLiveData<String>          by lazy { MutableLiveData<String>() }
-    val dateOfBirth: MutableLiveData<Date>      by lazy { MutableLiveData<Date>() }
-    val gender: MutableLiveData<String>         by lazy { MutableLiveData<String>()}
-    val email: MutableLiveData<String>          by lazy { MutableLiveData<String>() }
-    val phoneNumber: MutableLiveData<String>    by lazy { MutableLiveData<String>()}
-    val username: MutableLiveData<String>       by lazy { MutableLiveData<String>() }
-    val password: MutableLiveData<String>       by lazy { MutableLiveData<String>() }
-    val agreement: MutableLiveData<Boolean>     by lazy { MutableLiveData<Boolean>() }
+    val fName: MutableLiveData<String> by lazy{ MutableLiveData<String>() }
+    val lName: MutableLiveData<String> by lazy { MutableLiveData<String>() }
+    val dateOfBirth: MutableLiveData<Date> by lazy { MutableLiveData<Date>() }
+    val gender: MutableLiveData<String> by lazy { MutableLiveData<String>() }
+    val email: MutableLiveData<String> by lazy { MutableLiveData<String>() }
+    val phoneNumber: MutableLiveData<String> by lazy { MutableLiveData<String>() }
+    val username: MutableLiveData<String> by lazy { MutableLiveData<String>() }
+    val password: MutableLiveData<String> by lazy { MutableLiveData<String>() }
+    val agreement: MutableLiveData<Boolean> by lazy { MutableLiveData<Boolean>() }
 
     fun submit() {
 

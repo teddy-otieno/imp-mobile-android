@@ -1,4 +1,4 @@
-package com.imp.impandroidclient.submission_types.pages.camera_capture
+package com.imp.impandroidclient.submission_types.choose_media_pages.camera_capture
 
 import android.os.Bundle
 import androidx.fragment.app.Fragment

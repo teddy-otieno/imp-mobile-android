@@ -1,4 +1,4 @@
-package com.imp.impandroidclient.submission_types.pages.media_library
+package com.imp.impandroidclient.submission_types.choose_media_pages.media_library
 
 import android.os.Bundle
 import android.util.Log
@@ -9,9 +9,7 @@ import android.view.ViewGroup
 import android.widget.ImageView
 import android.widget.RadioButton
 import androidx.fragment.app.activityViewModels
-import androidx.fragment.app.viewModels
 import androidx.lifecycle.Observer
-import androidx.lifecycle.ViewModelProvider
 import androidx.lifecycle.lifecycleScope
 import androidx.recyclerview.widget.GridLayoutManager
 import androidx.recyclerview.widget.RecyclerView
@@ -81,8 +79,10 @@ class MediaLibrary : Fragment() {
 
         activityViewModel.selectedImage.observe(this.viewLifecycleOwner, Observer {
             activity?.let { activity ->
-                ResourceManager.getLocalImage(activity.contentResolver, it) {
-                    imagePreview.setImageBitmap(it)
+                lifecycleScope.launch(Dispatchers.Main) {
+                    ResourceManager.getLocalImage(activity.contentResolver, it) {
+                        imagePreview.setImageBitmap(it)
+                    }
                 }
             }
         })
@@ -124,8 +124,10 @@ private class MediaViewHolder(
                 parentFragment.activityViewModel.selectedImage.value = item
             }
 
-            ResourceManager.getLocalImage(activity.contentResolver, item) { bitmap ->
-                thumbnailView.setImageBitmap(bitmap)
+            parentFragment.lifecycleScope.launch(Dispatchers.Main) {
+                ResourceManager.getLocalImage(activity.contentResolver, item) { bitmap ->
+                    thumbnailView.setImageBitmap(bitmap)
+                }
             }
 
         } ?: throw IllegalStateException("")

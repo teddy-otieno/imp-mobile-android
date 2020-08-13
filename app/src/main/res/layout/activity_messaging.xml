@@ -1,16 +1,9 @@
 <?xml version="1.0" encoding="utf-8"?>
 <androidx.constraintlayout.widget.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:background="@android:color/background_light"
-    android:visibility="visible"
-    tools:context=".start_up.signup.SignUp">
-
-    <FrameLayout
-        android:id="@+id/sign_up_stage_fragment_container"
-        android:layout_width="match_parent"
-        android:layout_height="match_parent" />
-
+    tools:context=".messaging.Messaging">
 
 </androidx.constraintlayout.widget.ConstraintLayout>

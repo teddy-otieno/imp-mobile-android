@@ -1,4 +1,4 @@
-package com.imp.impandroidclient.loginsignup.signup
+package com.imp.impandroidclient.start_up.signup
 
 import android.content.Intent
 import android.os.Bundle

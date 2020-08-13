@@ -69,7 +69,8 @@ object ResourceManager {
     private val loadingImages: MutableList<ImageFuture> = mutableListOf()
 
 
-    fun onLoadImage(url: String, callback: (image: Bitmap?) -> Unit) {
+    suspend fun onLoadImage(url: String, callback: suspend (image: Bitmap?) -> Unit)
+            = withContext(Dispatchers.Main) {
         val image = imageCache.getImageFromMemCache(url)
 
         if(image != null) {
@@ -79,11 +80,8 @@ object ResourceManager {
             val future = loadingImages.find { it.url == url }
 
             if(future != null) {
-
-               mainThreadScope.launch {
-                   val loadedImage = future.image.await()
-                   callback(loadedImage)
-               }
+               val loadedImage = future.image.await()
+               callback(loadedImage)
 
             } else {
 
@@ -100,50 +98,47 @@ object ResourceManager {
         }
     }
 
-    fun getLocalImage(
+    suspend  fun getLocalImage(
         contentResolver: ContentResolver,
         image: LocalImage,
         size: Size? = null,
         callback: (image: Bitmap?) -> Unit
-    ) {
+    ) = withContext(Dispatchers.IO) {
 
         val cachedThumbnail = thumbnailCache.getImage(image.contentUri.toString())
 
         if(cachedThumbnail == null) {
 
-            mainThreadScope.launch {
+            if (Build.VERSION.SDK_INT >= 29) {
 
-                if (Build.VERSION.SDK_INT >= 29) {
+                size?.let {
+                    val bitmap = contentResolver.loadThumbnail(image.contentUri, size, null)
+                    thumbnailCache.addImage(image, bitmap)
+                    callback(bitmap)
+                } ?: throw IllegalStateException("Size parameter was not passed")
 
-                    size?.let {
-                        val bitmap = contentResolver.loadThumbnail(image.contentUri, size, null)
-                        thumbnailCache.addImage(image, bitmap)
-                        callback(bitmap)
-                    } ?: throw IllegalStateException("Size parameter was not passed")
+            } else {
 
-                } else {
+                val bitmapFactory = BitmapFactory.Options().apply {
+                    inJustDecodeBounds = true
+                    inMutable = false
+                    inSampleSize = 2
+                }
 
-                    val bitmapFactory = BitmapFactory.Options().apply {
-                        inJustDecodeBounds = true
-                        inMutable = false
-                        inSampleSize = 2
-                    }
+                val bitmap = MediaStore.Images.Thumbnails.getThumbnail(
+                    contentResolver,
+                    image.imageID,
+                    MediaStore.Images.Thumbnails.MINI_KIND,
+                    bitmapFactory
+                )
 
-                    val bitmap = MediaStore.Images.Thumbnails.getThumbnail(
-                        contentResolver,
-                        image.imageID,
-                        MediaStore.Images.Thumbnails.MINI_KIND,
-                        bitmapFactory
-                    )
+                if (bitmap != null) {
 
-                    if (bitmap != null) {
-
-                        thumbnailCache.addImage(image, bitmap)
-                        callback(bitmap)
-
-                    }
+                    thumbnailCache.addImage(image, bitmap)
+                    callback(bitmap)
 
                 }
+
             }
 
         } else {

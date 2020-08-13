@@ -17,4 +17,6 @@
     <dimen name="submission_view_font_size">16sp</dimen>
     <dimen name="container_horizontal_padding">8dp</dimen>
     <dimen name="container_vertical_padding">8dp</dimen>
+    <dimen name="moodboard_image_height">100dp</dimen>
+    <dimen name="moodboard_image_width">75dp</dimen>
 </resources>

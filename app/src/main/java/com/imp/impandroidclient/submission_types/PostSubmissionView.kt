@@ -9,6 +9,7 @@ import androidx.activity.viewModels
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.Observer
 import androidx.lifecycle.ViewModel
+import androidx.lifecycle.lifecycleScope
 import com.imp.impandroidclient.EDIT_MODE
 import com.imp.impandroidclient.R
 import com.imp.impandroidclient.SUBMISSION_ID
@@ -16,6 +17,9 @@ import com.imp.impandroidclient.app_state.ResourceManager
 import com.imp.impandroidclient.app_state.repos.PostSubmissionRepo
 import com.imp.impandroidclient.app_state.repos.data.PostSubmission
 import kotlinx.android.synthetic.main.activity_post_submission_view.*
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.launch
+import okhttp3.Dispatcher
 import java.lang.IllegalStateException
 import kotlin.properties.Delegates
 
@@ -53,8 +57,10 @@ class PostSubmissionView : AppCompatActivity() {
             notes.text = it.note
 
             it.image_url?.let { image_url ->
-                ResourceManager.onLoadImage(image_url) { bitmap ->
-                    submission_image.setImageBitmap(bitmap)
+                lifecycleScope.launch(Dispatchers.Main) {
+                    ResourceManager.onLoadImage(image_url) { bitmap ->
+                        submission_image.setImageBitmap(bitmap)
+                    }
                 }
             }
         })

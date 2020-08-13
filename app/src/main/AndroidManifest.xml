@@ -13,7 +13,8 @@
         android:roundIcon="@mipmap/ic_launcher_round"
         android:supportsRtl="true"
         android:theme="@style/AppTheme">
-        <activity android:name=".submission_types.PostSubmissionView"></activity>
+        <activity android:name=".messaging.Messaging"></activity>
+        <activity android:name=".submission_types.PostSubmissionView" />
         <activity android:name=".submission_types.PostSubmissionDetails" />
         <activity
             android:name=".submission_types.ChooseMedia"
@@ -29,13 +30,13 @@
         <activity
             android:name=".dashboards.MainDashboard"
             android:label="@string/title_activity_main_dashboard"
-            android:parentActivityName=".loading_activity.LoadingPage">
+            android:parentActivityName=".start_up.LoadingPage">
             <meta-data
                 android:name="android.support.PARENT_ACTIVITY"
-                android:value="com.imp.impandroidclient.loading_activity.LoadingPage" />
+                android:value="com.imp.impandroidclient.start_up.LoadingPage" />
         </activity>
-        <activity android:name=".loginsignup.login.LoginActivity" />
-        <activity android:name=".loading_activity.LoadingPage">
+        <activity android:name=".start_up.LoginActivity" />
+        <activity android:name=".start_up.LoadingPage">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
 
@@ -43,8 +44,8 @@
             </intent-filter>
         </activity>
         <activity
-            android:name=".loginsignup.signup.SignUp"
-            android:parentActivityName=".loginsignup.login.LoginActivity">
+            android:name=".start_up.signup.SignUp"
+            android:parentActivityName=".start_up.LoginActivity">
             <intent-filter>
                 <action android:name="android.intent.action.VIEW" />
             </intent-filter>

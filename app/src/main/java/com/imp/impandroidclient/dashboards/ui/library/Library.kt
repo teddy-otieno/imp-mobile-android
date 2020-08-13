@@ -1,6 +1,5 @@
 package com.imp.impandroidclient.dashboards.ui.library
 
-import android.app.Activity
 import android.content.Intent
 import android.graphics.Bitmap
 import android.os.Bundle
@@ -15,16 +14,12 @@ import androidx.lifecycle.Observer
 import androidx.lifecycle.lifecycleScope
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
-import com.google.android.material.card.MaterialCardView
-import com.imp.impandroidclient.CAMPAIGN_ID
 import com.imp.impandroidclient.R
 import com.imp.impandroidclient.SUBMISSION_ID
 import com.imp.impandroidclient.app_state.ResourceManager
 import com.imp.impandroidclient.app_state.repos.resize
 import com.imp.impandroidclient.submission_types.PostSubmissionView
-import kotlinx.coroutines.CoroutineScope
-import kotlinx.coroutines.Dispatchers
-import kotlinx.coroutines.launch
+import kotlinx.coroutines.*
 import java.lang.IllegalStateException
 
 class Library : Fragment() {
@@ -49,12 +44,10 @@ class Library : Fragment() {
     private fun setUpObservers(rootView: View) {
         val submissionsView: RecyclerView = rootView.findViewById(R.id.submissions_view)
 
+        val fragmentRef = this
         activity?.let {
             dashboardViewModel.combinedSubmission.observe(it, Observer {submissions ->
-
-                lifecycleScope.launch(Dispatchers.Main){
-                    submissionsView.adapter = SubmissionsViewAdapter(submissions, it)
-                }
+                submissionsView.adapter = SubmissionsViewAdapter(submissions, fragmentRef)
             })
         } ?: throw IllegalStateException("Activity is not supposed to be null")
     }
@@ -65,9 +58,8 @@ class Library : Fragment() {
 
 
 private class SubmissionViewHolder(private val view: View): RecyclerView.ViewHolder(view) {
-    private val scope: CoroutineScope= CoroutineScope(Dispatchers.Main)
 
-    fun bind(submission: CombinedSubmission, activity: Activity) {
+    suspend  fun bind(submission: CombinedSubmission, library: Library) = withContext(Dispatchers.Main) {
         val submissionCaption: TextView = view.findViewById(R.id.submission_caption)
         val submissionStatus: TextView = view.findViewById(R.id.status)
         val submissionImage: ImageView = view.findViewById(R.id.image)
@@ -78,14 +70,8 @@ private class SubmissionViewHolder(private val view: View): RecyclerView.ViewHol
             else
                 submissionCaption.text = it
         }
-
         submissionStatus.text = submission.status?.toString() ?: "DRAFT"
 
-        /**
-         * Note(teddy) The bitmap image was being loaded asynchronously in the background \
-         * You'll need to wait for the loading to complete without blocking the main thread \
-         *
-         */
         submission.url?.let { url ->
             ResourceManager.onLoadImage(url) {resultImage ->
 
@@ -94,18 +80,15 @@ private class SubmissionViewHolder(private val view: View): RecyclerView.ViewHol
 
                 } else {
                     //Note(teddy) Cache when possible
-                    scope.launch(Dispatchers.Main) {
-                        val scale = 4.0
-                        val scaledBitmap = Bitmap.createScaledBitmap(
+                    val scale = 4.0
+                    val scaledBitmap =
+                        Bitmap.createScaledBitmap(
                             resultImage,
                             (resultImage.width / scale).toInt(),
                             (resultImage.height / scale).toInt(),
                             true
                         )
-                        val _scaledBitmap =
-                            resize(resultImage, submissionImage.width, submissionImage.height)
-                        submissionImage.setImageBitmap(scaledBitmap)
-                    }
+                    submissionImage.setImageBitmap(scaledBitmap)
                 }
             }
 
@@ -117,24 +100,42 @@ private class SubmissionViewHolder(private val view: View): RecyclerView.ViewHol
 
                 else -> Library::class.java
             }
-            val intent = Intent(activity, activityClass).apply {
+            val intent = Intent(library.activity, activityClass).apply {
                 putExtra(SUBMISSION_ID, submission.submissionId)
             }
 
             //TODO(teddy) Maybe ask activity to a flag if the selected item was modified \
             //Then update the item on this list
-            activity.startActivity(intent)
+            library.startActivity(intent)
         }
     }
 }
 
+private data class BindJob(val id: Int, val job: Job)
+
 private class SubmissionsViewAdapter(private val submissions: List<CombinedSubmission>,
-                             private val activity: Activity
+                             private val library: Library
 ) : RecyclerView.Adapter<SubmissionViewHolder>() {
+
+    val buffer: MutableList<BindJob> = mutableListOf()
+
     override fun getItemCount(): Int = submissions.size
 
     override fun onBindViewHolder(holder: SubmissionViewHolder, position: Int) {
-        holder.bind(submissions[position], activity)
+
+        val previous = buffer.find { it.id == position }
+
+        previous?.job?.cancel()
+
+        val job = library.lifecycleScope.launch(Dispatchers.Main) {
+            holder.bind(submissions[position], library)
+        }
+
+        if(previous != null) {
+            buffer[buffer.indexOf(previous)] = BindJob(position, job)
+        } else {
+            buffer.add(BindJob(position, job))
+        }
     }
 
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): SubmissionViewHolder {
