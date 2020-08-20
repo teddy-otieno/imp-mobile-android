@@ -65,6 +65,9 @@
     <string name="instagram">Instagram</string>
     <string name="twitter">Twitter</string>
     <string name="moodboards">Moodboards</string>
+    <string name="profile">Profile</string>
+    <string name="channel_name">imp_notification_channel</string>
+    <string name="channel_description">imp_notification_channel_desc</string>
 
     <string-array name="gender">
         <item>Male</item>

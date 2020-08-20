@@ -1,6 +1,5 @@
 package com.imp.impandroidclient.app_state.repos
 
-import android.graphics.Bitmap
 import android.util.Log
 import androidx.lifecycle.MutableLiveData
 import com.google.gson.Gson
@@ -13,7 +12,10 @@ import okio.IOException
 import org.json.JSONArray
 import java.lang.IllegalStateException
 import java.util.*
-import kotlin.collections.HashMap
+
+const val CONNECTION_FAILED_MESSAGE = "Unable to connect with the server"
+const val SERVER_ERROR = "Request was not processed"
+const val EMPTY_RESPONSE = "EMPTY RESPONSE BODY"
 
 private enum class CacheItemNames {
     HASH_TAG,
@@ -21,10 +23,6 @@ private enum class CacheItemNames {
     DONTS,
     MOODBOARDS
 };
-
-private const val CONNECTION_FAILED_MESSAGE = "Unable to connect with the server"
-private const val SERVER_ERROR = "Request was not processed"
-private const val EMPTY_RESPONSE = "EMPTY RESPONSE BODY"
 
 
 object CampaignRepository {
@@ -93,7 +91,7 @@ object CampaignRepository {
                         val rawCampaign = rawCampaigns[i]
                         val campaign: CampaignData = gson.fromJson(rawCampaign.toString(), CampaignData::class.java)
                         campaigns.add(campaign)
-                        getBrand(campaign.brand)
+                        loadBrand(campaign.brand)
                     }
 
                     campaignData.postValue(campaigns)
@@ -107,8 +105,9 @@ object CampaignRepository {
                 Log.w("Connection", "${e.message}" )
             }
         }
-
     }
+
+
 
     fun getCampaignOfId(campaignId: Int): CampaignData {
         return campaignData.value?.find {
@@ -120,42 +119,47 @@ object CampaignRepository {
         campaignData.value!![index] = campaign
     }
 
-    fun getBrand(brandId: Int) {
-        scope.launch(Dispatchers.IO) {
-
-            val request = Request.Builder()
-                .url("${HttpClient.SERVER_URL}/api/company/brand/${brandId}")
-                .get()
-                .addHeader("Authorization", "Bearer ${HttpClient.accessKey}")
-                .build()
-
-            try {
-                val response = HttpClient.webClient.newCall(request).execute()
-
-                if(response.code == 200) {
-                    val rawJson = response.body?.string() ?: throw IllegalStateException("RESPONSE BODY IS EMPTY")
-                    val gson = Gson()
-
-                    val brand = gson.fromJson<Brand>(rawJson, Brand::class.java)
-
-                    brands.value?.let {
-
-                        val temp = it
-                        temp.add(brand)
-
-                        brands.postValue(temp)
-                    }
-                } else {
-                    Log.w("NETWORK", "Failed to get brands from server")
-                }
-
-            } catch (e: IOException) {
-                Log.w("NETWORK", "Failed to establish connection with server")
+    fun getBrand(brandInt: Int): Brand {
+        return brands.value?.let {
+            it.find { brand ->
+                brand.id == brandInt
             }
+        } ?: throw IllegalStateException("PRETTY SURE BRAND SHOULD EXIST")
+    }
+
+    suspend fun loadBrand(brandId: Int) = withContext(Dispatchers.IO) {
+        val request = Request.Builder()
+            .url("${HttpClient.SERVER_URL}/api/company/brand/${brandId}")
+            .get()
+            .addHeader("Authorization", "Bearer ${HttpClient.accessKey}")
+            .build()
+
+        try {
+            val response = HttpClient.webClient.newCall(request).execute()
+
+            if(response.code == 200) {
+                val rawJson = response.body?.string() ?: throw IllegalStateException("RESPONSE BODY IS EMPTY")
+                val gson = Gson()
+
+                val brand = gson.fromJson<Brand>(rawJson, Brand::class.java)
+
+                brands.value?.let {
+
+                    val temp = it
+                    temp.add(brand)
+
+                    brands.postValue(temp)
+                }
+            } else {
+                Log.w("NETWORK", "Failed to get brands from server")
+            }
+
+        } catch (e: IOException) {
+            Log.w("NETWORK", "Failed to establish connection with server")
         }
     }
 
-    fun loadHashTags(campaignId: Int) {
+    suspend fun loadHashTags(campaignId: Int) = withContext(Dispatchers.IO) {
 
         val hashTagCache = alreadyLoadedCache[CacheItemNames.HASH_TAG]
             ?: throw IllegalStateException("ITEM INSIDE THE HASHTAG WAS ALREADY LOADED")
@@ -172,27 +176,25 @@ object CampaignRepository {
                 .addHeader("Authorization", "Bearer ${HttpClient.accessKey}")
                 .build()
 
-            scope.launch(Dispatchers.IO) {
-                try {
-                    val response = HttpClient.webClient.newCall(request).execute()
+            try {
+                val response = HttpClient.webClient.newCall(request).execute()
 
-                    if(response.isSuccessful) {
+                if(response.isSuccessful) {
 
-                        val rawJson = response.body?.string()
-                            ?: throw IllegalStateException("RESPONSE BODY IS EMPTY")
+                    val rawJson = response.body?.string()
+                        ?: throw IllegalStateException("RESPONSE BODY IS EMPTY")
 
-                        val gson = Gson()
+                    val gson = Gson()
 
-                        val loadedHashtags = gson.fromJson<Array<HashTag>>(rawJson, Array<HashTag>::class.java)
-                        hashTags.postValue(loadedHashtags.asList())
+                    val loadedHashtags = gson.fromJson<Array<HashTag>>(rawJson, Array<HashTag>::class.java)
+                    hashTags.postValue(loadedHashtags.asList())
 
-                        hashTagCache.add(campaignId)
-                    }
-
-                } catch (exception: IOException) {
-                    Log.w("NETWORK", "Failed to establish server connection")
-
+                    hashTagCache.add(campaignId)
                 }
+
+            } catch (exception: IOException) {
+                Log.w("NETWORK", "Failed to establish server connection")
+
             }
 
         }

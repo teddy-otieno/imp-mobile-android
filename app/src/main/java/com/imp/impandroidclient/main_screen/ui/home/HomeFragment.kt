@@ -1,8 +1,7 @@
-package com.imp.impandroidclient.dashboards.ui.home
+package com.imp.impandroidclient.main_screen.ui.home
 
 import android.app.ActivityOptions
 import android.content.Intent
-import android.graphics.Bitmap
 import android.os.Bundle
 import android.util.Log
 import android.view.LayoutInflater
@@ -10,36 +9,32 @@ import android.view.View
 import android.view.ViewGroup
 import android.widget.ImageView
 import android.widget.TextView
-import androidx.appcompat.app.ActionBar
 import androidx.fragment.app.Fragment
+import androidx.fragment.app.activityViewModels
 import androidx.lifecycle.Observer
 import androidx.lifecycle.ViewModelProvider
 import androidx.lifecycle.lifecycleScope
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
-import com.google.android.material.appbar.AppBarLayout
 import com.google.android.material.appbar.MaterialToolbar
 import com.imp.impandroidclient.CAMPAIGN_ID
 import com.imp.impandroidclient.R
 import com.imp.impandroidclient.app_state.ResourceManager
-import com.imp.impandroidclient.app_state.repos.CampaignRepository
 import com.imp.impandroidclient.app_state.repos.data.CampaignData
 import com.imp.impandroidclient.campaign.CampaignActivity
+import com.imp.impandroidclient.main_screen.DashBoardFragment
 import kotlinx.android.synthetic.main.fragment_home.*
-import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
 import org.joda.time.DateTime
-import org.joda.time.LocalDate
 import org.joda.time.Duration
 import java.lang.IllegalStateException
-import java.time.Period
 import java.util.*
 import android.util.Pair as UtilPair
 
 
-class HomeFragment : Fragment() {
+class HomeFragment : DashBoardFragment() {
 
-    lateinit var homeViewModel: HomeViewModel
+    val homeViewModel: HomeViewModel by activityViewModels()
 
     private var campaignAdapter: CampaignComponentAdapter? = null
     private lateinit  var activityToolBar: MaterialToolbar
@@ -48,29 +43,7 @@ class HomeFragment : Fragment() {
         super.onCreate(savedInstanceState)
 
 
-        activityToolBar = activity?.let{
-            homeViewModel = ViewModelProvider(it).get(HomeViewModel::class.java)
-            retainInstance = true
 
-            it.findViewById<MaterialToolbar>(R.id.tool_bar)
-        } ?: throw IllegalStateException("ACTIVITY SHOULD BE NULL")
-
-        if(!homeViewModel.menuSet) {
-            activityToolBar.title = resources.getString(R.string.home)
-            activityToolBar.inflateMenu(R.menu.home_fragment_toolbar_menu)
-
-            activityToolBar.setOnMenuItemClickListener {
-                when(it.itemId) {
-                    R.id.search -> {
-                        Log.i("TAG", "SEARCH CLICKED")
-                        true
-                    }
-
-                    else -> false
-                }
-            }
-            homeViewModel.menuSet = true
-        }
     }
 
     override fun onCreateView(
@@ -78,7 +51,7 @@ class HomeFragment : Fragment() {
         container: ViewGroup?,
         savedInstanceState: Bundle?
     ): View? {
-
+        super.onCreateView(inflater, container, savedInstanceState)
         return inflater.inflate(R.layout.fragment_home, container, false)
     }
 
@@ -91,6 +64,24 @@ class HomeFragment : Fragment() {
             home_campaign_list_view.adapter = campaignAdapter!!
         })
 
+
+
+    }
+
+    override fun updateToolBar(view: MaterialToolbar) {
+        view.title = resources.getString(R.string.home)
+        view.inflateMenu(R.menu.home_fragment_toolbar_menu)
+
+        view.setOnMenuItemClickListener {
+            when(it.itemId) {
+                R.id.search -> {
+                    Log.i("TAG", "SEARCH CLICKED")
+                    true
+                }
+
+                else -> false
+            }
+        }
     }
 
     override fun onResume() {

@@ -11,6 +11,7 @@ import androidx.core.widget.doOnTextChanged
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.Observer
 import androidx.lifecycle.ViewModel
+import androidx.lifecycle.viewModelScope
 import com.google.android.material.chip.Chip
 import com.imp.impandroidclient.*
 import com.imp.impandroidclient.app_state.ResourceManager
@@ -20,6 +21,7 @@ import com.imp.impandroidclient.app_state.repos.data.CampaignData
 import com.imp.impandroidclient.app_state.repos.data.HashTag
 import com.imp.impandroidclient.app_state.repos.data.PostSubmission
 import kotlinx.android.synthetic.main.activity_post_submission_details.*
+import kotlinx.coroutines.launch
 import kotlin.NumberFormatException
 import kotlin.properties.Delegates
 
@@ -40,14 +42,14 @@ class PostSubmissionDetails : AppCompatActivity() {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_post_submission_details)
 
-        val bundle = intent.extras ?: throw IllegalStateException("EXPECTED A BUNDLE")
-        editMode = bundle.getInt(EDIT_MODE)
-        campaignId = bundle.getInt(CAMPAIGN_ID)
+        val bundle = intent.extras?.also {
+            editMode = it.getInt(EDIT_MODE)
+            campaignId = it.getInt(CAMPAIGN_ID)
+            imageUri = it.getParcelable(IMAGE_URI)
 
+        }?: throw IllegalStateException("EXPECTED A BUNDLE")
 
-        imageUri = bundle.getParcelable(IMAGE_URI)
-
-        CampaignRepository.loadHashTags(campaignId)
+        model.loadHashTags(campaignId)
 
         if(editMode == EDIT_SUBMISSION_RESULT) {
             val submissionId = bundle.getInt(SUBMISSION_ID)
@@ -179,6 +181,12 @@ class PostSubmissionDetailsViewModel : ViewModel() {
     private var subId: Int by Delegates.notNull()
 
     fun getHashTags(): MutableLiveData<List<HashTag>> = CampaignRepository.hashTags
+
+    fun loadHashTags(campaign: Int) {
+        viewModelScope.launch {
+            CampaignRepository.loadHashTags(campaign)
+        }
+    }
 
     fun submit(campaign: Int, image: Uri, contentResolver: ContentResolver) {
         PostSubmissionRepo.syncSubmission(

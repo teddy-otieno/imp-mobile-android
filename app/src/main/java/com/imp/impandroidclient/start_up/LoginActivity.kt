@@ -12,7 +12,7 @@ import androidx.lifecycle.lifecycleScope
 import com.imp.impandroidclient.R
 import com.imp.impandroidclient.app_state.repos.SessionRepository
 import com.imp.impandroidclient.app_state.repos.TransferStatus
-import com.imp.impandroidclient.dashboards.MainDashboard
+import com.imp.impandroidclient.main_screen.MainDashboard
 import com.imp.impandroidclient.start_up.signup.SignUp
 import kotlinx.android.synthetic.main.activity_login.*
 import kotlinx.coroutines.launch

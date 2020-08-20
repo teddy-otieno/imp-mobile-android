@@ -7,27 +7,27 @@
 
     <fragment
         android:id="@+id/navigation_campaign_feed"
-        android:name="com.imp.impandroidclient.dashboards.ui.home.HomeFragment"
+        android:name="com.imp.impandroidclient.main_screen.ui.home.HomeFragment"
         android:label="@string/title_campaign_feed"
         tools:layout="@layout/fragment_home" />
 
     <fragment
         android:id="@+id/navigation_campaign_dashboard"
-        android:name="com.imp.impandroidclient.dashboards.ui.library.Library"
+        android:name="com.imp.impandroidclient.main_screen.ui.library.Library"
         android:label="@string/title_campaign_dashboard"
         tools:layout="@layout/fragment_library" />
 
     <fragment
         android:id="@+id/navigation_notifications"
-        android:name="com.imp.impandroidclient.dashboards.ui.notifications.NotificationsFragment"
+        android:name="com.imp.impandroidclient.main_screen.ui.notifications.NotificationsFragment"
         android:label="@string/title_notifications"
         tools:layout="@layout/fragment_notifications" />
 
     <fragment
         android:id="@+id/navigation_creator_profile"
-        android:name="com.imp.impandroidclient.dashboards.ui.creator_profile.CreatorProfile"
+        android:name="com.imp.impandroidclient.main_screen.ui.creator_profile.CreatorProfile"
         android:label="@string/title_creator_profile"
-        tools:layout="@layout/creator_profile_fragment" />
+        tools:layout="@layout/fragment_creator_profile" />
 
 
 </navigation>

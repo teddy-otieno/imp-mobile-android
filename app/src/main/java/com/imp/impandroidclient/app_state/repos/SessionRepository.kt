@@ -93,8 +93,7 @@ object SessionRepository {
                                 HttpClient.accessKey = json.getString("access")
                                 HttpClient.refreshKey = json.getString("refresh")
 
-                                val prevKey = db.sessionDao().getCurrentCredentials()
-                                if(prevKey == null) {
+                                if(db.sessionDao().getCurrentCredentials() == null) {
                                     db.sessionDao().insertToken(HttpClient.refreshKey)
 
                                 } else {
@@ -115,7 +114,10 @@ object SessionRepository {
                     }
                 }
 
-                override fun onFailure(call: Call, e: IOException) { }
+                override fun onFailure(call: Call, e: IOException) {
+                    Log.d("NETWORK", CONNECTION_FAILED_MESSAGE)
+                    throw e
+                }
             })
 
         }

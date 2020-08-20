@@ -1,12 +1,19 @@
 package com.imp.impandroidclient.application
 
 import android.app.Application
+import android.app.NotificationChannel
+import android.app.NotificationManager
 import android.content.Context
+import android.os.Build
+import androidx.core.app.NotificationManagerCompat
+import com.imp.impandroidclient.R
 import com.imp.impandroidclient.app_state.ResourceManager
 import com.imp.impandroidclient.app_state.database.AppDatabase
 import com.imp.impandroidclient.app_state.repos.FileSystemMedia
 import net.danlew.android.joda.JodaTimeAndroid
 
+
+const val CHANNEL_ID = "imp-activity"
 class GlobalApplication : Application() {
     //Initialize the database
 
@@ -28,5 +35,6 @@ class GlobalApplication : Application() {
 
         ResourceManager.clear()
     }
+
 }
 

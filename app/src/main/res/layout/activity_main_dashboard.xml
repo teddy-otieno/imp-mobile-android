@@ -24,7 +24,8 @@
             android:layout_width="match_parent"
             android:layout_height="match_parent"
             app:navigationIcon="@drawable/ic_menu_24px"
-            style="@style/Widget.MaterialComponents.Toolbar.Primary"
+            android:foregroundTint="@color/white"
+            style="@style/Toolbar"
             >
 
 

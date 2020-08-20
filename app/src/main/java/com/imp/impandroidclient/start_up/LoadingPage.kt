@@ -10,7 +10,7 @@ import androidx.lifecycle.ViewModel
 import com.imp.impandroidclient.R
 import com.imp.impandroidclient.app_state.repos.SessionRepository
 import com.imp.impandroidclient.app_state.repos.TransferStatus
-import com.imp.impandroidclient.dashboards.MainDashboard
+import com.imp.impandroidclient.main_screen.MainDashboard
 import kotlinx.android.synthetic.main.activity_loading_page.*
 
 class LoadingPage : AppCompatActivity() {

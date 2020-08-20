@@ -19,7 +19,8 @@ object HttpClient {
         setDateFormat("yyyy-MM-dd'T'HH:mm:ss.SX")
     }.create()
 
-    const val SERVER_URL = "http://192.168.0.15:8000"
+    const val SERVER_URL = "http://192.168.0.29:8000"
+    const val SERVER_WEBSOCKET_URL = "ws://192.168.0.29:8000"
 
     val JSON = "application/json; charset=utf-8".toMediaType()
     val MEDIA_TYPE_PNG = "image/png".toMediaTypeOrNull()

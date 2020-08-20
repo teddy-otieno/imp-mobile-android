@@ -1,12 +1,10 @@
-package com.imp.impandroidclient.dashboards.ui.library
+package com.imp.impandroidclient.main_screen.ui.library
 
-import android.graphics.Bitmap
 import androidx.lifecycle.*
 import androidx.lifecycle.Observer
 import com.imp.impandroidclient.app_state.repos.PostSubmissionRepo
 import com.imp.impandroidclient.app_state.repos.data.PostSubmission
 import com.imp.impandroidclient.app_state.repos.data.SubmissionStatus
-import kotlinx.coroutines.Deferred
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
 import java.lang.IllegalStateException

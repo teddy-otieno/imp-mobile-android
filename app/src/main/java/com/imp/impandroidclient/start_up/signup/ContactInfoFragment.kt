@@ -13,7 +13,7 @@ import androidx.fragment.app.activityViewModels
 import androidx.lifecycle.Observer
 import com.imp.impandroidclient.R
 import com.imp.impandroidclient.app_state.repos.SessionRepository
-import com.imp.impandroidclient.dashboards.MainDashboard
+import com.imp.impandroidclient.main_screen.MainDashboard
 import kotlinx.android.synthetic.main.fragment_contact_info.*
 
 class ContactInfoFragment : Fragment() {

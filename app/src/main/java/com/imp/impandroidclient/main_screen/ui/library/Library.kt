@@ -1,4 +1,4 @@
-package com.imp.impandroidclient.dashboards.ui.library
+package com.imp.impandroidclient.main_screen.ui.library
 
 import android.content.Intent
 import android.graphics.Bitmap
@@ -9,45 +9,61 @@ import android.view.ViewGroup
 import android.widget.ImageView
 import android.widget.TextView
 import androidx.fragment.app.Fragment
+import androidx.fragment.app.activityViewModels
 import androidx.fragment.app.viewModels
 import androidx.lifecycle.Observer
 import androidx.lifecycle.lifecycleScope
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
+import com.google.android.material.appbar.MaterialToolbar
 import com.imp.impandroidclient.R
 import com.imp.impandroidclient.SUBMISSION_ID
 import com.imp.impandroidclient.app_state.ResourceManager
-import com.imp.impandroidclient.app_state.repos.resize
+import com.imp.impandroidclient.main_screen.DashBoardFragment
 import com.imp.impandroidclient.submission_types.PostSubmissionView
 import kotlinx.coroutines.*
 import java.lang.IllegalStateException
 
-class Library : Fragment() {
+class Library : DashBoardFragment() {
 
-    private val dashboardViewModel: LibraryViewModel by viewModels()
+    private val dashboardViewModel: LibraryViewModel by activityViewModels()
     private lateinit var submissionView: RecyclerView
 
-    override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?): View? {
+    override fun updateToolBar(view: MaterialToolbar) {
+        val materialToolbar: MaterialToolbar = activity?.findViewById(R.id.tool_bar)
+            ?: throw IllegalStateException("ACTIVITY WAS NULL")
 
-        val root = inflater.inflate(R.layout.fragment_library, container, false)
-        setupFrag(root)
-        setUpObservers(root)
-        setUpListeners(root)
-        return root
+        materialToolbar.title = resources.getString(R.string.library)
+    }
+
+    override fun onCreateView(
+        inflater: LayoutInflater,
+        container: ViewGroup?,
+        savedInstanceState: Bundle?
+    ): View? {
+        return inflater.inflate(R.layout.fragment_library, container, false)
+    }
+
+    override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
+        super.onViewCreated(view, savedInstanceState)
+
+        setupFrag(view)
+        setUpObservers(view)
+        setUpListeners(view)
     }
 
     private fun setupFrag(rootView: View) {
         submissionView = rootView.findViewById(R.id.submissions_view)
         submissionView.layoutManager = LinearLayoutManager(activity)
+
     }
 
     private fun setUpObservers(rootView: View) {
-        val submissionsView: RecyclerView = rootView.findViewById(R.id.submissions_view)
 
         val fragmentRef = this
         activity?.let {
             dashboardViewModel.combinedSubmission.observe(it, Observer {submissions ->
-                submissionsView.adapter = SubmissionsViewAdapter(submissions, fragmentRef)
+                submissionView.adapter = SubmissionsViewAdapter(submissions, fragmentRef)
             })
         } ?: throw IllegalStateException("Activity is not supposed to be null")
     }
@@ -73,22 +89,23 @@ private class SubmissionViewHolder(private val view: View): RecyclerView.ViewHol
         submissionStatus.text = submission.status?.toString() ?: "DRAFT"
 
         submission.url?.let { url ->
-            ResourceManager.onLoadImage(url) {resultImage ->
+            ResourceManager.onLoadImage(url) { resultImage ->
 
-                if(resultImage == null) {
-                    submissionImage.setImageBitmap(null)
+                withContext(Dispatchers.Main) {
+                    if(resultImage == null) {
+                        submissionImage.setImageBitmap(null)
 
-                } else {
-                    //Note(teddy) Cache when possible
-                    val scale = 4.0
-                    val scaledBitmap =
-                        Bitmap.createScaledBitmap(
-                            resultImage,
-                            (resultImage.width / scale).toInt(),
-                            (resultImage.height / scale).toInt(),
-                            true
-                        )
-                    submissionImage.setImageBitmap(scaledBitmap)
+                    } else {
+                        //Note(teddy) Cache when possible
+                        val scale = 4.0
+                        val scaledBitmap = Bitmap.createScaledBitmap(
+                                resultImage,
+                                (resultImage.width / scale).toInt(),
+                                (resultImage.height / scale).toInt(),
+                                true
+                            )
+                        submissionImage.setImageBitmap(scaledBitmap)
+                    }
                 }
             }
 
@@ -113,8 +130,9 @@ private class SubmissionViewHolder(private val view: View): RecyclerView.ViewHol
 
 private data class BindJob(val id: Int, val job: Job)
 
-private class SubmissionsViewAdapter(private val submissions: List<CombinedSubmission>,
-                             private val library: Library
+private class SubmissionsViewAdapter(
+    private val submissions: List<CombinedSubmission>,
+    private val library: Library
 ) : RecyclerView.Adapter<SubmissionViewHolder>() {
 
     val buffer: MutableList<BindJob> = mutableListOf()
