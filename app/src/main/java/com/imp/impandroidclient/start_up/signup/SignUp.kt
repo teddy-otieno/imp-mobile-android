@@ -9,7 +9,7 @@ import com.google.gson.Gson
 import com.imp.impandroidclient.BuildConfig
 import com.imp.impandroidclient.R
 import com.imp.impandroidclient.app_state.repos.SessionRepository
-import com.imp.impandroidclient.app_state.repos.data.CreatorSignUpInfo
+import com.imp.impandroidclient.app_state.repos.models.CreatorSignUpInfo
 import com.imp.impandroidclient.app_state.web_client.HttpClient
 import okhttp3.Call
 import okhttp3.Callback

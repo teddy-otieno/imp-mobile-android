@@ -3,8 +3,8 @@ package com.imp.impandroidclient.main_screen.ui.home
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
 import com.imp.impandroidclient.app_state.repos.CampaignRepository
-import com.imp.impandroidclient.app_state.repos.data.Brand
-import com.imp.impandroidclient.app_state.repos.data.CampaignData
+import com.imp.impandroidclient.app_state.repos.models.Brand
+import com.imp.impandroidclient.app_state.repos.models.CampaignData
 
 class HomeViewModel : ViewModel() {
 

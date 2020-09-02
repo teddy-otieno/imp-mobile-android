@@ -3,7 +3,7 @@ package com.imp.impandroidclient.app_state.repos
 import android.util.Log
 import androidx.lifecycle.MutableLiveData
 import com.google.gson.Gson
-import com.imp.impandroidclient.app_state.repos.data.*
+import com.imp.impandroidclient.app_state.repos.models.*
 import com.imp.impandroidclient.app_state.web_client.HttpClient
 import kotlinx.coroutines.*
 import okhttp3.Request

@@ -1,7 +1,6 @@
-package com.imp.impandroidclient.app_state.repos.data
+package com.imp.impandroidclient.app_state.repos.models
 
 import com.google.gson.annotations.SerializedName
-import org.joda.time.DateTime
 import java.util.*
 
 data class CreatorSignUpInfo(

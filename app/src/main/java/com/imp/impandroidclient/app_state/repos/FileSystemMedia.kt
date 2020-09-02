@@ -8,7 +8,7 @@ import android.graphics.Matrix
 import android.graphics.Paint
 import android.provider.MediaStore
 import androidx.lifecycle.MutableLiveData
-import com.imp.impandroidclient.app_state.repos.data.LocalImage
+import com.imp.impandroidclient.app_state.repos.models.LocalImage
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.cancel

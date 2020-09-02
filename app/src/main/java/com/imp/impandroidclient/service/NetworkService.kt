@@ -1,10 +1,8 @@
 package com.imp.impandroidclient.service
 
-import android.app.Notification
 import android.app.NotificationChannel
 import android.app.NotificationManager
 import android.app.Service
-import android.content.Context
 import android.content.Intent
 import android.os.*
 import android.util.Log
@@ -12,8 +10,7 @@ import androidx.core.app.NotificationCompat
 import androidx.core.app.NotificationManagerCompat
 import com.imp.impandroidclient.R
 import com.imp.impandroidclient.app_state.repos.ConversationRepo
-import com.imp.impandroidclient.app_state.repos.data.Conversation
-import com.imp.impandroidclient.app_state.repos.data.SocketMessageEvent
+import com.imp.impandroidclient.app_state.repos.models.SocketMessageEvent
 import com.imp.impandroidclient.app_state.web_client.HttpClient
 import com.imp.impandroidclient.application.CHANNEL_ID
 import kotlinx.coroutines.CoroutineScope
@@ -22,8 +19,6 @@ import okhttp3.Request
 import okhttp3.Response
 import okhttp3.WebSocket
 import okhttp3.WebSocketListener
-import okhttp3.internal.notify
-import java.lang.Exception
 
 
 const val MSG_LISTEN_CONVERSATION = 0x001
@@ -70,7 +65,7 @@ class NetworkService : Service() {
         }
     }
 
-    fun sendNotificationMessage(message: com.imp.impandroidclient.app_state.repos.data.Message) {
+    fun sendNotificationMessage(message: com.imp.impandroidclient.app_state.repos.models.Message) {
 
         val notificationBuilder = NotificationCompat.Builder(this@NetworkService, "MESSAGE")
             .setContentTitle(message.conversationId.toString())

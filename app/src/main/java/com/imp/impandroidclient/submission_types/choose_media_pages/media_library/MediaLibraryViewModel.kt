@@ -3,7 +3,7 @@ package com.imp.impandroidclient.submission_types.choose_media_pages.media_libra
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
 import com.imp.impandroidclient.app_state.repos.FileSystemMedia
-import com.imp.impandroidclient.app_state.repos.data.LocalImage
+import com.imp.impandroidclient.app_state.repos.models.LocalImage
 
 class MediaLibraryViewModel: ViewModel() {
 

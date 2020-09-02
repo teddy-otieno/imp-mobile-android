@@ -15,11 +15,10 @@ import com.imp.impandroidclient.R
 import com.imp.impandroidclient.SUBMISSION_ID
 import com.imp.impandroidclient.app_state.ResourceManager
 import com.imp.impandroidclient.app_state.repos.PostSubmissionRepo
-import com.imp.impandroidclient.app_state.repos.data.PostSubmission
+import com.imp.impandroidclient.app_state.repos.models.PostSubmission
 import kotlinx.android.synthetic.main.activity_post_submission_view.*
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
-import okhttp3.Dispatcher
 import java.lang.IllegalStateException
 import kotlin.properties.Delegates
 

@@ -1,9 +1,8 @@
 package com.imp.impandroidclient.app_state.repos
 
-import android.os.Parcelable
 import android.util.Log
 import androidx.lifecycle.MutableLiveData
-import com.imp.impandroidclient.app_state.repos.data.CreatorAccount
+import com.imp.impandroidclient.app_state.repos.models.CreatorAccount
 import com.imp.impandroidclient.app_state.web_client.HttpClient
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.withContext

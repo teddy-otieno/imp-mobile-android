@@ -3,8 +3,8 @@ package com.imp.impandroidclient.main_screen.ui.library
 import androidx.lifecycle.*
 import androidx.lifecycle.Observer
 import com.imp.impandroidclient.app_state.repos.PostSubmissionRepo
-import com.imp.impandroidclient.app_state.repos.data.PostSubmission
-import com.imp.impandroidclient.app_state.repos.data.SubmissionStatus
+import com.imp.impandroidclient.app_state.repos.models.PostSubmission
+import com.imp.impandroidclient.app_state.repos.models.SubmissionStatus
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
 import java.lang.IllegalStateException
@@ -82,6 +82,6 @@ data class CombinedSubmission(
     val caption: String?,
     val rate: Int?,
     val time: Date?,
-    val status: SubmissionStatus?,
+    val status: String?,
     val url: String? = null
 )

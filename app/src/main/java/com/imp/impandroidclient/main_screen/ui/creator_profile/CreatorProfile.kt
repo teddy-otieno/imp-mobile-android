@@ -13,7 +13,7 @@ import androidx.lifecycle.viewModelScope
 import com.google.android.material.appbar.MaterialToolbar
 import com.imp.impandroidclient.R
 import com.imp.impandroidclient.app_state.repos.UserAccount
-import com.imp.impandroidclient.app_state.repos.data.CreatorAccount
+import com.imp.impandroidclient.app_state.repos.models.CreatorAccount
 import com.imp.impandroidclient.main_screen.DashBoardFragment
 import com.imp.impandroidclient.messaging.ConversationsList
 import kotlinx.coroutines.Dispatchers

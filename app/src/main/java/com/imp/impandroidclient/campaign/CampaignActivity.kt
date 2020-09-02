@@ -5,15 +5,12 @@ import android.content.Context
 import android.content.Intent
 import android.os.Bundle
 import android.util.TypedValue
-import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import android.widget.ImageView
 import android.widget.LinearLayout
 import android.widget.TextView
 import androidx.appcompat.app.AppCompatActivity
-import androidx.core.view.marginEnd
-import androidx.core.view.marginStart
 import androidx.lifecycle.*
 import androidx.navigation.ActivityNavigator
 import androidx.recyclerview.widget.LinearLayoutManager
@@ -22,9 +19,9 @@ import com.imp.impandroidclient.CAMPAIGN_ID
 import com.imp.impandroidclient.R
 import com.imp.impandroidclient.app_state.ResourceManager
 import com.imp.impandroidclient.app_state.repos.CampaignRepository
-import com.imp.impandroidclient.app_state.repos.data.CampaignData
-import com.imp.impandroidclient.app_state.repos.data.GenericCampaignItem
-import com.imp.impandroidclient.app_state.repos.data.MoodBoard
+import com.imp.impandroidclient.app_state.repos.models.CampaignData
+import com.imp.impandroidclient.app_state.repos.models.GenericCampaignItem
+import com.imp.impandroidclient.app_state.repos.models.MoodBoard
 import com.imp.impandroidclient.submission_types.ChooseMedia
 import kotlinx.android.synthetic.main.activity_campaign.*
 import kotlinx.android.synthetic.main.layout_campaign_info_details.*
@@ -183,6 +180,7 @@ private class MoodBoardAdapter(val context: CampaignActivity, val moodBoards: Li
         val height = 200f
         val width = 150f
 
+        //Note(teddy) adding margins to the recycler view
         val layout = ViewGroup.MarginLayoutParams(
             getPixelValue(context, width),
             getPixelValue(context, height)
@@ -194,6 +192,9 @@ private class MoodBoardAdapter(val context: CampaignActivity, val moodBoards: Li
         val view = ImageView(context).apply {
             layoutParams = layout
             scaleType = ImageView.ScaleType.CENTER_CROP
+            background = context.getDrawable(R.drawable.avatar_background)
+            elevation = getPixelValue(context, 4f).toFloat()
+            clipToOutline = true
         }
 
         return MoodBoardViewHolder(view)

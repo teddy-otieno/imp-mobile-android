@@ -21,6 +21,7 @@ import com.imp.impandroidclient.SUBMISSION_ID
 import com.imp.impandroidclient.app_state.ResourceManager
 import com.imp.impandroidclient.main_screen.DashBoardFragment
 import com.imp.impandroidclient.submission_types.PostSubmissionView
+import com.imp.impandroidclient.submission_types.SubmissionApproved
 import kotlinx.coroutines.*
 import java.lang.IllegalStateException
 
@@ -113,7 +114,14 @@ private class SubmissionViewHolder(private val view: View): RecyclerView.ViewHol
 
         view.setOnClickListener {
             val activityClass = when(submission.type) {
-                SubmissionType.POST -> PostSubmissionView::class.java
+                SubmissionType.POST -> {
+
+                    if(submission.status == "APPROVED")
+                        SubmissionApproved::class.java
+                    else
+                        PostSubmissionView::class.java
+
+                }
 
                 else -> Library::class.java
             }

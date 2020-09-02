@@ -34,6 +34,7 @@
     <string name="header_campaignDonts">DONTs</string>
     <string name="campaign_apply">APPLY</string>
     <string name="post_activity_title">Instagram Post</string>
+    <string name="post">Publish to Instagram</string>
     <string name="caption_hint">Caption</string>
     <string name="fee">Fee</string>
     <string name="notes">Notes</string>
@@ -68,6 +69,7 @@
     <string name="profile">Profile</string>
     <string name="channel_name">imp_notification_channel</string>
     <string name="channel_description">imp_notification_channel_desc</string>
+    <string name="copy_clipboard">Your submission caption copied to clipboard.</string>
 
     <string-array name="gender">
         <item>Male</item>

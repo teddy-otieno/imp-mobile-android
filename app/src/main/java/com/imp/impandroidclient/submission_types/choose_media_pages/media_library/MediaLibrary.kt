@@ -16,7 +16,7 @@ import androidx.recyclerview.widget.RecyclerView
 import com.imp.impandroidclient.R
 import com.imp.impandroidclient.app_state.ResourceManager
 import com.imp.impandroidclient.app_state.repos.FileSystemMedia
-import com.imp.impandroidclient.app_state.repos.data.LocalImage
+import com.imp.impandroidclient.app_state.repos.models.LocalImage
 import com.imp.impandroidclient.submission_types.ChooseMediaViewModel
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers

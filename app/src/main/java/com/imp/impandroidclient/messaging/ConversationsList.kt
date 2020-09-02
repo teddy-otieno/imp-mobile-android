@@ -17,14 +17,13 @@ import com.imp.impandroidclient.CONVERSATION_ID
 import com.imp.impandroidclient.R
 import com.imp.impandroidclient.app_state.repos.ConversationID
 import com.imp.impandroidclient.app_state.repos.ConversationRepo
-import com.imp.impandroidclient.app_state.repos.data.Conversation
-import com.imp.impandroidclient.app_state.repos.data.Message
+import com.imp.impandroidclient.app_state.repos.models.Conversation
+import com.imp.impandroidclient.app_state.repos.models.Message
 import kotlinx.android.synthetic.main.activity_conversations_list.*
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
 import java.lang.IllegalStateException
 import java.text.SimpleDateFormat
-import java.time.LocalDateTime
 import java.util.*
 
 class ConversationsList : AppCompatActivity() {

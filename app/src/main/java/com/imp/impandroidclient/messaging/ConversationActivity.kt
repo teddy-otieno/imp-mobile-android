@@ -19,9 +19,8 @@ import com.imp.impandroidclient.CONVERSATION_ID
 import com.imp.impandroidclient.R
 import com.imp.impandroidclient.app_state.repos.ConversationID
 import com.imp.impandroidclient.app_state.repos.ConversationRepo
-import com.imp.impandroidclient.app_state.repos.data.Message
+import com.imp.impandroidclient.app_state.repos.models.Message
 import kotlinx.android.synthetic.main.activity_conversation.*
-import kotlinx.coroutines.flow.callbackFlow
 import kotlinx.coroutines.launch
 import java.lang.IllegalStateException
 import java.util.*

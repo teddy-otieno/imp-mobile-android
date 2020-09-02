@@ -1,4 +1,4 @@
-package com.imp.impandroidclient.app_state.repos.data
+package com.imp.impandroidclient.app_state.repos.models
 
 import android.net.Uri
 

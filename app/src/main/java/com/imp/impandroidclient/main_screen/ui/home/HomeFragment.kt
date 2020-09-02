@@ -9,10 +9,8 @@ import android.view.View
 import android.view.ViewGroup
 import android.widget.ImageView
 import android.widget.TextView
-import androidx.fragment.app.Fragment
 import androidx.fragment.app.activityViewModels
 import androidx.lifecycle.Observer
-import androidx.lifecycle.ViewModelProvider
 import androidx.lifecycle.lifecycleScope
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
@@ -20,14 +18,13 @@ import com.google.android.material.appbar.MaterialToolbar
 import com.imp.impandroidclient.CAMPAIGN_ID
 import com.imp.impandroidclient.R
 import com.imp.impandroidclient.app_state.ResourceManager
-import com.imp.impandroidclient.app_state.repos.data.CampaignData
+import com.imp.impandroidclient.app_state.repos.models.CampaignData
 import com.imp.impandroidclient.campaign.CampaignActivity
 import com.imp.impandroidclient.main_screen.DashBoardFragment
 import kotlinx.android.synthetic.main.fragment_home.*
 import kotlinx.coroutines.launch
 import org.joda.time.DateTime
 import org.joda.time.Duration
-import java.lang.IllegalStateException
 import java.util.*
 import android.util.Pair as UtilPair
 

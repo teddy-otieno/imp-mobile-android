@@ -9,7 +9,7 @@ import android.provider.MediaStore
 import android.util.Log
 import android.util.LruCache
 import android.util.Size
-import com.imp.impandroidclient.app_state.repos.data.LocalImage
+import com.imp.impandroidclient.app_state.repos.models.LocalImage
 import com.imp.impandroidclient.app_state.web_client.HttpClient
 import kotlinx.coroutines.*
 import okhttp3.Request

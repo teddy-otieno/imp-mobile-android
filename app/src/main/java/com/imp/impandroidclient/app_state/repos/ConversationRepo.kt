@@ -1,18 +1,15 @@
 package com.imp.impandroidclient.app_state.repos
 
 import android.util.Log
-import androidx.core.app.NotificationCompat
 import androidx.lifecycle.MutableLiveData
-import com.google.gson.JsonObject
-import com.imp.impandroidclient.app_state.repos.data.Brand
-import com.imp.impandroidclient.app_state.repos.data.Conversation
-import com.imp.impandroidclient.app_state.repos.data.Message
+import com.imp.impandroidclient.app_state.repos.models.Brand
+import com.imp.impandroidclient.app_state.repos.models.Conversation
+import com.imp.impandroidclient.app_state.repos.models.Message
 import com.imp.impandroidclient.app_state.web_client.HttpClient
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.withContext
 import okhttp3.Request
 import okhttp3.RequestBody.Companion.toRequestBody
-import okhttp3.ResponseBody.Companion.toResponseBody
 import org.json.JSONObject
 import java.io.IOException
 import java.lang.IllegalStateException

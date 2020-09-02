@@ -2,9 +2,11 @@
 <com.google.android.material.card.MaterialCardView xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    android:layout_marginVertical="4dp"
+    android:layout_marginHorizontal="2dp"
     android:background="@drawable/campaign_frame_outline"
     android:clickable="true"
-    android:layout_height="wrap_content"
     android:paddingBottom="@dimen/frame_bottom_padding"
     android:focusable="true"
     >

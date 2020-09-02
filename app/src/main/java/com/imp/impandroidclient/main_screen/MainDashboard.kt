@@ -23,12 +23,10 @@ import com.google.android.material.appbar.MaterialToolbar
 import com.google.android.material.bottomnavigation.BottomNavigationView
 import com.imp.impandroidclient.R
 import com.imp.impandroidclient.app_state.repos.ConversationRepo
-import com.imp.impandroidclient.app_state.repos.data.Conversation
-import com.imp.impandroidclient.app_state.repos.data.Message
+import com.imp.impandroidclient.app_state.repos.models.Conversation
 import com.imp.impandroidclient.service.MSG_LISTEN_CONVERSATION
 import com.imp.impandroidclient.service.NetworkService
 import kotlinx.android.synthetic.main.activity_main_dashboard.*
-import kotlinx.android.synthetic.main.item_message_bubble.*
 import kotlinx.coroutines.launch
 import java.lang.IllegalStateException
 

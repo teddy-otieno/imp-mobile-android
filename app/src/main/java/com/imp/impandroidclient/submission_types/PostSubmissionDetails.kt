@@ -6,7 +6,6 @@ import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
 import android.util.Log
 import androidx.activity.viewModels
-import androidx.core.view.doOnPreDraw
 import androidx.core.widget.doOnTextChanged
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.Observer
@@ -17,9 +16,8 @@ import com.imp.impandroidclient.*
 import com.imp.impandroidclient.app_state.ResourceManager
 import com.imp.impandroidclient.app_state.repos.CampaignRepository
 import com.imp.impandroidclient.app_state.repos.PostSubmissionRepo
-import com.imp.impandroidclient.app_state.repos.data.CampaignData
-import com.imp.impandroidclient.app_state.repos.data.HashTag
-import com.imp.impandroidclient.app_state.repos.data.PostSubmission
+import com.imp.impandroidclient.app_state.repos.models.HashTag
+import com.imp.impandroidclient.app_state.repos.models.PostSubmission
 import kotlinx.android.synthetic.main.activity_post_submission_details.*
 import kotlinx.coroutines.launch
 import kotlin.NumberFormatException

@@ -1,22 +1,16 @@
 package com.imp.impandroidclient.app_state.repos
 
 import android.content.ContentResolver
-import android.content.Context
-import android.database.AbstractCursor
 import android.graphics.Bitmap
 import android.net.Uri
-import android.provider.MediaStore
 import android.util.Log
 import androidx.lifecycle.MutableLiveData
 import com.google.gson.Gson
-import com.google.gson.JsonObject
-import com.imp.impandroidclient.app_state.ResourceManager
-import com.imp.impandroidclient.app_state.repos.data.PostSubmission
+import com.imp.impandroidclient.app_state.repos.models.PostSubmission
 import com.imp.impandroidclient.app_state.web_client.HttpClient
 import kotlinx.coroutines.*
 import okhttp3.*
 import okhttp3.RequestBody.Companion.toRequestBody
-import org.joda.time.DateTime
 import org.json.JSONException
 import org.json.JSONObject
 import java.io.*
